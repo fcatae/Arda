@@ -1,0 +1,102 @@
+﻿@using System.Security.Principal
+@using System.Net.Http;
+@using Arda.Common.Utils
+@using Arda.Common.ViewModels.Main
+
+@if (User.Identity.IsAuthenticated)
+{
+    <iframe id="feedbackForm" src="" style="display: none" onload="checkForm(this.contentWindow.location.toString())"></iframe>
+
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+        </button>
+    </div>
+
+    <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left">
+            @{
+                var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+                var menuItems = Util.ConnectToRemoteService<List<MenuItemViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getusermenu", user, string.Empty).Result;
+                if (menuItems != null)
+                {
+                    foreach (var item in menuItems)
+                    {
+                        <li class="nav-item dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">@item.Category <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                @foreach (var subitem in item.Items)
+                                {
+                                    var displayLink = subitem.Item1;
+                                    var controller = subitem.Item2;
+                                    var action = subitem.Item3;
+                                    <li class="nav-item">
+                                        <a asp-controller=@controller asp-action=@action class="nav-link">@displayLink</a>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                }
+            }
+
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+
+            <!-- Feedback button -->
+            <li class="nav-item">
+                <script src="/feedback/feedback.js"></script>
+                <a class="btn btn-primary" href="#" onclick="openForm()">Feedback</a>
+                <style>
+                    iframe {
+                        position: fixed;
+                        border: 1px solid black;
+                        background-color: white;
+                        top: 0; 
+                        right: 0;
+                        width: auto;
+                        height: 20rem;
+                        z-index: 100;
+                    }
+                </style>
+                <div>
+                    <!-- <iframe id="feedbackForm" src="" style="display: none" onload="checkForm(this.contentWindow.location.toString())"></iframe> -->
+                    <script>
+                        (function () {
+                            var username = '@User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value';
+                            var redirect = '/feedback/done.html';
+
+                            initForm(username, redirect);
+                        })();
+                    </script>
+
+                </div>
+            </li>
+            <!-- Feedback button -->
+
+            <li class="nav-item--signout nav-item text-center">
+                Welcome, <strong>@User.Claims.First(claim => claim.Type == "name").Value</strong>
+            </li>
+            <li>
+                <div>
+                    @{ 
+                        var photo = "";//Util.GetUserPhoto(user);
+                    }
+                    <img class="user" id="userImg" src="@photo" />
+                </div>
+            </li>
+            <li class="nav-item--signout nav-item">
+                <a asp-controller="Account" asp-action="SignOut" class="btn btn-danger"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
+            </li>
+
+        </ul>
+    </div>
+
+                }
+                else
+                {
+                    <div class="pull-right">
+                        <a asp-controller="Account" asp-action="SignIn" class="icon-user"></a>
+                    </div>
+                }
