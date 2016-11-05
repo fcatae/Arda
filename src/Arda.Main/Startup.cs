@@ -75,8 +75,22 @@ namespace Arda.Main
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            loggerFactory.AddConsole(LogLevel.Trace);
+            var logger = loggerFactory.CreateLogger("Default");
+
+            //app.Run(async context =>
+            //{
+            //    var connectionFeature = context.Connection;
+            //    logger.LogDebug($"Peer: {connectionFeature.RemoteIpAddress?.ToString()}:{connectionFeature.RemotePort}"
+            //        + $"{Environment.NewLine}"
+            //        + $"Sock: {connectionFeature.LocalIpAddress?.ToString()}:{connectionFeature.LocalPort}");
+
+            //    var response = $"hello, world{Environment.NewLine}";
+            //    context.Response.ContentLength = response.Length;
+            //    context.Response.ContentType = "text/plain";
+            //    await context.Response.WriteAsync(response);
+            //});
+
 
             app.UseApplicationInsightsRequestTelemetry();
 

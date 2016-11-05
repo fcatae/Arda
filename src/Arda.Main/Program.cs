@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Arda.Main
 {
@@ -12,9 +8,17 @@ namespace Arda.Main
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
-                .UseKestrel()
+                .UseKestrel(
+                options =>
+                {
+                    options.NoDelay = true;
+                    options.UseHttps("arda.pfx", "Pa$$w0rd");
+                    options.UseConnectionLogging();
+                }
+                )
+                .UseUrls("http://0.0.0.0:80", "https://0.0.0.0:443")
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
+                //.UseIISIntegration()
                 .UseStartup<Startup>()
                 .Build();
 
