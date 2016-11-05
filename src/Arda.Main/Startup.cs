@@ -55,7 +55,7 @@ namespace Arda.Main
             
             //Add Session Middleware
             services.AddMemoryCache();
-            //services.AddSession();
+            services.AddSession();
 
             services.AddMvc()
                 .AddJsonOptions(opts =>
@@ -106,8 +106,8 @@ namespace Arda.Main
             app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseStaticFiles();
-
-            //app.UseSession();
+            app.UseDeveloperExceptionPage();
+            app.UseSession();
 
             // Configure the OpenIdConnect Auth Pipeline and required services.
             ConfigureAuth(app);

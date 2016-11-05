@@ -67,7 +67,8 @@ namespace Arda.Main
         public async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         {
             //await CacheUserAndCodeOnRedis(context);
-            //await AcquireTokenForMicrosoftGraph(context);
+            await AcquireTokenForMicrosoftGraph(context);
+
         }
 
 

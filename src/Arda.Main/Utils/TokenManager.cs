@@ -14,14 +14,11 @@ namespace Arda.Main.Utils
         public static async Task<AuthenticationResult> GetAccessToken(HttpContext context)
         {
             string userObjectID = context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            AuthenticationContext authContext = new AuthenticationContext(Startup.Authority, new SessionCache(userObjectID, context));
+            var tokenCache = new SessionCache(userObjectID, context);
             ClientCredential credential = new ClientCredential(Startup.ClientId, Startup.ClientSecret);
-
-            return await authContext.AcquireTokenAsync(Startup.GraphResourceId, credential);
+            AuthenticationContext authContext = new AuthenticationContext(Startup.Authority, tokenCache);
             
-            // Codigo antigo
-            //return await authContext.AcquireTokenSilentAsync(Startup.GraphResourceId, credential, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
-
+            return await authContext.AcquireTokenAsync(Startup.GraphResourceId, credential);
         }
 
         private static async Task<IActionResult> CallMicrosoftGraph(HttpContext context)
