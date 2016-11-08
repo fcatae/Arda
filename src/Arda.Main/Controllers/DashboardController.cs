@@ -41,7 +41,7 @@ namespace Arda.Main.Controllers
 
                 return View();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //If get silent token fails:
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
