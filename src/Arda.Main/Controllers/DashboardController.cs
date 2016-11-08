@@ -87,9 +87,7 @@ namespace Arda.Main.Controllers
             catch (Exception)
             {
                 throw;
-            }
-          
+            } 
         }
-
     }
 }
