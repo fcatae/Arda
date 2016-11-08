@@ -68,7 +68,6 @@ namespace Arda.Main
         {
             //await CacheUserAndCodeOnRedis(context);
             await AcquireTokenForMicrosoftGraph(context);
-
         }
 
 
@@ -96,6 +95,5 @@ namespace Arda.Main
             AuthenticationResult authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
                 context.JwtSecurityToken.Id, new Uri(context.ProtocolMessage.RedirectUri), clientCred, GraphResourceId);
         }
-
     }
 }

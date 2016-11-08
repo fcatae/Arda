@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Arda.Common.ViewModels.Main;
 using Arda.Kanban.Models;
 
@@ -39,11 +38,11 @@ namespace Arda.Kanban.Repositories
                     return null;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // Shouldn't this exception be logged in someform?
                 return null;
             }
         }
-
     }
 }

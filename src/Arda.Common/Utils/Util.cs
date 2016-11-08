@@ -49,7 +49,8 @@ namespace Arda.Common.Utils
                     {
                         var photo = Util.GetString(_cache.Get(key));
                         return photo;
-                    }else
+                    }
+                    else
                     {
                         return string.Empty;
                     }
@@ -235,7 +236,7 @@ namespace Arda.Common.Utils
             KanbanURL = config["Endpoints:kanban-service"];
             ReportsURL = config["Endpoints:reports-service"];
 
-            
+
             _cache = new RedisCache(new RedisCacheOptions
             {
                 Configuration = config["Storage:Redis:Configuration"],

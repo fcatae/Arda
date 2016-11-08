@@ -3,9 +3,6 @@ using Arda.Common.Models.Kanban;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
 using Arda.Common.ViewModels.Main;
 using Arda.Kanban.Models;
 
