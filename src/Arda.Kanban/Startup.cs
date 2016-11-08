@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +9,6 @@ using Microsoft.Extensions.Caching.Redis;
 using Arda.Kanban.Models;
 using Arda.Common.Interfaces.Kanban;
 using Arda.Kanban.Repositories;
-using Arda.Common.Middlewares;
 
 namespace Arda.Kanban
 {

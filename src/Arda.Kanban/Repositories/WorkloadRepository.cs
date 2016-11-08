@@ -4,7 +4,6 @@ using Arda.Kanban.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Arda.Common.Models.Kanban;
 using Arda.Common.Email;
 using System.Text;
