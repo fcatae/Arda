@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -49,7 +46,8 @@ namespace Arda.Common.Utils
                     {
                         var photo = Util.GetString(_cache.Get(key));
                         return photo;
-                    }else
+                    }
+                    else
                     {
                         return string.Empty;
                     }
@@ -235,7 +233,7 @@ namespace Arda.Common.Utils
             KanbanURL = config["Endpoints:kanban-service"];
             ReportsURL = config["Endpoints:reports-service"];
 
-            
+
             _cache = new RedisCache(new RedisCacheOptions
             {
                 Configuration = config["Storage:Redis:Configuration"],

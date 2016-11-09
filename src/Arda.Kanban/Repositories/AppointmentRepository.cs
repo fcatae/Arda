@@ -1,12 +1,10 @@
 ﻿using Arda.Common.Interfaces.Kanban;
 using Arda.Common.Models.Kanban;
-using Arda.Common.ViewModels.Kanban;
 using Arda.Common.ViewModels.Main;
 using Arda.Kanban.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Arda.Kanban.Repositories
 {

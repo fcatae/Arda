@@ -9,7 +9,6 @@ namespace Arda.Kanban.Models
             : base(options)
         { }
 
-
         public DbSet<Module> Modules { get; set; }
 
         public DbSet<Resource> Resources { get; set; }

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Arda.Common.Models.Kanban;
 using Arda.Common.Interfaces.Kanban;
 using Arda.Common.ViewModels.Main;
 using Newtonsoft.Json;

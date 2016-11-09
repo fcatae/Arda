@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Http;
 using Arda.Common.Utils;
 using Arda.Common.ViewModels.Main;
-using Newtonsoft.Json;
 using Arda.Common.JSON;
-using System.Net;
 
 namespace Arda.Main.Controllers
 {

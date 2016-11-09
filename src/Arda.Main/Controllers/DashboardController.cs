@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using Arda.Common.ViewModels.Main;
-using Microsoft.Extensions.Caching.Distributed;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -41,7 +39,7 @@ namespace Arda.Main.Controllers
 
                 return View();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //If get silent token fails:
                 return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
@@ -87,9 +85,7 @@ namespace Arda.Main.Controllers
             catch (Exception)
             {
                 throw;
-            }
-          
+            } 
         }
-
     }
 }

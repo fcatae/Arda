@@ -1,0 +1,40 @@
+{
+    "version": "0.1.0",
+    "command": "dotnet",
+    "isShellCommand": true,
+    "args": [],
+    "tasks": [
+        {
+            "taskName": "build",
+            "args": [
+                "${workspaceRoot}\\src\\Arda.Kanban\\project.json"
+            ],
+            "isBuildCommand": true,
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "restore",
+            "args": [
+                "${workspaceRoot}\\src\\Arda.Common\\project.json",
+                "${workspaceRoot}\\src\\Arda.Kanban\\project.json",
+                "${workspaceRoot}\\src\\Arda.Main\\project.json",
+                "${workspaceRoot}\\src\\Arda.Permissions\\project.json",
+                "${workspaceRoot}\\src\\Arda.Reports\\project.json"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "taskName": "buildAll",
+            "args": [
+                "build",
+                "${workspaceRoot}\\src\\Arda.Common\\project.json",
+                "${workspaceRoot}\\src\\Arda.Kanban\\project.json",
+                "${workspaceRoot}\\src\\Arda.Main\\project.json",
+                "${workspaceRoot}\\src\\Arda.Permissions\\project.json",
+                "${workspaceRoot}\\src\\Arda.Reports\\project.json"
+            ],
+            "suppressTaskName": true,
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

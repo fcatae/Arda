@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Extensions.Caching.Memory;
 
