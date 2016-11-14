@@ -7,4 +7,4 @@ helping them being better decision makers. For the team member, Arda is a simple
 # Documentation
 Here we have a content navigation summary. Enjoy!
 
-[Overview]('https://github.com/DXBrazil/Arda/wiki/Overview')
+[Overview](https://github.com/DXBrazil/Arda/wiki/Overview)
