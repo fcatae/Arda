@@ -32,9 +32,9 @@ $(function ($) {
     $("#table-appointments-my").DataTable({
         "sAjaxSource": "/Appointment/ListMyAppointments",
         "columns": [
-            { "width": "30%" },
-            { "width": "20%" },
-            { "width": "15%" },
+            { "width": "30%", "type":"string" },
+            { "width": "20%", "type": "date" },
+            { "width": "15%", "type": "integer" },
             { "width": "35%" }
         ],
         "columnDefs": [
