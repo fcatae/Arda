@@ -8,3 +8,4 @@ helping them being better decision makers. For the team member, Arda is a simple
 Here we have a content navigation summary. Enjoy!
 
 [Overview](https://github.com/DXBrazil/Arda/wiki/Overview)
+[Motivation, Architecture and Technologies](https://github.com/DXBrazil/Arda/wiki/Architecture)
