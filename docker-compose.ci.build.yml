@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  ci-build:
+    image: microsoft/aspnetcore-build:1.0.2-msbuild-preview
+    volumes:
+      - .:/src
+    working_dir: /src
+    command: /bin/bash -c "dotnet restore && dotnet publish -c Release -o ./bin/Release/PublishOutput"
