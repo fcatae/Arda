@@ -37,6 +37,12 @@ namespace Arda.Main
                 AutomaticAuthenticate = true
             });
 
+            if( ClientId == null || ClientId == "" )
+            {
+                // quick return
+                return;
+            }
+
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions()
             {
                 AutomaticChallenge = true,
