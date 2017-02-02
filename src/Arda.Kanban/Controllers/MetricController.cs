@@ -72,7 +72,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("listbyyear")]
-        public IEnumerable<MetricViewModel> List(int year)
+        public IEnumerable<MetricViewModel> List([FromQuery]int year)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("getmetricbyid")]
-        public MetricViewModel GetMetricByID(Guid id)
+        public MetricViewModel GetMetricByID([FromQuery]Guid id)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpDelete]
         [Route("deletemetricbyid")]
-        public HttpResponseMessage DeleteMetricByID(Guid id)
+        public HttpResponseMessage DeleteMetricByID([FromQuery]Guid id)
         {
             try
             {

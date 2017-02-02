@@ -72,7 +72,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("getfiscalyearbyid")]
-        public FiscalYearViewModel GetFiscalYearByID(Guid id)
+        public FiscalYearViewModel GetFiscalYearByID([FromQuery]Guid id)
         {
             try
             {
@@ -123,7 +123,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpDelete]
         [Route("deletefiscalyearbyid")]
-        public HttpResponseMessage DeleteFiscalYearByID(Guid id)
+        public HttpResponseMessage DeleteFiscalYearByID([FromQuery]Guid id)
         {
             try
             {

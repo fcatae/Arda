@@ -69,7 +69,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("details")]
-        public WorkloadViewModel Details(Guid workloadID)
+        public WorkloadViewModel Details([FromQuery]Guid workloadID)
         {
             try
             {
@@ -173,7 +173,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpDelete]
         [Route("delete")]
-        public HttpResponseMessage Delete(Guid workloadID)
+        public HttpResponseMessage Delete([FromQuery]Guid workloadID)
         {
             try
             {
