@@ -16,7 +16,7 @@ namespace Arda.Main
                     options.UseConnectionLogging();
                 }
                 )
-                .UseUrls("http://0.0.0.0:80", "https://0.0.0.0:443")
+                .UseUrls("http://0.0.0.0:80", "http://0.0.0.0:8080", "https://0.0.0.0:443")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()

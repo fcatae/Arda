@@ -11,6 +11,7 @@ namespace Arda.Reports
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
+                .UseUrls("http://0.0.0.0:80","http://0.0.0.0:83")
                 .UseStartup<Startup>()
                 .Build();
 
