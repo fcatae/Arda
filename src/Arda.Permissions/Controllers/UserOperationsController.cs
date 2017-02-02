@@ -114,7 +114,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpGet]
         [Route("getuserpermissions")]
-        public PermissionsViewModel GetUserPermissions(string uniqueName)
+        public PermissionsViewModel GetUserPermissions([FromQuery]string uniqueName)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpGet]
         [Route("getuser")]
-        public UserMainViewModel GetUser(string uniqueName)
+        public UserMainViewModel GetUser([FromQuery]string uniqueName)
         {
             try
             {

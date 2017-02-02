@@ -51,7 +51,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpDelete]
         [Route("delete")]
-        public HttpResponseMessage DeleteUser(string userID)
+        public HttpResponseMessage DeleteUser([FromQuery]string userID)
         {
             if (userID != null)
             {

@@ -23,7 +23,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpPost]
         [Route("setuserpermissionsandcode")]
-        public IActionResult SetUserPermissionsAndCode(string name)
+        public IActionResult SetUserPermissionsAndCode([FromQuery]string name)
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
             var code = HttpContext.Request.Headers["code"].ToString();
@@ -83,7 +83,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpPut]
         [Route("updateuserpermissions")]
-        public HttpResponseMessage UpdateUserPermissions(string uniqueName)
+        public HttpResponseMessage UpdateUserPermissions([FromQuery]string uniqueName)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpDelete]
         [Route("deleteuser")]
-        public HttpResponseMessage DeleteUser(string uniqueName)
+        public HttpResponseMessage DeleteUser([FromQuery]string uniqueName)
         {
             try
             {
@@ -161,7 +161,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpPut]
         [Route("updateuserphoto")]
-        public HttpResponseMessage UpdateUserPhoto(string uniqueName)
+        public HttpResponseMessage UpdateUserPhoto([FromQuery]string uniqueName)
         {
             try
             {
@@ -187,7 +187,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpPut]
         [Route("saveuserphotooncache")]
-        public HttpResponseMessage SaveUserPhotoOnCache(string uniqueName)
+        public HttpResponseMessage SaveUserPhotoOnCache([FromQuery]string uniqueName)
         {
             try
             {
@@ -215,7 +215,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpPut]
         [Route("updateuser")]
-        public HttpResponseMessage UpdateUser(string uniqueName)
+        public HttpResponseMessage UpdateUser([FromQuery]string uniqueName)
         {
             try
             {
@@ -241,7 +241,7 @@ namespace Arda.Permissions.Controllers
 
         [HttpGet]
         [Route("verifyuseraccesstoresource")]
-        public HttpResponseMessage VerifyUserAccessToResource(string uniqueName, string module, string resource)
+        public HttpResponseMessage VerifyUserAccessToResource([FromQuery]string uniqueName, [FromQuery]string module, [FromQuery]string resource)
         {
             try
             {

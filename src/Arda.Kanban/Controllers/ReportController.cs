@@ -20,7 +20,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("getactivityconsumingdata")]
-        public IEnumerable<ActivityConsumingViewModel> GetActivityConsumingData(DateTime startDate, DateTime endDate, string user = "All")
+        public IEnumerable<ActivityConsumingViewModel> GetActivityConsumingData([FromQuery]DateTime startDate, [FromQuery] DateTime endDate, [FromQuery]string user = "All")
         {
             try
             {
@@ -43,7 +43,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("getexpertiseconsumingdata")]
-        public IEnumerable<ExpertiseConsumingViewModel> GetExpertiseConsumingData(DateTime startDate, DateTime endDate, string user = "All")
+        public IEnumerable<ExpertiseConsumingViewModel> GetExpertiseConsumingData([FromQuery]DateTime startDate, [FromQuery]DateTime endDate, [FromQuery]string user = "All")
         {
             try
             {
@@ -66,7 +66,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("getmetricconsumingdata")]
-        public IEnumerable<MetricConsumingViewModel> GetMetricConsumingData(DateTime startDate, DateTime endDate, string user = "All")
+        public IEnumerable<MetricConsumingViewModel> GetMetricConsumingData([FromQuery]DateTime startDate, [FromQuery]DateTime endDate, [FromQuery]string user = "All")
         {
             try
             {

@@ -9,6 +9,7 @@ using Arda.Common.Interfaces.Permissions;
 using Arda.Permissions.Repositories;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Arda.Permissions
 {
@@ -66,6 +67,11 @@ namespace Arda.Permissions
             
             //// Injecting repository dependencies to permissions.
             services.AddScoped<IPermissionRepository, PermissionRepository>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Arda.Permissions", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -83,6 +89,12 @@ namespace Arda.Permissions
             app.UseStaticFiles();
 
             app.UseCors("AllowAll");
+
+            app.UseSwagger();
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arda.Permissions v1");
+            });
 
             app.UseMvc();
         }

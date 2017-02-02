@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Redis;
 using Arda.Kanban.Models;
 using Arda.Common.Interfaces.Kanban;
 using Arda.Kanban.Repositories;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Arda.Kanban
 {
@@ -73,6 +74,11 @@ namespace Arda.Kanban
             services.AddScoped<IWorkloadRepository, WorkloadRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Arda.Kanban", Version = "v1" });
+            });            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -91,6 +97,12 @@ namespace Arda.Kanban
 
             app.UseCors("AllowAll");
 
+            app.UseSwagger();
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arda.Kanban v1");
+            });
+            
             app.UseMvc();
         }
 

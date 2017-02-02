@@ -72,7 +72,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("listfromuser")]
-        public IEnumerable<AppointmentViewModel> ListFromUser(string user)
+        public IEnumerable<AppointmentViewModel> ListFromUser([FromQuery]string user)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("getappointmentbyid")]
-        public AppointmentViewModel GetAppointmentByID(Guid id)
+        public AppointmentViewModel GetAppointmentByID([FromQuery]Guid id)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace Arda.Kanban.Controllers
 
         [HttpDelete]
         [Route("deleteappointmentbyid")]
-        public HttpResponseMessage DeleteAppointmentByID(Guid id)
+        public HttpResponseMessage DeleteAppointmentByID([FromQuery]Guid id)
         {
             try
             {
