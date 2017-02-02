@@ -16,7 +16,7 @@ namespace Arda.Reports.Controllers
         // GET: /<controller>/
         [HttpGet]
         [Route("bubble")]
-        public async Task<D3BubbleViewModel> Bubble(DateTime startDate, DateTime endDate, string user = "All")
+        public async Task<D3BubbleViewModel> Bubble([FromQuery]DateTime startDate, [FromQuery]DateTime endDate, [FromQuery]string user = "All")
         {
             var data = await Util.ConnectToRemoteService<IEnumerable<ActivityConsumingViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/Report/getactivityconsumingdata?startDate=" + startDate + "&endDate=" + endDate + "&user=" +user, "","");
 
@@ -43,7 +43,7 @@ namespace Arda.Reports.Controllers
 
         [HttpGet]
         [Route("tabledata")]
-        public async Task<IEnumerable<ActivityConsumingViewModel>> TableData(DateTime startDate, DateTime endDate, string user = "All")
+        public async Task<IEnumerable<ActivityConsumingViewModel>> TableData([FromQuery]DateTime startDate, [FromQuery]DateTime endDate, [FromQuery]string user = "All")
         {
             var data = await Util.ConnectToRemoteService<IEnumerable<ActivityConsumingViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/Report/getactivityconsumingdata?startDate=" + startDate + "&endDate=" + endDate + "&user=" + user, "", "");
 

@@ -13,8 +13,9 @@ namespace Arda.Reports.Controllers
     [Route("api/[controller]")]
     public class MetricController : Controller
     {
+        [HttpGet]
         [Route("tabledata")]
-        public async Task<IEnumerable<MetricConsumingViewModel>> TableData(DateTime startDate, DateTime endDate, string user = "All")
+        public async Task<IEnumerable<MetricConsumingViewModel>> TableData([FromQuery]DateTime startDate, [FromQuery]DateTime endDate, [FromQuery]string user = "All")
         {
             var data = await Util.ConnectToRemoteService<IEnumerable<MetricConsumingViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/Report/getmetricconsumingdata?startDate=" + startDate + "&endDate=" + endDate + "&user=" + user, "", "");
 

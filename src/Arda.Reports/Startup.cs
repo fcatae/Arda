@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Arda.Common.Interfaces.Reports;
 using Arda.Reports.Repositories;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Arda.Reports
 {
@@ -59,6 +60,11 @@ namespace Arda.Reports
 
             // Registering additional services.
             services.AddScoped<IReportsRepository, ReportsRepository>();
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Arda.Reports", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -78,6 +84,12 @@ namespace Arda.Reports
             app.UseStaticFiles();
 
             app.UseCors("AllowAll");
+
+            app.UseSwagger();
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arda.Reports v1");
+            });
 
             app.UseMvc();
         }
