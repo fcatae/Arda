@@ -1,14 +1,25 @@
 version: '2.1'
 services:
+  main:
+     image: ardafull
+     command: run.cmd Arda.Main
+     env_file: environment_secrets.env
+     ports:
+        - "80:80"
+     dns:
+        - 8.8.8.8
+        
   kanban:
      image: ardafull
-     command: run.cmd arda.kanban
+     command: run.cmd Arda.Kanban
      env_file: environment_secrets.env
   permissions:
      image: ardafull
-     command: run.cmd arda.permissions
-     ports:
-        - "80:80"
+     command: run.cmd Arda.Permissions
+     env_file: environment_secrets.env
+  reports:
+     image: ardafull
+     command: run.cmd Arda.Reports
      env_file: environment_secrets.env
 networks:
   default:
