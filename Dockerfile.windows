@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.0.3-runtime-nanoserver
+FROM arda-base
 ARG source=.
 WORKDIR /app
 EXPOSE 80
