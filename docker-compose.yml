@@ -1,0 +1,16 @@
+version: '2.1'
+services:
+  kanban:
+     image: ardafull
+     command: run.cmd arda.kanban
+     env_file: environment_secrets.env
+  permissions:
+     image: ardafull
+     command: run.cmd arda.permissions
+     ports:
+        - "80:80"
+     env_file: environment_secrets.env
+networks:
+  default:
+    external:
+      name: nat
