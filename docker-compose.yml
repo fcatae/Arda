@@ -6,9 +6,7 @@ services:
      env_file: environment_secrets.env
      ports:
         - "80:80"
-     dns:
-        - 8.8.8.8
-        
+        - "443:443"
   kanban:
      image: ardafull
      command: run.cmd Arda.Kanban
