@@ -9,16 +9,25 @@ services:
         - "443:443"
   kanban:
      image: ardafull
+     hostname: kanban
      command: run.cmd Arda.Kanban
      env_file: environment_secrets.env
+     ports:
+        - "81:81"
   permissions:
      image: ardafull
+     hostname: permissions
      command: run.cmd Arda.Permissions
      env_file: environment_secrets.env
+     ports:
+        - "82:82"
   reports:
      image: ardafull
+     hostname: reports
      command: run.cmd Arda.Reports
      env_file: environment_secrets.env
+     ports:
+        - "83:83"     
 networks:
   default:
     external:
