@@ -16,7 +16,7 @@
       "type": "platform"
     },
     "Microsoft.EntityFrameworkCore": "1.1.0-*",
-    "Microsoft.AspNetCore.Mvc": "1.1.0",
+    "Microsoft.AspNetCore.Mvc": "1.1.1",
     "Microsoft.AspNetCore.Mvc.Formatters.Json": "1.1.0",
     "Microsoft.Extensions.Caching.Redis": "1.1.0-preview1-final",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
