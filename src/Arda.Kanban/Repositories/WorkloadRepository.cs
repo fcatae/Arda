@@ -340,8 +340,9 @@ namespace Arda.Kanban.Repositories
         {
             try
             {
-                var workloads = (from wb in _context.WorkloadBacklogs
-                                join wbu in _context.WorkloadBacklogUsers on wb.WBUsers.Where(u => u.User.UniqueName == uniqueName).First().WBUserID equals wbu.WBUserID
+                var workloads = (from wb in _context.WorkloadBacklogs 
+                                join wbu in _context.WorkloadBacklogUsers on wb.WBID equals wbu.WorkloadBacklogWBID
+                                // wb.WBUsers.Where(u => u.User.UniqueName == uniqueName).First().WBUserID equals wbu.WBUserID
                                 join uk in _context.Users on wbu.User.UniqueName equals uk.UniqueName
                                 //join at in _context.Files on wb equals at.WorkloadBacklog
                                 where uk.UniqueName.Equals(uniqueName)
