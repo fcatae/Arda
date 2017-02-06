@@ -19,6 +19,12 @@ namespace Arda.Kanban.Controllers
             _repository = repository;
         }
 
+        [HttpGet]
+        [Route("listworkloadwithfilter")]
+        public IEnumerable<WorkloadsByUserViewModel> ListWorkloadWithFilter([FromQuery]string uniqueName)
+        {
+            return _repository.GetWorkloadsByUser(uniqueName);
+        }
 
         [HttpGet]
         [Route("listworkloadbyuser")]
