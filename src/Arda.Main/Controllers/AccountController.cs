@@ -49,7 +49,7 @@ namespace Arda.Main.Controllers
             {
                 await AuthSimple();
 
-                return Redirect(Util.MainURL + "Dashboard");
+                return Redirect("/Dashboard");
             }
 
             return new ChallengeResult(
