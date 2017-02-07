@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -10,18 +12,21 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Arda.Common.Utils;
 using Arda.Main.Utils;
 using System.Net.Http;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Arda.Main
 {
     public partial class Startup
     {
+        public static bool IsSimpleAuthForDemo;
         public static string Authority = string.Empty;
         public static string CallbackPath = string.Empty;
         public static string ClientId = string.Empty;
         public static string ClientSecret = string.Empty;
         public static string GraphResourceId = string.Empty;
         public static string PostLogoutRedirectUri = string.Empty;
-
+        
         public void ConfigureAuth(IApplicationBuilder app)
         {
             // Populate Azure AD Configuration Values
@@ -32,16 +37,27 @@ namespace Arda.Main
             GraphResourceId = Configuration["Authentication:AzureAd:GraphResourceId"];
             PostLogoutRedirectUri = Configuration["Authentication:AzureAd:PostLogoutRedirectUri"];
 
+            IsSimpleAuthForDemo = (ClientId == null || ClientId == "");
+
+            if ( IsSimpleAuthForDemo )
+            {
+                app.UseCookieAuthentication(new CookieAuthenticationOptions()
+                {
+                    AuthenticationScheme = "defaultCookieAuth",
+                    LoginPath = new PathString("/Account/Unauthorized/"),
+                    AccessDeniedPath = new PathString("/Account/Forbidden/"),
+                    AutomaticAuthenticate = true,
+                    AutomaticChallenge = true
+                });                
+
+                // quick return
+                return;
+            }
+            
             app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
                 AutomaticAuthenticate = true
             });
-
-            if( ClientId == null || ClientId == "" )
-            {
-                // quick return
-                return;
-            }
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions()
             {

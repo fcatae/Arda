@@ -21,16 +21,21 @@ namespace Arda.Main.Controllers
 
         public async Task<IActionResult> Index()
         {
-            try
-            {
+            //try
+            //{
                 var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
                 var userStatus = Util.ConnectToRemoteService<int>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuserstatus", user, string.Empty).Result;
-                var result = await TokenManager.GetAccessToken(HttpContext);
-                var token = result.AccessToken;
+                string token = null;
 
                 ViewBag.User = user;
                 ViewBag.UserStatus = userStatus;
-                ViewBag.Token = token;
+
+                if (!Startup.IsSimpleAuthForDemo)
+                {
+                    Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await TokenManager.GetAccessToken(HttpContext);
+                    token = result.AccessToken;
+                    ViewBag.Token = token;
+                }
 
                 if (userStatus == 0)
                 {
@@ -38,12 +43,12 @@ namespace Arda.Main.Controllers
                 }
 
                 return View();
-            }
-            catch (Exception)
-            {
-                //If get silent token fails:
-                return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
-            }
+            //}
+            //catch (Exception)
+            //{
+            //    //If get silent token fails:
+            //    return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
+            //}
         }
 
 
