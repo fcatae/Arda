@@ -1,3 +1,6 @@
+dotnet restore -p .\src\Arda.Main\project.json
+dotnet build -p .\src\Arda.Main\project.json
+
 dotnet restore
 
 xcopy /e /y .\deploy\webapp\app_data\*.*  %WEBROOT_PATH%\app_data\
