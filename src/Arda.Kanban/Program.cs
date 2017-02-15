@@ -14,7 +14,7 @@ namespace Arda.Kanban
                             .AddJsonFile("local-secret.json", true)
                             .AddJsonFile("microservices.json", true)
                             .AddEnvironmentVariables()
-                            //.AddCommandLine(args)
+                            .AddCommandLine(args)
                             .Build();
 
             var builder = new WebHostBuilder()
