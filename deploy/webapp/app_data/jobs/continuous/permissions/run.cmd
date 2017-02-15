@@ -1,1 +1,1 @@
-%WEBROOT_PATH%\webapp-permissions.bat
+%WEBROOT_PATH%\webapp-permissions.cmd

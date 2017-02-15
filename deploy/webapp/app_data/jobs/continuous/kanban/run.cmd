@@ -1,1 +1,1 @@
-%WEBROOT_PATH%\webapp-kanban.bat
+%WEBROOT_PATH%\webapp-kanban.cmd

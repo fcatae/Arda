@@ -1,1 +1,1 @@
-%WEBROOT_PATH%\webapp-reports.bat
+%WEBROOT_PATH%\webapp-reports.cmd
