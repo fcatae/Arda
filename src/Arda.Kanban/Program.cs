@@ -10,7 +10,7 @@ namespace Arda.Kanban
         {
             var config = new ConfigurationBuilder()
                             .SetBasePath(Directory.GetCurrentDirectory())
-                            .AddJsonFile("appsettings.json")
+                            .AddJsonFile("appsettings.json", true)
                             .AddJsonFile("local-secret.json", true)
                             .AddJsonFile("microservices.json", true)
                             .AddEnvironmentVariables()
@@ -27,10 +27,13 @@ namespace Arda.Kanban
             string kestrelListen = config["KESTREL_LISTEN_KANBAN"];
             if ( kestrelListen != null )
             {
+                System.Console.WriteLine("KESTREL_LISTEN_KANBAN = " + kestrelListen);
+
                 builder = builder.UseUrls(kestrelListen);
             }
 
             var host = builder.Build();
+
 
             host.Run();
         }
