@@ -1,3 +1,3 @@
-cd %HOME%\site\src\Arda.Main
+cd %HOME%\site\wwwroot\src\Arda.Main
 
 dotnet run
