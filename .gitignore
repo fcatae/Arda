@@ -242,3 +242,5 @@ ModelManifest.xml
 .fake/
 
 environment_secrets.env
+
+/app_data
