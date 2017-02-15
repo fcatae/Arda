@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using System.IO;
 
 namespace Arda.Kanban
@@ -7,13 +8,29 @@ namespace Arda.Kanban
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
+            var config = new ConfigurationBuilder()
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddJsonFile("appsettings.json")
+                            .AddJsonFile("local-secret.json", true)
+                            .AddJsonFile("microservices.json", true)
+                            .AddEnvironmentVariables()
+                            //.AddCommandLine(args)
+                            .Build();
+
+            var builder = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
-                .UseUrls("http://0.0.0.0:80","http://0.0.0.0:81")                
-                .UseStartup<Startup>()
-                .Build();
+                .UseUrls("http://0.0.0.0:80", "http://0.0.0.0:81")
+                .UseStartup<Startup>();
+
+            string kestrelListen = config["KESTREL_LISTEN_KANBAN"];
+            if ( kestrelListen != null )
+            {
+                builder = builder.UseUrls(kestrelListen);
+            }
+
+            var host = builder.Build();
 
             host.Run();
         }
