@@ -1,2 +1,1 @@
-xcopy /e /y .\deploy\webapp\app_data .\app_data
-
+xcopy /e /y .\deploy\webapp\app_data\*.* .\app_data\
