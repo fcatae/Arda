@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using System.IO;
 
 namespace Arda.Main
@@ -7,22 +8,37 @@ namespace Arda.Main
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                .UseKestrel(
-                options =>
-                {
+            var config = new ConfigurationBuilder()
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddJsonFile("appsettings.json", true)
+                            .AddJsonFile("local-secret.json", true)
+                            .AddJsonFile("microservices.json", true)
+                            .AddEnvironmentVariables()
+                            .AddCommandLine(args)
+                            .Build();
+
+            var builder = new WebHostBuilder()
+                .UseKestrel(options => {
                     options.NoDelay = true;
                     options.UseHttps("arda.pfx", "Pa$$w0rd");
                     options.UseConnectionLogging();
-                }
-                )
-                .UseUrls("http://0.0.0.0:80", "http://0.0.0.0:8080", "https://0.0.0.0:443")
+                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls("http://0.0.0.0:80")
                 .UseIISIntegration()
-                .UseStartup<Startup>()
-                .Build();
+                .UseStartup<Startup>();
 
-            host.Run(); //running
+            string kestrelListen = config["KESTREL_LISTEN_MAIN"];
+            if (kestrelListen != null)
+            {
+                System.Console.WriteLine("KESTREL_LISTEN_MAIN = " + kestrelListen);
+
+                builder = builder.UseUrls(kestrelListen);
+            }
+
+            var host = builder.Build();
+
+            host.Run();            
         }
     }
 }
