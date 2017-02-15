@@ -20,8 +20,8 @@ namespace Arda.Kanban
             var builder = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseUrls("http://0.0.0.0:8081")
                 .UseIISIntegration()
-                .UseUrls("http://0.0.0.0:80")
                 .UseStartup<Startup>();
 
             string kestrelListen = config["KESTREL_LISTEN_KANBAN"];
