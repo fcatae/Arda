@@ -1,1 +1,1 @@
-tcpping -t localhost:80
+%WEBROOT_PATH%\webapp-kanban.bat
