@@ -2,7 +2,7 @@ REM set NUGET_PACKAGES=D:\home\site\.nuget
 
 dotnet restore
 
-dotnet build -p .\src\Arda.Main\project.json
+dotnet build .\src\Arda.Main\project.json
 
 copy .\deploy\webapp\*.cmd  %WEBROOT_PATH%\
 copy .\deploy\webapp\*.config  %WEBROOT_PATH%\
