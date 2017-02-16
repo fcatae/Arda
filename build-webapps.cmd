@@ -1,6 +1,8 @@
 set DOTNET_SKIP_FIRST_TIME_EXPERIENCE=false
 set NUGET_PACKAGES=
 
+dotnet restore -p .\src\Arda.Common\project.json
+
 dotnet restore -p .\src\Arda.Main\project.json
 dotnet build -p .\src\Arda.Main\project.json
 
