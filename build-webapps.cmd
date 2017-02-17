@@ -12,3 +12,4 @@ copy .\deploy\webapp\appsettings.json  %WEBROOT_PATH%\
 copy .\deploy\webapp\arda.pfx  %WEBROOT_PATH%\
 
 xcopy /e /y .\deploy\webapp\app_data\*.*  %WEBROOT_PATH%\app_data\
+
