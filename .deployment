@@ -1,0 +1,4 @@
+[config]
+COMMAND=build-webapps.cmd
+SCM_REPOSITORY_PATH=wwwroot
+SCM_USE_SHALLOW_CLONE=1

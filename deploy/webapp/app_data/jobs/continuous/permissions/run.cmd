@@ -1,0 +1,1 @@
+%WEBROOT_PATH%\webapp-permissions.cmd
