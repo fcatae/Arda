@@ -20,68 +20,40 @@ namespace Arda.Kanban.Repositories
 
         public bool AddNewUser(UserKanbanViewModel user)
         {
-            try
+            _context.Users.Add(new User()
             {
-                _context.Users.Add(new User()
-                {
-                    UniqueName = user.UniqueName,
-                    Name = user.Name
-                });
-                _context.SaveChanges();
+                UniqueName = user.UniqueName,
+                Name = user.Name
+            });
+            _context.SaveChanges();
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
         }
 
         public bool DeleteUserByID(string userID)
         {
-            try
-            {
-                var user = _context.Users.First(u=> u.UniqueName==userID);
-                //TODO: Remove Appointments and WBs
+            var user = _context.Users.First(u => u.UniqueName == userID);
+            //TODO: Remove Appointments and WBs
 
-                //Removing User:
-                _context.Users.Remove(user);
+            //Removing User:
+            _context.Users.Remove(user);
 
-                _context.SaveChanges();
+            _context.SaveChanges();
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return true;
         }
 
         public IEnumerable<UserKanbanViewModel> GetAllUsers()
         {
-            try
-            {
-                var response = (from u in _context.Users
-                                orderby u.Name
-                                select new UserKanbanViewModel
-                                {
-                                    UniqueName = u.UniqueName,
-                                    Name = u.Name
-                                }).ToList();
+            var response = (from u in _context.Users
+                            orderby u.Name
+                            select new UserKanbanViewModel
+                            {
+                                UniqueName = u.UniqueName,
+                                Name = u.Name
+                            }).ToList();
 
-                if (response != null)
-                {
-                    return response;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return response;
         }
     }
 }
