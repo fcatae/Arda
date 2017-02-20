@@ -22,69 +22,27 @@ namespace Arda.Kanban.Controllers
         [Route("getactivityconsumingdata")]
         public IEnumerable<ActivityConsumingViewModel> GetActivityConsumingData([FromQuery]DateTime startDate, [FromQuery] DateTime endDate, [FromQuery]string user = "All")
         {
-            try
-            {
-                var activities = _repository.GetActivityConsumingData(startDate, endDate, user);
+            var activities = _repository.GetActivityConsumingData(startDate, endDate, user);
 
-                if (activities != null)
-                {
-                    return activities;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return activities;
         }
 
         [HttpGet]
         [Route("getexpertiseconsumingdata")]
         public IEnumerable<ExpertiseConsumingViewModel> GetExpertiseConsumingData([FromQuery]DateTime startDate, [FromQuery]DateTime endDate, [FromQuery]string user = "All")
         {
-            try
-            {
-                var expertises = _repository.GetExpertiseConsumingData(startDate, endDate, user);
+            var expertises = _repository.GetExpertiseConsumingData(startDate, endDate, user);
 
-                if (expertises != null)
-                {
-                    return expertises;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return expertises;
         }
 
         [HttpGet]
         [Route("getmetricconsumingdata")]
         public IEnumerable<MetricConsumingViewModel> GetMetricConsumingData([FromQuery]DateTime startDate, [FromQuery]DateTime endDate, [FromQuery]string user = "All")
         {
-            try
-            {
-                var metrics = _repository.GetMetricConsumingData(startDate, endDate, user);
+            var metrics = _repository.GetMetricConsumingData(startDate, endDate, user);
 
-                if (metrics != null)
-                {
-                    return metrics;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return metrics;
         }
     }
 }
