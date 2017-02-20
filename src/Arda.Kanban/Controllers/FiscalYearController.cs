@@ -23,25 +23,18 @@ namespace Arda.Kanban.Controllers
         [Route("addfiscalyear")]
         public HttpResponseMessage Add()
         {
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var fiscalYear = JsonConvert.DeserializeObject<FiscalYearViewModel>(requestFromPost);
+
+            // Calling update
+            var fiscalyear = _repository.AddNewFiscalYear(fiscalYear);
+
+            if (fiscalyear)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var fiscalYear = JsonConvert.DeserializeObject<FiscalYearViewModel>(requestFromPost);
-
-                // Calling update
-                var fiscalyear = _repository.AddNewFiscalYear(fiscalYear);
-
-                if (fiscalyear)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -51,71 +44,36 @@ namespace Arda.Kanban.Controllers
         [Route("list")]
         public IEnumerable<FiscalYearViewModel> List()
         {
-            try
-            {
-                var fiscalyears = _repository.GetAllFiscalYears();
+            var fiscalyears = _repository.GetAllFiscalYears();
 
-                if (fiscalyears != null)
-                {
-                    return fiscalyears;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return fiscalyears;
         }
 
         [HttpGet]
         [Route("getfiscalyearbyid")]
         public FiscalYearViewModel GetFiscalYearByID([FromQuery]Guid id)
         {
-            try
-            {
-                var fiscalYear = _repository.GetFiscalYearByID(id);
+            var fiscalYear = _repository.GetFiscalYearByID(id);
 
-                if (fiscalYear != null)
-                {
-                    return fiscalYear;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return fiscalYear;
         }
 
         [HttpPut]
         [Route("editfiscalyearbyid")]
         public HttpResponseMessage EditFiscalYearByID()
         {
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var fiscalYear = JsonConvert.DeserializeObject<FiscalYearViewModel>(requestFromPost);
+
+            // Calling update
+            var fiscalyear = _repository.EditFiscalYearByID(fiscalYear);
+
+            if (fiscalyear)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var fiscalYear = JsonConvert.DeserializeObject<FiscalYearViewModel>(requestFromPost);
-
-                // Calling update
-                var fiscalyear = _repository.EditFiscalYearByID(fiscalYear);
-
-                if (fiscalyear)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -125,20 +83,13 @@ namespace Arda.Kanban.Controllers
         [Route("deletefiscalyearbyid")]
         public HttpResponseMessage DeleteFiscalYearByID([FromQuery]Guid id)
         {
-            try
-            {
-                var response = _repository.DeleteFiscalYearByID(id);
+            var response = _repository.DeleteFiscalYearByID(id);
 
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+            if (response)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
