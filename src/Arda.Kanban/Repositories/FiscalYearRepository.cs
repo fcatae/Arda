@@ -20,28 +20,21 @@ namespace Arda.Kanban.Repositories
         // Adds a new fiscal year to the system.
         public bool AddNewFiscalYear(FiscalYearViewModel fiscalyear)
         {
-            try
+            var fiscalYearToBeSaved = new FiscalYear()
             {
-                var fiscalYearToBeSaved = new FiscalYear()
-                {
-                    FiscalYearID = fiscalyear.FiscalYearID,
-                    FullNumericFiscalYear = fiscalyear.FullNumericFiscalYearMain,
-                    TextualFiscalYear = fiscalyear.TextualFiscalYearMain
-                };
+                FiscalYearID = fiscalyear.FiscalYearID,
+                FullNumericFiscalYear = fiscalyear.FullNumericFiscalYearMain,
+                TextualFiscalYear = fiscalyear.TextualFiscalYearMain
+            };
 
-                _context.FiscalYears.Add(fiscalYearToBeSaved);
-                var response = _context.SaveChanges();
+            _context.FiscalYears.Add(fiscalYearToBeSaved);
+            var response = _context.SaveChanges();
 
-                if (response > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            if (response > 0)
+            {
+                return true;
             }
-            catch (Exception)
+            else
             {
                 return false;
             }
@@ -50,85 +43,50 @@ namespace Arda.Kanban.Repositories
         // Return a 'numberOfOccurencies' to controller.
         public List<FiscalYearViewModel> GetAllFiscalYears()
         {
-            try
-            {
-                //_context.FiscalYears.OrderByDescending(fy => fy.FullNumericFiscalYear).ToList();
-                var response = (from f in _context.FiscalYears
-                                orderby f.FullNumericFiscalYear
-                                select new FiscalYearViewModel
-                                {
-                                    FiscalYearID = f.FiscalYearID,
-                                    FullNumericFiscalYearMain = f.FullNumericFiscalYear,
-                                    TextualFiscalYearMain = f.TextualFiscalYear
-                                }).ToList();
+            //_context.FiscalYears.OrderByDescending(fy => fy.FullNumericFiscalYear).ToList();
+            var response = (from f in _context.FiscalYears
+                            orderby f.FullNumericFiscalYear
+                            select new FiscalYearViewModel
+                            {
+                                FiscalYearID = f.FiscalYearID,
+                                FullNumericFiscalYearMain = f.FullNumericFiscalYear,
+                                TextualFiscalYearMain = f.TextualFiscalYear
+                            }).ToList();
 
-                if (response != null)
-                {
-                    return response;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return response;
         }
 
         // Return fiscal year based on ID
         public FiscalYearViewModel GetFiscalYearByID(Guid id)
         {
-            try
-            {
-                var response = _context.FiscalYears.Where(fy => fy.FiscalYearID.Equals(id)).SingleOrDefault();
+            var response = _context.FiscalYears.Where(fy => fy.FiscalYearID.Equals(id)).SingleOrDefault();
 
-                var fiscalYear = new FiscalYearViewModel()
-                {
-                    FiscalYearID = response.FiscalYearID,
-                    TextualFiscalYearMain = response.TextualFiscalYear,
-                    FullNumericFiscalYearMain = response.FullNumericFiscalYear
-                };
-
-                if (fiscalYear != null)
-                {
-                    return fiscalYear;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
+            var fiscalYear = new FiscalYearViewModel()
             {
-                return null;
-            }
+                FiscalYearID = response.FiscalYearID,
+                TextualFiscalYearMain = response.TextualFiscalYear,
+                FullNumericFiscalYearMain = response.FullNumericFiscalYear
+            };
+
+            return fiscalYear;
         }
 
         // Update fiscal year data based on ID
         public bool EditFiscalYearByID(FiscalYearViewModel fiscalyear)
         {
-            try
+            var fiscalYearToBeUpdated = _context.FiscalYears.SingleOrDefault(fy => fy.FiscalYearID.Equals(fiscalyear.FiscalYearID));
+
+            if (fiscalYearToBeUpdated != null)
             {
-                var fiscalYearToBeUpdated = _context.FiscalYears.SingleOrDefault(fy => fy.FiscalYearID.Equals(fiscalyear.FiscalYearID));
+                // Update informations of object
+                fiscalYearToBeUpdated.FullNumericFiscalYear = fiscalyear.FullNumericFiscalYearMain;
+                fiscalYearToBeUpdated.TextualFiscalYear = fiscalyear.TextualFiscalYearMain;
 
-                if (fiscalYearToBeUpdated != null)
-                {
-                    // Update informations of object
-                    fiscalYearToBeUpdated.FullNumericFiscalYear = fiscalyear.FullNumericFiscalYearMain;
-                    fiscalYearToBeUpdated.TextualFiscalYear = fiscalyear.TextualFiscalYearMain;
+                var response = _context.SaveChanges();
 
-                    var response = _context.SaveChanges();
-
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
-            catch (Exception)
+            else
             {
                 return false;
             }
@@ -137,23 +95,16 @@ namespace Arda.Kanban.Repositories
         // Delete fiscal year based on ID
         public bool DeleteFiscalYearByID(Guid id)
         {
-            try
+            var fiscalYearToBeDeleted = _context.FiscalYears.SingleOrDefault(fy => fy.FiscalYearID.Equals(id));
+
+            if (fiscalYearToBeDeleted != null)
             {
-                var fiscalYearToBeDeleted = _context.FiscalYears.SingleOrDefault(fy => fy.FiscalYearID.Equals(id));
+                var response = _context.Remove(fiscalYearToBeDeleted);
+                _context.SaveChanges();
 
-                if (fiscalYearToBeDeleted != null)
-                {
-                    var response = _context.Remove(fiscalYearToBeDeleted);
-                    _context.SaveChanges();
-
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return true;
             }
-            catch (Exception)
+            else
             {
                 return false;
             }
