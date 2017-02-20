@@ -22,23 +22,9 @@ namespace Arda.Kanban.Controllers
         [Route("list")]
         public IEnumerable<ActivityViewModel> List()
         {
-            try
-            {
-                var activities = _repository.GetAllActivities();
+            var activities = _repository.GetAllActivities();
 
-                if (activities != null)
-                {
-                    return activities;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return activities;
         }
     }
 }
