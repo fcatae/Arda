@@ -23,25 +23,18 @@ namespace Arda.Kanban.Controllers
         [Route("add")]
         public HttpResponseMessage Add()
         {
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var metric = JsonConvert.DeserializeObject<MetricViewModel>(requestFromPost);
+
+            // Calling update
+            var response = _repository.AddNewMetric(metric);
+
+            if (response)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var metric = JsonConvert.DeserializeObject<MetricViewModel>(requestFromPost);
-
-                // Calling update
-                var response = _repository.AddNewMetric(metric);
-
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -51,94 +44,45 @@ namespace Arda.Kanban.Controllers
         [Route("list")]
         public IEnumerable<MetricViewModel> List()
         {
-            try
-            {
-                var metrics = _repository.GetAllMetrics();
+            var metrics = _repository.GetAllMetrics();
 
-                if (metrics != null)
-                {
-                    return metrics;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return metrics;
         }
 
         [HttpGet]
         [Route("listbyyear")]
         public IEnumerable<MetricViewModel> List([FromQuery]int year)
         {
-            try
-            {
-                var metrics = _repository.GetAllMetrics(year);
+            var metrics = _repository.GetAllMetrics(year);
 
-                if (metrics != null)
-                {
-                    return metrics;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return metrics;
         }
 
         [HttpGet]
         [Route("getmetricbyid")]
         public MetricViewModel GetMetricByID([FromQuery]Guid id)
         {
-            try
-            {
-                var metric = _repository.GetMetricByID(id);
+            var metric = _repository.GetMetricByID(id);
 
-                if (metric != null)
-                {
-                    return metric;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return metric;
         }
 
         [HttpPut]
         [Route("editmetricbyid")]
         public HttpResponseMessage EditMetricByID()
         {
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var metric = JsonConvert.DeserializeObject<MetricViewModel>(requestFromPost);
+
+            // Calling update
+            var response = _repository.EditMetricByID(metric);
+
+            if (response)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var metric = JsonConvert.DeserializeObject<MetricViewModel>(requestFromPost);
-
-                // Calling update
-                var response = _repository.EditMetricByID(metric);
-
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -148,20 +92,13 @@ namespace Arda.Kanban.Controllers
         [Route("deletemetricbyid")]
         public HttpResponseMessage DeleteMetricByID([FromQuery]Guid id)
         {
-            try
-            {
-                var response = _repository.DeleteMetricByID(id);
+            var response = _repository.DeleteMetricByID(id);
 
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+            if (response)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
