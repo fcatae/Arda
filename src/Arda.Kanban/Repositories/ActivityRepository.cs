@@ -16,32 +16,17 @@ namespace Arda.Kanban.Repositories
             _context = context;
         }
 
-
         public IEnumerable<ActivityViewModel> GetAllActivities()
         {
-            try
-            {
-                var response = (from a in _context.Activities
-                                orderby a.ActivityName
-                                select new ActivityViewModel
-                                {
-                                    ActivityID = a.ActivityID,
-                                    ActivityName  = a.ActivityName
-                                }).ToList();
+            var response = (from a in _context.Activities
+                            orderby a.ActivityName
+                            select new ActivityViewModel
+                            {
+                                ActivityID = a.ActivityID,
+                                ActivityName = a.ActivityName
+                            }).ToList();
 
-                if (response != null)
-                {
-                    return response;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return response;
         }
     }
 }
