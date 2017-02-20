@@ -30,227 +30,178 @@ namespace Arda.Permissions.Repositories
 
         public bool SetUserPermissionsAndCode(string uniqueName, string code)
         {
-            try
-            {
-                var userPermissions = (from u in _context.Users
-                                       join up in _context.UsersPermissions on u.UniqueName equals up.UniqueName
-                                       join r in _context.Resources on up.ResourceID equals r.ResourceID
-                                       join m in _context.Modules on r.ModuleID equals m.ModuleID
-                                       where up.UniqueName == uniqueName && r.ResourceSequence > 0
-                                       orderby r.CategorySequence, r.ResourceSequence
-                                       select new PermissionsToBeCachedViewModel
-                                       {
-                                           Endpoint = m.Endpoint,
-                                           Module = m.ModuleName,
-                                           Resource = r.ResourceName,
-                                           Category = r.Category,
-                                           DisplayName = r.DisplayName
-                                       }).ToList();
+            var userPermissions = (from u in _context.Users
+                                   join up in _context.UsersPermissions on u.UniqueName equals up.UniqueName
+                                   join r in _context.Resources on up.ResourceID equals r.ResourceID
+                                   join m in _context.Modules on r.ModuleID equals m.ModuleID
+                                   where up.UniqueName == uniqueName && r.ResourceSequence > 0
+                                   orderby r.CategorySequence, r.ResourceSequence
+                                   select new PermissionsToBeCachedViewModel
+                                   {
+                                       Endpoint = m.Endpoint,
+                                       Module = m.ModuleName,
+                                       Resource = r.ResourceName,
+                                       Category = r.Category,
+                                       DisplayName = r.DisplayName
+                                   }).ToList();
 
-                var propertiesToCache = new CacheViewModel(code, userPermissions);
-                _cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
+            var propertiesToCache = new CacheViewModel(code, userPermissions);
+            _cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
 
-                return true;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return true;
         }
 
         //Updates permissions on database and cache
         public bool UpdateUserPermissions(string uniqueName, PermissionsViewModel newUserPermissions)
         {
+            //Delete old permissions from the database:
+            var oldPermissions = _context.UsersPermissions.Where(up => up.UniqueName == uniqueName);
+            _context.UsersPermissions.RemoveRange(oldPermissions);
+            //_context.SaveChanges();
+
+            //Update the database
+            //Permissions:
+            foreach (var permissionToQuery in newUserPermissions.permissions)
+            {
+                var resourceReturned = _context.Resources.First(r => r.Category == permissionToQuery.category && r.DisplayName == permissionToQuery.resource);
+
+                _context.UsersPermissions.Add(new UsersPermission()
+                {
+                    UniqueName = uniqueName,
+                    ResourceID = resourceReturned.ResourceID
+                });
+            }
+            //User:
+            var user = _context.Users.First(u => u.UniqueName == uniqueName);
+            if (newUserPermissions.permissions.Count > 0)
+            {
+                user.Status = PermissionStatus.Permissions_Granted;
+            }
+            else
+            {
+                user.Status = PermissionStatus.Permissions_Denied;
+            }
+
+            _context.SaveChanges();
+
+            //Update the cache
+            CacheViewModel propertiesToCache;
             try
             {
-                //Delete old permissions from the database:
-                var oldPermissions = _context.UsersPermissions.Where(up => up.UniqueName == uniqueName);
-                _context.UsersPermissions.RemoveRange(oldPermissions);
-                //_context.SaveChanges();
-
-                //Update the database
-                //Permissions:
-                foreach (var permissionToQuery in newUserPermissions.permissions)
-                {
-                    var resourceReturned = _context.Resources.First(r => r.Category == permissionToQuery.category && r.DisplayName == permissionToQuery.resource);
-
-                    _context.UsersPermissions.Add(new UsersPermission()
-                    {
-                        UniqueName = uniqueName,
-                        ResourceID = resourceReturned.ResourceID
-                    });
-                }
-                //User:
-                var user = _context.Users.First(u => u.UniqueName == uniqueName);
-                if (newUserPermissions.permissions.Count > 0)
-                {
-                    user.Status = PermissionStatus.Permissions_Granted;
-                }
-                else
-                {
-                    user.Status = PermissionStatus.Permissions_Denied;
-                }
-
-                _context.SaveChanges();
-
-                //Update the cache
-                CacheViewModel propertiesToCache;
-                try
-                {
-                    //User is on cache:
-                    var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
-                    propertiesToCache = new CacheViewModel(propertiesSerializedCached);
-                }
-                catch
-                {
-                    //User is not on cache:
-                    propertiesToCache = new CacheViewModel();
-                }
-
-                var userPermissions = (from up in _context.UsersPermissions
-                                       join r in _context.Resources on up.ResourceID equals r.ResourceID
-                                       join m in _context.Modules on r.ModuleID equals m.ModuleID
-                                       where up.UniqueName == uniqueName && r.ResourceSequence > 0
-                                       orderby r.CategorySequence, r.ResourceSequence
-                                       select new PermissionsToBeCachedViewModel
-                                       {
-                                           Endpoint = m.Endpoint,
-                                           Module = m.ModuleName,
-                                           Resource = r.ResourceName,
-                                           Category = r.Category,
-                                           DisplayName = r.DisplayName
-                                       }).ToList();
-
-                if (userPermissions != null)
-                {
-                    propertiesToCache.Permissions = userPermissions;
-                    _cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                //User is on cache:
+                var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+                propertiesToCache = new CacheViewModel(propertiesSerializedCached);
             }
-            catch (Exception)
+            catch
             {
-                throw;
+                //User is not on cache:
+                propertiesToCache = new CacheViewModel();
+            }
+
+            var userPermissions = (from up in _context.UsersPermissions
+                                   join r in _context.Resources on up.ResourceID equals r.ResourceID
+                                   join m in _context.Modules on r.ModuleID equals m.ModuleID
+                                   where up.UniqueName == uniqueName && r.ResourceSequence > 0
+                                   orderby r.CategorySequence, r.ResourceSequence
+                                   select new PermissionsToBeCachedViewModel
+                                   {
+                                       Endpoint = m.Endpoint,
+                                       Module = m.ModuleName,
+                                       Resource = r.ResourceName,
+                                       Category = r.Category,
+                                       DisplayName = r.DisplayName
+                                   }).ToList();
+
+            if (userPermissions != null)
+            {
+                propertiesToCache.Permissions = userPermissions;
+                _cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
         
         //Updates user photo
         public bool UpdateUserPhoto(string uniqueName, string photo)
         {
-            try
-            {
-                var user = _context.Users.First(u => u.UniqueName == uniqueName);
+            var user = _context.Users.First(u => u.UniqueName == uniqueName);
 
-                if (user != null && photo != null)
-                {
-                    //Save on database:
-                    user.PhotoBase64 = photo;
-                    _context.SaveChanges();
-                    //Cache it:
-                    CacheUserPhoto(uniqueName, photo);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
+            if (user != null && photo != null)
             {
-                throw;
+                //Save on database:
+                user.PhotoBase64 = photo;
+                _context.SaveChanges();
+                //Cache it:
+                CacheUserPhoto(uniqueName, photo);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
         //Cache User Photo:
         public void CacheUserPhoto(string uniqueName, string PhotoBase64)
         {
-            try
-            {
-                var key = "photo_" + uniqueName;
-                _cache.Set(key, Util.GetBytes(PhotoBase64.ToString()));
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var key = "photo_" + uniqueName;
+            _cache.Set(key, Util.GetBytes(PhotoBase64.ToString()));
         }
 
         //Updates user info
         public bool UpdateUser(string uniqueName, UserMainViewModel userToBeUpdated)
         {
-            try
+            var user = _context.Users.First(u => u.UniqueName == uniqueName);
+
+            if (user != null)
             {
-                var user = _context.Users.First(u => u.UniqueName == uniqueName);
+                user.Name = userToBeUpdated.Name;
+                user.GivenName = userToBeUpdated.GivenName;
+                user.Surname = userToBeUpdated.Surname;
+                user.JobTitle = userToBeUpdated.JobTitle;
+                user.ManagerUniqueName = userToBeUpdated.ManagerUniqueName;
 
-                if (user != null)
-                {
-                    user.Name = userToBeUpdated.Name;
-                    user.GivenName = userToBeUpdated.GivenName;
-                    user.Surname = userToBeUpdated.Surname;
-                    user.JobTitle = userToBeUpdated.JobTitle;
-                    user.ManagerUniqueName = userToBeUpdated.ManagerUniqueName;
-
-                    _context.SaveChanges();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                _context.SaveChanges();
+                return true;
             }
-            catch (Exception)
+            else
             {
-                throw;
+                return false;
             }
         }
 
         public void DeleteUserPermissions(string uniqueName)
         {
-            try
-            {
-                _cache.Remove(uniqueName);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            _cache.Remove(uniqueName);
         }
 
         public void DeleteUser(string uniqueName)
         {
-            try
+            //From Cache:
+            _cache.Remove(uniqueName);
+
+            //From Context:
+            var userPermissions = (from up in _context.UsersPermissions
+                                   where up.UniqueName == uniqueName
+                                   select up).ToList();
+
+            var user = (from u in _context.Users
+                        where u.UniqueName == uniqueName
+                        select u).First();
+
+            _context.UsersPermissions.RemoveRange(userPermissions);
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+
+            //From Kanban:
+            var res = Util.ConnectToRemoteService(HttpMethod.Delete, Util.KanbanURL + "api/user/delete?userID=" + uniqueName, "kanban", "kanban").Result;
+
+            if (!res.IsSuccessStatusCode)
             {
-                //From Cache:
-                _cache.Remove(uniqueName);
-
-                //From Context:
-                var userPermissions = (from up in _context.UsersPermissions
-                                       where up.UniqueName == uniqueName
-                                       select up).ToList();
-
-                var user = (from u in _context.Users
-                            where u.UniqueName == uniqueName
-                            select u).First();
-
-                _context.UsersPermissions.RemoveRange(userPermissions);
-                _context.Users.Remove(user);
-                _context.SaveChanges();
-
-                //From Kanban:
-                var res = Util.ConnectToRemoteService(HttpMethod.Delete, Util.KanbanURL + "api/user/delete?userID=" + uniqueName, "kanban", "kanban").Result;
-
-                if (!res.IsSuccessStatusCode)
-                {
-                    throw new Exception();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                throw new Exception();
             }
         }
 
@@ -296,20 +247,13 @@ namespace Arda.Permissions.Repositories
 
         public bool VerifyIfUserIsInUserPermissionsDatabase(string uniqueName)
         {
-            try
-            {
-                var response = _context.Users.SingleOrDefault(u => u.UniqueName == uniqueName);
+            var response = _context.Users.SingleOrDefault(u => u.UniqueName == uniqueName);
 
-                if (response == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+            if (response == null)
+            {
+                return false;
             }
-            catch (Exception)
+            else
             {
                 return true;
             }
@@ -359,40 +303,33 @@ namespace Arda.Permissions.Repositories
         // Generate initial and basic permissions set to new users.
         public User CreateNewUserAndSetInitialPermissions(string uniqueName, string name)
         {
-            try
+            var user = new User()
             {
-                var user = new User()
-                {
-                    UniqueName = uniqueName,
-                    Name = name,
-                    Status = PermissionStatus.Waiting_Review,
-                    UserPermissions = new List<UsersPermission>()
-                };
+                UniqueName = uniqueName,
+                Name = name,
+                Status = PermissionStatus.Waiting_Review,
+                UserPermissions = new List<UsersPermission>()
+            };
 
-                //Save on Permissions
-                _context.Users.Add(user);
-                _context.SaveChanges();
+            //Save on Permissions
+            _context.Users.Add(user);
+            _context.SaveChanges();
 
-                //Save on Kanban
-                var kanbanUser = new Common.ViewModels.Kanban.UserKanbanViewModel()
-                {
-                    UniqueName = user.UniqueName,
-                    Name = user.Name
-                };
-                var res = Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/user/add", "kanban", "kanban", kanbanUser).Result;
+            //Save on Kanban
+            var kanbanUser = new Common.ViewModels.Kanban.UserKanbanViewModel()
+            {
+                UniqueName = user.UniqueName,
+                Name = user.Name
+            };
+            var res = Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/user/add", "kanban", "kanban", kanbanUser).Result;
 
-                if (res.IsSuccessStatusCode)
-                {
-                    return user;
-                }
-                else
-                {
-                    return null;
-                }
+            if (res.IsSuccessStatusCode)
+            {
+                return user;
             }
-            catch (Exception)
+            else
             {
-                throw;
+                return null;
             }
         }
 
@@ -448,34 +385,20 @@ namespace Arda.Permissions.Repositories
 
         public PermissionStatus GetUserStatus(string uniqueName)
         {
-            try
-            {
-                return _context.Users.First(u => u.UniqueName == uniqueName).Status;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return _context.Users.First(u => u.UniqueName == uniqueName).Status;
         }
 
         public bool VerifyIfUserAdmin(string uniqueName)
         {
-            try
-            {
-                var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
-                var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
+            var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+            var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
 
-                var permToReview = permissions.First(p => p.Module == "Users" && p.Resource == "Review");
-                if (permToReview != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            var permToReview = permissions.First(p => p.Module == "Users" && p.Resource == "Review");
+            if (permToReview != null)
+            {
+                return true;
             }
-            catch (Exception)
+            else
             {
                 return false;
             }
@@ -483,148 +406,99 @@ namespace Arda.Permissions.Repositories
 
         public int GetNumberOfUsersToApprove()
         {
-            try
-            {
-                return _context.Users.Where(u => u.Status == PermissionStatus.Waiting_Review).Count();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return _context.Users.Where(u => u.Status == PermissionStatus.Waiting_Review).Count();
         }
 
         public IEnumerable<UserMainViewModel> GetPendingUsers()
         {
-            try
-            {
-                var data = from users in _context.Users
-                           where users.Status == PermissionStatus.Waiting_Review
-                           select new UserMainViewModel
-                           {
-                               Name = users.Name,
-                               Email = users.UniqueName,
-                               Status = (int)users.Status
-                           };
+            var data = from users in _context.Users
+                       where users.Status == PermissionStatus.Waiting_Review
+                       select new UserMainViewModel
+                       {
+                           Name = users.Name,
+                           Email = users.UniqueName,
+                           Status = (int)users.Status
+                       };
 
-                return data;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return data;
         }
 
         public IEnumerable<ResourcesViewModel> GetAllPermissions()
         {
-            try
-            {
-                var data = (from r in _context.Resources
-                            orderby r.CategorySequence, r.ResourceSequence
-                            group r.DisplayName by r.Category into g
-                            select new ResourcesViewModel
-                            {
-                                Category = g.Key,
-                                Resources = g.ToList()
-                            }).ToList();
+            var data = (from r in _context.Resources
+                        orderby r.CategorySequence, r.ResourceSequence
+                        group r.DisplayName by r.Category into g
+                        select new ResourcesViewModel
+                        {
+                            Category = g.Key,
+                            Resources = g.ToList()
+                        }).ToList();
 
-                return data;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return data;
         }
 
         public PermissionsViewModel GetUserPermissions(string uniqueName)
         {
-            try
-            {
-                var data = (from up in _context.UsersPermissions
-                            join r in _context.Resources on up.ResourceID equals r.ResourceID
-                            where up.UniqueName == uniqueName
-                            orderby r.CategorySequence, r.ResourceSequence
-                            select new Permission
-                            {
-                                category = r.Category,
-                                resource = r.DisplayName
-                            }).ToList();
+            var data = (from up in _context.UsersPermissions
+                        join r in _context.Resources on up.ResourceID equals r.ResourceID
+                        where up.UniqueName == uniqueName
+                        orderby r.CategorySequence, r.ResourceSequence
+                        select new Permission
+                        {
+                            category = r.Category,
+                            resource = r.DisplayName
+                        }).ToList();
 
-                var permissions = new PermissionsViewModel()
-                {
-                    permissions = data
-                };
-
-                return permissions;
-            }
-            catch (Exception)
+            var permissions = new PermissionsViewModel()
             {
-                throw;
-            }
+                permissions = data
+            };
+
+            return permissions;
         }
 
         public IEnumerable<UserMainViewModel> GetUsers()
         {
-            try
-            {
-                var data = from users in _context.Users
-                           select new UserMainViewModel
-                           {
-                               Name = users.Name,
-                               Email = users.UniqueName,
-                               Status = (int)users.Status
-                           };
+            var data = from users in _context.Users
+                       select new UserMainViewModel
+                       {
+                           Name = users.Name,
+                           Email = users.UniqueName,
+                           Status = (int)users.Status
+                       };
 
-                return data;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return data;
         }
 
         public UserMainViewModel GetUser(string uniqueName)
         {
-            try
-            {
-                var data = (from user in _context.Users
-                            where user.UniqueName == uniqueName
-                            select new UserMainViewModel
-                            {
-                                Name = user.Name,
-                                Email = user.UniqueName,
-                                Status = (int)user.Status
-                            }).First();
+            var data = (from user in _context.Users
+                        where user.UniqueName == uniqueName
+                        select new UserMainViewModel
+                        {
+                            Name = user.Name,
+                            Email = user.UniqueName,
+                            Status = (int)user.Status
+                        }).First();
 
-                return data;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return data;
         }
 
         public bool SaveUserPhotoOnCache(string uniqueName)
         {
-            try
-            {
-                var user = _context.Users.First(u => u.UniqueName == uniqueName);
+            var user = _context.Users.First(u => u.UniqueName == uniqueName);
 
-                if (user != null)
-                {
-                    //Get photo from database:
-                    var photo = user.PhotoBase64;
-                    //Cache it:
-                    CacheUserPhoto(uniqueName, photo);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception)
+            if (user != null)
             {
-                throw;
+                //Get photo from database:
+                var photo = user.PhotoBase64;
+                //Cache it:
+                CacheUserPhoto(uniqueName, photo);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
