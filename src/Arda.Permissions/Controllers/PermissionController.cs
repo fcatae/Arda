@@ -28,34 +28,19 @@ namespace Arda.Permissions.Controllers
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
             var code = HttpContext.Request.Headers["code"].ToString();
 
-            try
+            if (uniqueName != null && name != null && code != null)
             {
-                if (uniqueName != null && name != null && code != null)
-                {
-                    User responseUser = null;
-                    bool responseEmail = false;
+                User responseUser = null;
+                bool responseEmail = false;
 
-                    bool UserExists = _permission.VerifyIfUserIsInUserPermissionsDatabase(uniqueName);
-                    if (!UserExists)
+                bool UserExists = _permission.VerifyIfUserIsInUserPermissionsDatabase(uniqueName);
+                if (!UserExists)
+                {
+                    responseUser = _permission.CreateNewUserAndSetInitialPermissions(uniqueName, name);
+                    responseEmail = _permission.SendNotificationOfNewUserByEmail(uniqueName);
+                    if (responseUser == null || responseEmail == false)
                     {
-                        responseUser = _permission.CreateNewUserAndSetInitialPermissions(uniqueName, name);
-                        responseEmail = _permission.SendNotificationOfNewUserByEmail(uniqueName);
-                        if (responseUser == null || responseEmail == false)
-                        {
-                            return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
-                        }
-                        else
-                        {
-                            bool response = _permission.SetUserPermissionsAndCode(uniqueName, code);
-                            if (response)
-                            {
-                                return new StatusCodeResult((int)HttpStatusCode.OK);
-                            }
-                            else
-                            {
-                                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
-                            }
-                        }
+                        return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
                     }
                     else
                     {
@@ -72,12 +57,20 @@ namespace Arda.Permissions.Controllers
                 }
                 else
                 {
-                    return new StatusCodeResult((int)HttpStatusCode.BadRequest);
+                    bool response = _permission.SetUserPermissionsAndCode(uniqueName, code);
+                    if (response)
+                    {
+                        return new StatusCodeResult((int)HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+                    }
                 }
             }
-            catch (Exception)
+            else
             {
-                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+                return new StatusCodeResult((int)HttpStatusCode.BadRequest);
             }
         }
 
@@ -85,31 +78,24 @@ namespace Arda.Permissions.Controllers
         [Route("updateuserpermissions")]
         public HttpResponseMessage UpdateUserPermissions([FromQuery]string uniqueName)
         {
-            try
-            {
-                var reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                var userPermissionsSerialized = reader.ReadToEnd();
-                var userPermissions = JsonConvert.DeserializeObject<PermissionsViewModel>(userPermissionsSerialized);
+            var reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            var userPermissionsSerialized = reader.ReadToEnd();
+            var userPermissions = JsonConvert.DeserializeObject<PermissionsViewModel>(userPermissionsSerialized);
 
-                if (uniqueName != null && userPermissions != null)
+            if (uniqueName != null && userPermissions != null)
+            {
+                if (_permission.UpdateUserPermissions(uniqueName, userPermissions))
                 {
-                    if (_permission.UpdateUserPermissions(uniqueName, userPermissions))
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                    }
+                    return new HttpResponseMessage(HttpStatusCode.OK);
                 }
                 else
                 {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                 }
             }
-            catch (Exception)
+            else
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
@@ -117,23 +103,16 @@ namespace Arda.Permissions.Controllers
         [Route("deleteuserpermissions")]
         public HttpResponseMessage DeleteUserPermissions()
         {
-            try
-            {
-                var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
-                if (uniqueName != null)
-                {
-                    _permission.DeleteUserPermissions(uniqueName);
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
-            }
-            catch (Exception)
+            if (uniqueName != null)
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                _permission.DeleteUserPermissions(uniqueName);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
@@ -141,21 +120,14 @@ namespace Arda.Permissions.Controllers
         [Route("deleteuser")]
         public HttpResponseMessage DeleteUser([FromQuery]string uniqueName)
         {
-            try
+            if (uniqueName != null)
             {
-                if (uniqueName != null)
-                {
-                    _permission.DeleteUser(uniqueName);
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
+                _permission.DeleteUser(uniqueName);
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
@@ -163,25 +135,18 @@ namespace Arda.Permissions.Controllers
         [Route("updateuserphoto")]
         public HttpResponseMessage UpdateUserPhoto([FromQuery]string uniqueName)
         {
-            try
-            {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var userPhoto = JsonConvert.DeserializeObject<string>(requestFromPost);
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var userPhoto = JsonConvert.DeserializeObject<string>(requestFromPost);
 
-                if (uniqueName != null && userPhoto != null)
-                {
-                    _permission.UpdateUserPhoto(uniqueName, userPhoto);
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
-            }
-            catch (Exception)
+            if (uniqueName != null && userPhoto != null)
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                _permission.UpdateUserPhoto(uniqueName, userPhoto);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
@@ -189,27 +154,20 @@ namespace Arda.Permissions.Controllers
         [Route("saveuserphotooncache")]
         public HttpResponseMessage SaveUserPhotoOnCache([FromQuery]string uniqueName)
         {
-            try
+            if (uniqueName != null)
             {
-                if (uniqueName != null)
+                if (_permission.SaveUserPhotoOnCache(uniqueName))
                 {
-                    if (_permission.SaveUserPhotoOnCache(uniqueName))
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                    }
+                    return new HttpResponseMessage(HttpStatusCode.OK);
                 }
                 else
                 {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
                 }
             }
-            catch (Exception)
+            else
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
@@ -217,25 +175,18 @@ namespace Arda.Permissions.Controllers
         [Route("updateuser")]
         public HttpResponseMessage UpdateUser([FromQuery]string uniqueName)
         {
-            try
-            {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var userProfile = JsonConvert.DeserializeObject<UserMainViewModel>(requestFromPost);
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var userProfile = JsonConvert.DeserializeObject<UserMainViewModel>(requestFromPost);
 
-                if (uniqueName != null && userProfile != null)
-                {
-                    _permission.UpdateUser(uniqueName, userProfile);
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
-            }
-            catch (Exception)
+            if (uniqueName != null && userProfile != null)
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                _permission.UpdateUser(uniqueName, userProfile);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
@@ -243,27 +194,20 @@ namespace Arda.Permissions.Controllers
         [Route("verifyuseraccesstoresource")]
         public HttpResponseMessage VerifyUserAccessToResource([FromQuery]string uniqueName, [FromQuery]string module, [FromQuery]string resource)
         {
-            try
+            if (uniqueName != null && module != null && resource != null)
             {
-                if (uniqueName != null && module != null && resource != null)
+                if (_permission.VerifyUserAccessToResource(uniqueName, module, resource))
                 {
-                    if (_permission.VerifyUserAccessToResource(uniqueName, module, resource))
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return new HttpResponseMessage(HttpStatusCode.Forbidden);
-                    }
+                    return new HttpResponseMessage(HttpStatusCode.OK);
                 }
                 else
                 {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    return new HttpResponseMessage(HttpStatusCode.Forbidden);
                 }
             }
-            catch (Exception)
+            else
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
@@ -271,14 +215,7 @@ namespace Arda.Permissions.Controllers
         [Route("getallpermissions")]
         public IEnumerable<ResourcesViewModel> GetAllPermissions()
         {
-            try
-            {
-                return _permission.GetAllPermissions();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return _permission.GetAllPermissions();
         }
     }
 }
