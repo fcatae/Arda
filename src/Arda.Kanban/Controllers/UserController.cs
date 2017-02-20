@@ -76,23 +76,9 @@ namespace Arda.Kanban.Controllers
         [Route("list")]
         public IEnumerable<UserKanbanViewModel> List()
         {
-            try
-            {
-                var users = _repository.GetAllUsers();
+            var users = _repository.GetAllUsers();
 
-                if (users != null)
-                {
-                    return users;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return users;
         }
     }
 }
