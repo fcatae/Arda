@@ -19,30 +19,15 @@ namespace Arda.Kanban.Repositories
 
         public IEnumerable<TechnologyViewModel> GetAllTechnologies()
         {
-            try
-            {
-                var response = (from t in _context.Technologies
-                                orderby t.TechnologyName
-                                select new TechnologyViewModel
-                                {
-                                    TechnologyID = t.TechnologyID,
-                                    TechnologyName = t.TechnologyName
-                                }).ToList();
+            var response = (from t in _context.Technologies
+                            orderby t.TechnologyName
+                            select new TechnologyViewModel
+                            {
+                                TechnologyID = t.TechnologyID,
+                                TechnologyName = t.TechnologyName
+                            }).ToList();
 
-                if (response != null)
-                {
-                    return response;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                // Shouldn't this exception be logged in someform?
-                return null;
-            }
+            return response;
         }
     }
 }
