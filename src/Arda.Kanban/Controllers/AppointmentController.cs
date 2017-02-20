@@ -23,25 +23,18 @@ namespace Arda.Kanban.Controllers
         [Route("add")]
         public HttpResponseMessage Add()
         {
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var appointment = JsonConvert.DeserializeObject<AppointmentViewModel>(requestFromPost);
+
+            // Calling update
+            var response = _repository.AddNewAppointment(appointment);
+
+            if (response)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var appointment = JsonConvert.DeserializeObject<AppointmentViewModel>(requestFromPost);
-
-                // Calling update
-                var response = _repository.AddNewAppointment(appointment);
-
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -51,94 +44,45 @@ namespace Arda.Kanban.Controllers
         [Route("list")]
         public IEnumerable<AppointmentViewModel> List()
         {
-            try
-            {
-                var appointments = _repository.GetAllAppointments();
+            var appointments = _repository.GetAllAppointments();
 
-                if (appointments != null)
-                {
-                    return appointments;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return appointments;
         }
 
         [HttpGet]
         [Route("listfromuser")]
         public IEnumerable<AppointmentViewModel> ListFromUser([FromQuery]string user)
         {
-            try
-            {
-                var appointments = _repository.GetAllAppointments(user);
+            var appointments = _repository.GetAllAppointments(user);
 
-                if (appointments != null)
-                {
-                    return appointments;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return appointments;
         }
 
         [HttpGet]
         [Route("getappointmentbyid")]
         public AppointmentViewModel GetAppointmentByID([FromQuery]Guid id)
         {
-            try
-            {
-                var appointment = _repository.GetAppointmentByID(id);
+            var appointment = _repository.GetAppointmentByID(id);
 
-                if (appointment != null)
-                {
-                    return appointment;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return appointment;
         }
         
         [HttpPut]
         [Route("editappointment")]
         public HttpResponseMessage EditAppointmentByID()
         {
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var appointment = JsonConvert.DeserializeObject<AppointmentViewModel>(requestFromPost);
+
+
+            var response = _repository.EditAppointment(appointment);
+
+            if (response)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var appointment = JsonConvert.DeserializeObject<AppointmentViewModel>(requestFromPost);
-
-
-                var response = _repository.EditAppointment(appointment);
-
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -148,20 +92,13 @@ namespace Arda.Kanban.Controllers
         [Route("deleteappointmentbyid")]
         public HttpResponseMessage DeleteAppointmentByID([FromQuery]Guid id)
         {
-            try
-            {
-                var response = _repository.DeleteAppointmentByID(id);
+            var response = _repository.DeleteAppointmentByID(id);
 
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+            if (response)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
