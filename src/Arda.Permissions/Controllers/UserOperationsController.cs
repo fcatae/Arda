@@ -22,6 +22,7 @@ namespace Arda.Permissions.Controllers
         [Route("getusermenu")]
         public string GetUserMenu()
         {
+            // TODO: REQUIRES REVIEWING
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
             try
@@ -40,6 +41,7 @@ namespace Arda.Permissions.Controllers
                 var menu = _permission.GetUserMenuSerialized(uniqueName);
                 return menu;
 
+                // WARNING: NEVER REACH THIS POINT
                 throw ex;
             }
         }
@@ -50,18 +52,11 @@ namespace Arda.Permissions.Controllers
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
-            try
+            if (uniqueName != null)
             {
-                if (uniqueName != null)
-                {
-                    return (int)_permission.GetUserStatus(uniqueName);
-                }
-                return -1;
+                return (int)_permission.GetUserStatus(uniqueName);
             }
-            catch (Exception)
-            {
-                return -1;
-            }
+            return -1;
         }
 
         [HttpGet]
@@ -70,88 +65,46 @@ namespace Arda.Permissions.Controllers
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
-            try
+            if (uniqueName != null)
             {
-                if (uniqueName != null)
-                {
-                    return _permission.VerifyIfUserAdmin(uniqueName);
-                }
-                return false;
+                return _permission.VerifyIfUserAdmin(uniqueName);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return false;
         }
 
         [HttpGet]
         [Route("getnumberofuserstoapprove")]
         public int GetNumberOfUsersToApprove()
         {
-            try
-            {
-                return _permission.GetNumberOfUsersToApprove();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return _permission.GetNumberOfUsersToApprove();
         }
 
         [HttpGet]
         [Route("getpendingusers")]
         public IEnumerable<UserMainViewModel> GetPendingUsers()
         {
-            try
-            {
-                return _permission.GetPendingUsers();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return _permission.GetPendingUsers();
         }
 
         [HttpGet]
         [Route("getuserpermissions")]
         public PermissionsViewModel GetUserPermissions([FromQuery]string uniqueName)
         {
-            try
-            {
-                return _permission.GetUserPermissions(uniqueName);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return _permission.GetUserPermissions(uniqueName);
         }
 
         [HttpGet]
         [Route("getusers")]
         public IEnumerable<UserMainViewModel> GetUsers()
         {
-            try
-            {
-                return _permission.GetUsers();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return _permission.GetUsers();
         }
 
         [HttpGet]
         [Route("getuser")]
         public UserMainViewModel GetUser([FromQuery]string uniqueName)
         {
-            try
-            {
-                return _permission.GetUser(uniqueName);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return _permission.GetUser(uniqueName);
         }
 
     }
