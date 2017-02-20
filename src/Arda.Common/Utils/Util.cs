@@ -71,147 +71,112 @@ namespace Arda.Common.Utils
 
         public static async Task<T> ConnectToRemoteService<T>(HttpMethod method, string url, string uniqueName, string code)
         {
-            try
-            {
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(method, url);
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(method, url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                request.Headers.Add("unique_name", uniqueName);
-                request.Headers.Add("code", code);
+            request.Headers.Add("unique_name", uniqueName);
+            request.Headers.Add("code", code);
 
-                var responseRaw = await client.SendAsync(request);
-                var responseJson = responseRaw.Content.ReadAsStringAsync().Result;
-                var responseConverted = JsonConvert.DeserializeObject<T>(responseJson);
+            var responseRaw = await client.SendAsync(request);
+            var responseJson = responseRaw.Content.ReadAsStringAsync().Result;
+            var responseConverted = JsonConvert.DeserializeObject<T>(responseJson);
 
-                return responseConverted;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return responseConverted;
         }
 
         public static async Task<HttpResponseMessage> ConnectToRemoteService(HttpMethod method, string url, string uniqueName, string code)
         {
-            try
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(method, url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Add("unique_name", uniqueName);
+            request.Headers.Add("code", code);
+
+            var responseSend = await client.SendAsync(request);
+            var responseStr = await responseSend.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
+
+            if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
             {
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(method, url);
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                request.Headers.Add("unique_name", uniqueName);
-                request.Headers.Add("code", code);
-
-                var responseSend = await client.SendAsync(request);
-                var responseStr = await responseSend.Content.ReadAsStringAsync();
-                var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
-
-                if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
         public static async Task<HttpResponseMessage> ConnectToRemoteService<T>(HttpMethod method, string url, string uniqueName, string code, T body)
         {
-            try
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(method, url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Add("unique_name", uniqueName);
+            request.Headers.Add("code", code);
+
+            var serialized = JsonConvert.SerializeObject(body);
+            request.Content = new ByteArrayContent(GetBytes(serialized));
+
+            var responseSend = await client.SendAsync(request);
+            var responseStr = await responseSend.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
+
+            if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
             {
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(method, url);
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                request.Headers.Add("unique_name", uniqueName);
-                request.Headers.Add("code", code);
-
-                var serialized = JsonConvert.SerializeObject(body);
-                request.Content = new ByteArrayContent(GetBytes(serialized));
-
-                var responseSend = await client.SendAsync(request);
-                var responseStr = await responseSend.Content.ReadAsStringAsync();
-                var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
-
-                if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
         public static async Task<HttpResponseMessage> ConnectToRemoteService<T>(HttpMethod method, string url, T body)
         {
-            try
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(method, url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            if (body != null)
             {
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(method, url);
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                if (body != null)
-                {
-                    var serialized = JsonConvert.SerializeObject(body);
-                    request.Content = new ByteArrayContent(GetBytes(serialized));
-                }
-
-                var responseSend = await client.SendAsync(request);
-                var responseStr = await responseSend.Content.ReadAsStringAsync();
-                var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
-
-                if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
+                var serialized = JsonConvert.SerializeObject(body);
+                request.Content = new ByteArrayContent(GetBytes(serialized));
             }
-            catch (Exception)
+
+            var responseSend = await client.SendAsync(request);
+            var responseStr = await responseSend.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
+
+            if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
         public static async Task<HttpResponseMessage> ConnectToRemoteService<T>(HttpMethod method, string url, string uniqueName, string code, Guid id)
         {
-            try
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(method, url);
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Add("unique_name", uniqueName);
+            request.Headers.Add("code", code);
+
+            var responseSend = await client.SendAsync(request);
+            var responseStr = await responseSend.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
+
+            if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
             {
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(method, url);
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                request.Headers.Add("unique_name", uniqueName);
-                request.Headers.Add("code", code);
-
-                var responseSend = await client.SendAsync(request);
-                var responseStr = await responseSend.Content.ReadAsStringAsync();
-                var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
-
-                if (responseSend.IsSuccessStatusCode && responseObj.IsSuccessStatusCode)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
