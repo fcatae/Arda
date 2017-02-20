@@ -30,62 +30,27 @@ namespace Arda.Kanban.Controllers
         [Route("listworkloadbyuser")]
         public IEnumerable<WorkloadsByUserViewModel> ListWorkloadByUser()
         {
-            try
-            {
-                var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
-                var workloads = _repository.GetWorkloadsByUser(uniqueName);
+            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            var workloads = _repository.GetWorkloadsByUser(uniqueName);
 
-                if (workloads != null)
-                {
-                    return workloads;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return workloads;
         }
 
         [HttpGet]
         [Route("list")]
         public IEnumerable<WorkloadViewModel> List()
         {
-            try
-            {
-                var workloads = _repository.GetAllWorkloads();
+            var workloads = _repository.GetAllWorkloads();
 
-                if (workloads != null)
-                {
-                    return workloads;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return workloads;
         }
 
         [HttpGet]
         [Route("details")]
         public WorkloadViewModel Details([FromQuery]Guid workloadID)
         {
-            try
-            {
-                var workload = _repository.GetWorkloadByID(workloadID);
-                return workload;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            var workload = _repository.GetWorkloadByID(workloadID);
+            return workload;
         }
 
         [HttpPost]
@@ -94,26 +59,19 @@ namespace Arda.Kanban.Controllers
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var workload = JsonConvert.DeserializeObject<WorkloadViewModel>(requestFromPost);
+
+            // Calling add
+            var response = _repository.AddNewWorkload(workload);
+
+            if (response)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var workload = JsonConvert.DeserializeObject<WorkloadViewModel>(requestFromPost);
-
-                // Calling add
-                var response = _repository.AddNewWorkload(workload);
-
-                if (response)
-                {
-                    _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 0);
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 0);
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -126,21 +84,14 @@ namespace Arda.Kanban.Controllers
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             string requestFromPost = reader.ReadToEnd();
             var statusUpdate = JsonConvert.DeserializeObject(requestFromPost);
-            
-            try
-            {
-                var response = _repository.UpdateWorkloadStatus(Guid.Parse(id), status);
 
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+            var response = _repository.UpdateWorkloadStatus(Guid.Parse(id), status);
+
+            if (response)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -152,26 +103,19 @@ namespace Arda.Kanban.Controllers
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
-            try
+            System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
+            string requestFromPost = reader.ReadToEnd();
+            var workload = JsonConvert.DeserializeObject<WorkloadViewModel>(requestFromPost);
+
+            // Calling update
+            var response = _repository.EditWorkload(workload);
+
+            if (response)
             {
-                System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
-                string requestFromPost = reader.ReadToEnd();
-                var workload = JsonConvert.DeserializeObject<WorkloadViewModel>(requestFromPost);
-
-                // Calling update
-                var response = _repository.EditWorkload(workload);
-
-                if (response)
-                {
-                    _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 1);
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 1);
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -181,19 +125,12 @@ namespace Arda.Kanban.Controllers
         [Route("delete")]
         public HttpResponseMessage Delete([FromQuery]Guid workloadID)
         {
-            try
+            var response = _repository.DeleteWorkloadByID(workloadID);
+            if (response)
             {
-                var response = _repository.DeleteWorkloadByID(workloadID);
-                if (response)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                return new HttpResponseMessage(HttpStatusCode.OK);
             }
-            catch (Exception)
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
