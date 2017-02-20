@@ -22,23 +22,9 @@ namespace Arda.Kanban.Controllers
         [Route("list")]
         public IEnumerable<TechnologyViewModel> List()
         {
-            try
-            {
-                var technologies = _repository.GetAllTechnologies();
+            var technologies = _repository.GetAllTechnologies();
 
-                if (technologies != null)
-                {
-                    return technologies;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            return technologies;
         }
     }
 }
