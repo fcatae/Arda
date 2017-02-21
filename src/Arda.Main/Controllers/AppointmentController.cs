@@ -106,54 +106,38 @@ namespace Arda.Main.Controllers
 
         public IActionResult Details(Guid id)
         {
-            try
+            // Getting uniqueName
+            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            // Getting the selected appointment
+            var appointmentToBeViewed = Util.ConnectToRemoteService<AppointmentViewModel>(HttpMethod.Get, Util.KanbanURL + "api/appointment/getappointmentbyid?id=" + id, uniqueName, "").Result;
+
+            if (appointmentToBeViewed != null)
             {
-                // Getting uniqueName
-                var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-
-                // Getting the selected appointment
-                var appointmentToBeViewed = Util.ConnectToRemoteService<AppointmentViewModel>(HttpMethod.Get, Util.KanbanURL + "api/appointment/getappointmentbyid?id=" + id, uniqueName, "").Result;
-
-                if (appointmentToBeViewed != null)
-                {
-                    return View(appointmentToBeViewed);
-                }
-                else
-                {
-                    ViewBag.Message = "The system has not found the requested appointment.";
-                    return View("Error");
-                }
+                return View(appointmentToBeViewed);
             }
-            catch (Exception ex)
+            else
             {
-                ViewBag.Message = ex.Message;
+                ViewBag.Message = "The system has not found the requested appointment.";
                 return View("Error");
             }
         }
 
         public IActionResult Edit(Guid id)
         {
-            try
+            // Getting uniqueName
+            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            // Getting the selected appointment
+            var appointmentToBeViewed = Util.ConnectToRemoteService<AppointmentViewModel>(HttpMethod.Get, Util.KanbanURL + "api/appointment/getappointmentbyid?id=" + id, uniqueName, "").Result;
+
+            if (appointmentToBeViewed != null)
             {
-                // Getting uniqueName
-                var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-
-                // Getting the selected appointment
-                var appointmentToBeViewed = Util.ConnectToRemoteService<AppointmentViewModel>(HttpMethod.Get, Util.KanbanURL + "api/appointment/getappointmentbyid?id=" + id, uniqueName, "").Result;
-
-                if (appointmentToBeViewed != null)
-                {
-                    return View(appointmentToBeViewed);
-                }
-                else
-                {
-                    ViewBag.Message = "The system has not found the requested appointment.";
-                    return View("Error");
-                }
+                return View(appointmentToBeViewed);
             }
-            catch (Exception ex)
+            else
             {
-                ViewBag.Message = ex.Message;
+                ViewBag.Message = "The system has not found the requested appointment.";
                 return View("Error");
             }
         }
