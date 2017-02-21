@@ -54,43 +54,36 @@ namespace Arda.Main.Controllers
 
         private async void StoreUserInfo(string user, string token)
         {
-            try
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseProfile = await client.SendAsync(request);
+
+            HttpRequestMessage requestManager = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me/manager");
+            requestManager.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var responseManager = await client.SendAsync(requestManager);
+
+            Task.WaitAll();
+
+            if (responseProfile.IsSuccessStatusCode && responseManager.IsSuccessStatusCode)
             {
-                HttpClient client = new HttpClient();
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage responseProfile = await client.SendAsync(request);
+                var profileSerialized = await responseProfile.Content.ReadAsStringAsync();
+                var profile = JsonConvert.DeserializeObject<GraphProfileViewModel>(profileSerialized);
+                var managerSerialized = await responseManager.Content.ReadAsStringAsync();
+                var manager = JsonConvert.DeserializeObject<GraphProfileViewModel>(managerSerialized);
 
-                HttpRequestMessage requestManager = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me/manager");
-                requestManager.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var responseManager = await client.SendAsync(requestManager);
-
-                Task.WaitAll();
-
-                if (responseProfile.IsSuccessStatusCode && responseManager.IsSuccessStatusCode)
+                var userToBeUpdated = new UserMainViewModel()
                 {
-                    var profileSerialized = await responseProfile.Content.ReadAsStringAsync();
-                    var profile = JsonConvert.DeserializeObject<GraphProfileViewModel>(profileSerialized);
-                    var managerSerialized = await responseManager.Content.ReadAsStringAsync();
-                    var manager = JsonConvert.DeserializeObject<GraphProfileViewModel>(managerSerialized);
+                    Name = profile.displayName,
+                    Email = profile.userPrincipalName,
+                    GivenName = profile.givenName,
+                    Surname = profile.surname,
+                    JobTitle = profile.jobTitle,
+                    ManagerUniqueName = manager.userPrincipalName
+                };
 
-                    var userToBeUpdated = new UserMainViewModel()
-                    {
-                        Name = profile.displayName,
-                        Email = profile.userPrincipalName,
-                        GivenName = profile.givenName,
-                        Surname = profile.surname,
-                        JobTitle = profile.jobTitle,
-                        ManagerUniqueName = manager.userPrincipalName
-                    };
-
-                    var userStatus = Util.ConnectToRemoteService(HttpMethod.Put, Util.PermissionsURL + "api/permission/updateuser?=" + user, user, string.Empty, userToBeUpdated).Result;
-                }
+                var userStatus = Util.ConnectToRemoteService(HttpMethod.Put, Util.PermissionsURL + "api/permission/updateuser?=" + user, user, string.Empty, userToBeUpdated).Result;
             }
-            catch (Exception)
-            {
-                throw;
-            } 
         }
     }
 }
