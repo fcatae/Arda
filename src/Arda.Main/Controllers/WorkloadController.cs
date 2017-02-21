@@ -29,32 +29,25 @@ namespace Arda.Main.Controllers
 
             string filtered_user = (User == null || User == "") ? loggedUser : User;
 
-            try
-            {
-                var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listworkloadbyuser", filtered_user, "");
+            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listworkloadbyuser", filtered_user, "");
 
-                var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == false)
-                             .Select(x => new {
-                                 id = x._WorkloadID,
-                                 title = x._WorkloadTitle,
-                                 start = x._WorkloadStartDate.ToString("dd/MM/yyyy"),
-                                 end = x._WorkloadEndDate.ToString("dd/MM/yyyy"),
-                                 hours = x._WorkloadHours,
-                                 attachments = x._WorkloadAttachments,
-                                 tag = x._WorkloadExpertise,
-                                 status = x._WorkloadStatus,
-                                 users = x._WorkloadUsers,
-                                 textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
-                             })
-                             .Distinct()
-                             .ToList();
+            var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == false)
+                         .Select(x => new {
+                             id = x._WorkloadID,
+                             title = x._WorkloadTitle,
+                             start = x._WorkloadStartDate.ToString("dd/MM/yyyy"),
+                             end = x._WorkloadEndDate.ToString("dd/MM/yyyy"),
+                             hours = x._WorkloadHours,
+                             attachments = x._WorkloadAttachments,
+                             tag = x._WorkloadExpertise,
+                             status = x._WorkloadStatus,
+                             users = x._WorkloadUsers,
+                             textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
+                         })
+                         .Distinct()
+                         .ToList();
 
-                return Json(dados);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Json(dados);
         }
 
         [HttpGet]
@@ -66,32 +59,25 @@ namespace Arda.Main.Controllers
 
             string filtered_user = (User == null || User == "") ? loggedUser : User;
 
-            try
-            {
-                var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listworkloadbyuser", filtered_user, "");
+            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listworkloadbyuser", filtered_user, "");
 
-                var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == true)
-                             .Select(x => new {
-                                 id = x._WorkloadID,
-                                 title = x._WorkloadTitle,
-                                 start = x._WorkloadStartDate.ToString("dd/MM/yyyy"),
-                                 end = x._WorkloadEndDate.ToString("dd/MM/yyyy"),
-                                 hours = x._WorkloadHours,
-                                 attachments = x._WorkloadAttachments,
-                                 tag = x._WorkloadExpertise,
-                                 status = x._WorkloadStatus,
-                                 users = x._WorkloadUsers,
-                                 textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
-                             })
-                             .Distinct()
-                             .ToList();
+            var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == true)
+                         .Select(x => new {
+                             id = x._WorkloadID,
+                             title = x._WorkloadTitle,
+                             start = x._WorkloadStartDate.ToString("dd/MM/yyyy"),
+                             end = x._WorkloadEndDate.ToString("dd/MM/yyyy"),
+                             hours = x._WorkloadHours,
+                             attachments = x._WorkloadAttachments,
+                             tag = x._WorkloadExpertise,
+                             status = x._WorkloadStatus,
+                             users = x._WorkloadUsers,
+                             textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
+                         })
+                         .Distinct()
+                         .ToList();
 
-                return Json(dados);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Json(dados);
         }
 
         [HttpPost]
@@ -103,26 +89,19 @@ namespace Arda.Main.Controllers
             workload.WBCreatedBy = uniqueName;
             workload.WBCreatedDate = DateTime.Now;
             //Iterate over files:
-            try
+            if (WBFiles.Count > 0)
             {
-                if (WBFiles.Count > 0)
-                {
-                    List<Tuple<Guid, string, string>> fileList = await UploadNewFiles(WBFiles);
-                    //Adds the file lists to the workload object:
-                    workload.WBFilesList = fileList;
-                }
-                var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-                }
+                List<Tuple<Guid, string, string>> fileList = await UploadNewFiles(WBFiles);
+                //Adds the file lists to the workload object:
+                workload.WBFilesList = fileList;
             }
-            catch (Exception)
+            var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -138,37 +117,30 @@ namespace Arda.Main.Controllers
             //workload.WBCreatedBy = uniqueName;
             //workload.WBCreatedDate = DateTime.Now;
             //Iterate over files:
-            try
+            var fileList = new List<Tuple<Guid, string, string>>();
+            if (WBFiles.Count > 0)
             {
-                var fileList = new List<Tuple<Guid, string, string>>();
-                if (WBFiles.Count > 0)
+                fileList = await UploadNewFiles(WBFiles);
+            }
+            if (oldFiles != null)
+            {
+                for (int i = 0; i < oldFiles.Count; i++)
                 {
-                    fileList = await UploadNewFiles(WBFiles);
-                }
-                if (oldFiles != null)
-                {
-                    for (int i = 0; i < oldFiles.Count; i++)
-                    {
-                        var split = oldFiles[i].Split('&');
-                        var f = new Tuple<Guid, string, string>(new Guid(split[0]), split[1], split[2]);
-                        fileList.Add(f);
-                    }
-                }
-                //Adds the file lists to the workload object:
-                workload.WBFilesList = fileList;
-
-                var response = await Util.ConnectToRemoteService(HttpMethod.Put, Util.KanbanURL + "api/workload/edit", uniqueName, "", workload);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                    var split = oldFiles[i].Split('&');
+                    var f = new Tuple<Guid, string, string>(new Guid(split[0]), split[1], split[2]);
+                    fileList.Add(f);
                 }
             }
-            catch (Exception)
+            //Adds the file lists to the workload object:
+            workload.WBFilesList = fileList;
+
+            var response = await Util.ConnectToRemoteService(HttpMethod.Put, Util.KanbanURL + "api/workload/edit", uniqueName, "", workload);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            else
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
@@ -180,15 +152,8 @@ namespace Arda.Main.Controllers
         {
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
-            try
-            {
-                var workload = await Util.ConnectToRemoteService<WorkloadViewModel>(HttpMethod.Get, Util.KanbanURL + "api/workload/details?=" + workloadID, uniqueName, "");
-                return Json(workload);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var workload = await Util.ConnectToRemoteService<WorkloadViewModel>(HttpMethod.Get, Util.KanbanURL + "api/workload/details?=" + workloadID, uniqueName, "");
+            return Json(workload);
         }
 
         [HttpPut]
@@ -198,15 +163,8 @@ namespace Arda.Main.Controllers
             //System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             //string requestFromPost = reader.ReadToEnd();
 
-            try
-            {
-                await Util.ConnectToRemoteService<string>(HttpMethod.Put, Util.KanbanURL + "api/workload/updatestatus?id=" + Id + "&status=" + Status, uniqueName, "");
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            catch (Exception)
-            {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            }
+            await Util.ConnectToRemoteService<string>(HttpMethod.Put, Util.KanbanURL + "api/workload/updatestatus?id=" + Id + "&status=" + Status, uniqueName, "");
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         [HttpDelete]
@@ -214,15 +172,8 @@ namespace Arda.Main.Controllers
         {
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
-            try
-            {
-                await Util.ConnectToRemoteService(HttpMethod.Delete, Util.KanbanURL + "api/workload/delete?=" + workloadID, uniqueName, "");
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            catch (Exception)
-            {
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            }
+            await Util.ConnectToRemoteService(HttpMethod.Delete, Util.KanbanURL + "api/workload/delete?=" + workloadID, uniqueName, "");
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         [HttpGet]
