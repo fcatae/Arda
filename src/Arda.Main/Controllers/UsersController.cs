@@ -26,89 +26,40 @@ namespace Arda.Main.Controllers
             _cache = cache;
         }
 
-
         #region Views
 
-            //All Users
+        //All Users
         public IActionResult Index()
         {
-            try
-            {
-                //var result = await TokenManager.GetAccessToken(HttpContext);
-                //ViewBag.Token = result.AccessToken;
-
-                return View();
-            }
-            catch (Exception)
-            {
-                throw;
-                ////If get silent token fails:
-                //return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
-            }
+            return View();
         }
 
         //Review Permissions:
         public IActionResult Review()
         {
-            try
-            {
-                //var result = await TokenManager.GetAccessToken(HttpContext);
-                //ViewBag.Token = result.AccessToken;
-
-                return View();
-            }
-            catch (Exception)
-            {
-                throw;
-                ////If get silent token fails:
-                //return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
-            }
+            return View();
         }
 
         //User Details:
         public async Task<IActionResult> Details(string userID)
         {
-            try
-            {
-                //var result = await TokenManager.GetAccessToken(HttpContext);
-                //ViewBag.Token = result.AccessToken;
+            var photo = Util.GetUserPhoto(userID);
+            ViewBag.Photo = photo;
 
-                var photo = Util.GetUserPhoto(userID);
-                ViewBag.Photo = photo;
-
-                var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-                var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
-                return View(user);
-            }
-            catch (Exception)
-            {
-                throw;
-                ////If get silent token fails:
-                //return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
-            }
+            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
+            return View(user);
         }
 
         //Edit User:
         public async Task<IActionResult> Edit(string userID)
         {
-            try
-            {
-                //var result = await TokenManager.GetAccessToken(HttpContext);
-                //ViewBag.Token = result.AccessToken;
+            var photo = Util.GetUserPhoto(userID);
+            ViewBag.Photo = photo;
 
-                var photo = Util.GetUserPhoto(userID);
-                ViewBag.Photo = photo;
-
-                var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-                var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
-                return View(user);
-            }
-            catch (Exception)
-            {
-                throw;
-                ////If get silent token fails:
-                //return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme);
-            }
+            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
+            return View(user);            
         }
 
         #endregion
@@ -141,25 +92,18 @@ namespace Arda.Main.Controllers
             // Creating the final expected object to datatable
             SourceDataTablesFormat dataTablesSource = new SourceDataTablesFormat();
 
-            try
-            {
-                // Getting the response of remote service
-                var existentUsers = await Util.ConnectToRemoteService<List<UserMainViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getusers", uniqueName, "");
+            // Getting the response of remote service
+            var existentUsers = await Util.ConnectToRemoteService<List<UserMainViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getusers", uniqueName, "");
 
-                // Mouting rows data
-                foreach (UserMainViewModel user in existentUsers)
-                {
-                    IList<string> dataRow = new List<string>();
-                    dataRow.Add(user.Name.ToString());
-                    dataRow.Add(user.Email.ToString());
-                    dataRow.Add(getUserSituation(user.Status));
-                    dataRow.Add($"<div class='data-sorting-buttons'><a href='/users/details?userID={user.Email}' class='ds-button-detail'><i class='fa fa-align-justify' aria-hidden='true'></i>Details</div></a><div class='data-sorting-buttons'><a href='/users/edit?userID={user.Email}' class='ds-button-edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i>Edit</a></div><div class='data-sorting-buttons'><a data-toggle='modal' data-target='#DeleteUserModal' onclick=\"ModalDeleteUser('{user.Email}','{user.Name}');\" class='ds-button-delete'><i class='fa fa-trash' aria-hidden='true'></i>Delete</a></div>");
-                    dataTablesSource.aaData.Add(dataRow);
-                }
-            }
-            catch (Exception)
+            // Mouting rows data
+            foreach (UserMainViewModel user in existentUsers)
             {
-                throw;
+                IList<string> dataRow = new List<string>();
+                dataRow.Add(user.Name.ToString());
+                dataRow.Add(user.Email.ToString());
+                dataRow.Add(getUserSituation(user.Status));
+                dataRow.Add($"<div class='data-sorting-buttons'><a href='/users/details?userID={user.Email}' class='ds-button-detail'><i class='fa fa-align-justify' aria-hidden='true'></i>Details</div></a><div class='data-sorting-buttons'><a href='/users/edit?userID={user.Email}' class='ds-button-edit'><i class='fa fa-pencil-square-o' aria-hidden='true'></i>Edit</a></div><div class='data-sorting-buttons'><a data-toggle='modal' data-target='#DeleteUserModal' onclick=\"ModalDeleteUser('{user.Email}','{user.Name}');\" class='ds-button-delete'><i class='fa fa-trash' aria-hidden='true'></i>Delete</a></div>");
+                dataTablesSource.aaData.Add(dataRow);
             }
 
             return Json(dataTablesSource);
@@ -171,23 +115,16 @@ namespace Arda.Main.Controllers
 
             SourceDataTablesFormat dataTablesSource = new SourceDataTablesFormat();
 
-            try
-            {
-                var users = await Util.ConnectToRemoteService<List<UserMainViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getpendingusers", uniqueName, "");
+            var users = await Util.ConnectToRemoteService<List<UserMainViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getpendingusers", uniqueName, "");
 
-                // Mouting rows data
-                foreach (UserMainViewModel user in users)
-                {
-                    IList<string> dataRow = new List<string>();
-                    dataRow.Add(user.Name.ToString());
-                    dataRow.Add(user.Email.ToString());
-                    dataRow.Add($"<div class=\"data-sorting-buttons\"><a onclick=\"ModalSelectUser('{user.Email}','{user.Name}');\" class=\"ds-button-detail\"><i class=\"fa fa-align-justify\" aria-hidden=\"true\"></i>Details</a></div>");
-                    dataTablesSource.aaData.Add(dataRow);
-                }
-            }
-            catch (Exception)
+            // Mouting rows data
+            foreach (UserMainViewModel user in users)
             {
-                throw;
+                IList<string> dataRow = new List<string>();
+                dataRow.Add(user.Name.ToString());
+                dataRow.Add(user.Email.ToString());
+                dataRow.Add($"<div class=\"data-sorting-buttons\"><a onclick=\"ModalSelectUser('{user.Email}','{user.Name}');\" class=\"ds-button-detail\"><i class=\"fa fa-align-justify\" aria-hidden=\"true\"></i>Details</a></div>");
+                dataTablesSource.aaData.Add(dataRow);
             }
 
             return Json(dataTablesSource);
@@ -199,17 +136,10 @@ namespace Arda.Main.Controllers
             // Getting uniqueName
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
-            try
-            {
-                // Getting the response of remote service
-                var users = await Util.ConnectToRemoteService<List<UserKanbanViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/user/list", uniqueName, "");
+            // Getting the response of remote service
+            var users = await Util.ConnectToRemoteService<List<UserKanbanViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/user/list", uniqueName, "");
 
-                return Json(users);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Json(users);
         }
 
         [HttpDelete]
@@ -274,36 +204,19 @@ namespace Arda.Main.Controllers
 
         public async Task<JsonResult> GetAllResources()
         {
-            try
-            {
-                var uniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-                var items = await Util.ConnectToRemoteService<List<ResourcesViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/permission/getallpermissions", uniqueName, "");
-                return Json(items);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var uniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var items = await Util.ConnectToRemoteService<List<ResourcesViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/permission/getallpermissions", uniqueName, "");
+            return Json(items);
         }
 
         public async Task<JsonResult> GetUserPermissions(string user)
         {
             if (user != null)
-            {
-                try
-                {
-                    var uniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-                    var permissions = await Util.ConnectToRemoteService<PermissionsViewModel>(HttpMethod.Get, Util.PermissionsURL + "/api/UserOperations/GetUserPermissions?uniqueName=" + user, uniqueName, "");
-                    return Json(permissions);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }else
-            {
                 return null;
-            }
+
+            var uniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var permissions = await Util.ConnectToRemoteService<PermissionsViewModel>(HttpMethod.Get, Util.PermissionsURL + "/api/UserOperations/GetUserPermissions?uniqueName=" + user, uniqueName, "");
+            return Json(permissions);            
         }
 
         public string GetUserPhoto(string user)
