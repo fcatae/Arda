@@ -21,17 +21,10 @@ namespace Arda.Main.Controllers
             // Getting uniqueName
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
-            try
-            {
-                // Getting the response of remote service
-                var activity = await Util.ConnectToRemoteService<List<ActivityViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/activity/list", uniqueName, "");
+            // Getting the response of remote service
+            var activity = await Util.ConnectToRemoteService<List<ActivityViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/activity/list", uniqueName, "");
 
-                return Json(activity);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return Json(activity);
         }
     }
 }
