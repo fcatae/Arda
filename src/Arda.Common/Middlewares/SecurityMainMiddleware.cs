@@ -22,62 +22,55 @@ namespace Arda.Common.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            try
+            //1st: If the user is not authenticated, the [Authorize] Annotation takes cares:
+            if (!context.User.Identity.IsAuthenticated)
             {
-                //1st: If the user is not authenticated, the [Authorize] Annotation takes cares:
-                if (!context.User.Identity.IsAuthenticated)
-                {
-                    //RETURN ==> Requested Page:
-                    await _next(context);
-                    return;
-                }
-                //Get user info:
-                var uniqueName = context.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-                //Get the requested page info:
-                string path = context.Request.Path.ToString().Substring(1);
-                string module;
-                string resource;
-                var temp = path.Split('/');
-                if (temp.Length == 2)
-                {
-                    module = temp[0];
-                    resource = temp[1];
-                }
-                else if (temp.Length == 1)
-                {
-                    module = temp[0];
-                    resource = "";
-                }
-                else
-                {
-                    //RETURN ==> Bad Request:
-                    context.Response.StatusCode = 400;
-                    return;
-                }
-
-                //2nd: Is this module/resource a defaultResource?
-                if (defaultResources.Contains(Tuple.Create(module, resource)))
-                {
-                    //RETURN -> Requested Page:
-                    await _next(context);
-                    return;
-                }
-                //3rd: Does user have permissions to access it?
-                else if (checkMainPermission(uniqueName, module, resource))
-                {
-
-                }
-                //Not allowed:
-                else
-                {
-                    //RETURN ==> Bad Request:
-                    context.Response.StatusCode = 403;
-                    return;
-                }
+                //RETURN ==> Requested Page:
+                await _next(context);
+                return;
             }
-            catch (Exception)
+            //Get user info:
+            var uniqueName = context.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            //Get the requested page info:
+            string path = context.Request.Path.ToString().Substring(1);
+            string module;
+            string resource;
+            var temp = path.Split('/');
+            if (temp.Length == 2)
             {
-                throw;
+                module = temp[0];
+                resource = temp[1];
+            }
+            else if (temp.Length == 1)
+            {
+                module = temp[0];
+                resource = "";
+            }
+            else
+            {
+                //RETURN ==> Bad Request:
+                context.Response.StatusCode = 400;
+                return;
+            }
+
+            //2nd: Is this module/resource a defaultResource?
+            if (defaultResources.Contains(Tuple.Create(module, resource)))
+            {
+                //RETURN -> Requested Page:
+                await _next(context);
+                return;
+            }
+            //3rd: Does user have permissions to access it?
+            else if (checkMainPermission(uniqueName, module, resource))
+            {
+
+            }
+            //Not allowed:
+            else
+            {
+                //RETURN ==> Bad Request:
+                context.Response.StatusCode = 403;
+                return;
             }
         }
 
