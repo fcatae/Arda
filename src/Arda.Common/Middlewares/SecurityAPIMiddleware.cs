@@ -15,39 +15,32 @@ namespace Arda.Common.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            try
+            var user = context.Request.Headers["unique_name"].ToString();
+            var code = context.Request.Headers["code"].ToString();
+            //TODO: Compare with Cache
+
+            var endpoint = context.Request.Host.Value;
+            var path = context.Request.Path.ToString();
+
+            var temp = path.Remove(0, "/api/".Length).Split('/');
+            var module = temp[0];
+            var resource = temp[1];
+
+            if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(module) || string.IsNullOrWhiteSpace(resource))
             {
-                var user = context.Request.Headers["unique_name"].ToString();
-                var code = context.Request.Headers["code"].ToString();
-                //TODO: Compare with Cache
-
-                var endpoint = context.Request.Host.Value;
-                var path = context.Request.Path.ToString();
-
-                var temp = path.Remove(0, "/api/".Length).Split('/');
-                var module = temp[0];
-                var resource = temp[1];
-
-                if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(module) || string.IsNullOrWhiteSpace(resource))
-                {
-                    //Bad Request:
-                    context.Response.StatusCode = 400;
-                    return;
-                }
-                else if (!CheckUserPermissionToResource(user, module, resource))
-                {
-                    //User doesn't have permission, code is not valid or code is expired:
-                    context.Response.StatusCode = 401;
-                    return;
-                }
-                else
-                {
-                    await _next(context);
-                }
+                //Bad Request:
+                context.Response.StatusCode = 400;
+                return;
             }
-            catch (Exception)
+            else if (!CheckUserPermissionToResource(user, module, resource))
             {
-                throw;
+                //User doesn't have permission, code is not valid or code is expired:
+                context.Response.StatusCode = 401;
+                return;
+            }
+            else
+            {
+                await _next(context);
             }
         }
 
