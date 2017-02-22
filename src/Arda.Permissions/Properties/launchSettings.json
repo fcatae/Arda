@@ -15,15 +15,16 @@
         "Hosting:Environment": "Development"
       }
     },
-    "web": {
-      "commandName": "web",
-      "environmentVariables": {
-        "Hosting:Environment": "Development"
-      }
-    },
     "Docker": {
       "launchBrowser": true,
       "launchUrl": "http://localhost:{ServicePort}/api/permission"
+    },
+    "Arda.Permissions": {
+      "executablePath": "dotnet",
+      "commandName": "Project",
+      "environmentVariables": {
+        "Hosting:Environment": "Development"
+      }
     }
   }
 }
