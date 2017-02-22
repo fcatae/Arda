@@ -221,15 +221,8 @@ namespace Arda.Main.Controllers
 
         public string GetUserPhoto(string user)
         {
-            try
-            {
-                var photo = Util.GetUserPhoto(user);
-                return photo;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
+            var photo = Util.GetUserPhoto(user);
+            return photo;
         }
 
         #endregion
