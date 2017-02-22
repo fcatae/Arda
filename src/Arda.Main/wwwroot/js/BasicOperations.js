@@ -8,7 +8,8 @@ $(function ($) {
                 "width": "33%", "targets": 2,
                 "orderable": false
             }
-        ]
+        ],
+        "ordering": false
     });
 
     //Loading datatable to all appointments.
@@ -25,7 +26,8 @@ $(function ($) {
             {
                 "orderable": false
             }
-        ]
+        ],
+        "ordering": false
     });
 
     //Loading datatable to my appointments.
@@ -39,9 +41,10 @@ $(function ($) {
         ],
         "columnDefs": [
             {
-                "orderable": false
+                "orderable": true
             }
-        ]
+        ],
+        "ordering": false
     });
 
     // Send the new account request to specific controller/action in Arda.Main.
