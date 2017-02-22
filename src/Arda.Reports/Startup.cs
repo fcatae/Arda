@@ -53,11 +53,7 @@ namespace Arda.Reports
                 Configuration = Configuration["Storage:Redis:Configuration"],
                 InstanceName = Configuration["Storage:Redis:InstanceName"]
             }));
-
-            //// Adding database connection by dependency injection.
-            //var Connection = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Arda_Permissions;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-            //services.AddEntityFramework().AddSqlServer().AddDbContext<ReportsContext>(options => options.UseSqlServer(Connection));
-
+            
             // Registering additional services.
             services.AddScoped<IReportsRepository, ReportsRepository>();
             
@@ -75,8 +71,6 @@ namespace Arda.Reports
 
             //app.UseMiddleware<SecurityAPIMiddleware>();
             
-            //app.UseIISPlatformHandler();
-
             app.UseApplicationInsightsRequestTelemetry();
 
             app.UseApplicationInsightsExceptionTelemetry();
