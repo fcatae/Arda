@@ -45,7 +45,7 @@ namespace Arda.Permissions
             // Add framework services.
             services.AddCors(x => x.AddPolicy("AllowAll", c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-            //services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddApplicationInsightsTelemetry(Configuration);
 
             services.AddMvc()
                 .AddJsonOptions(opts =>
@@ -80,11 +80,9 @@ namespace Arda.Permissions
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            //app.UseIISPlatformHandler();
+            app.UseApplicationInsightsRequestTelemetry();
 
-            //app.UseApplicationInsightsRequestTelemetry();
-
-            //app.UseApplicationInsightsExceptionTelemetry();
+            app.UseApplicationInsightsExceptionTelemetry();
 
             app.UseStaticFiles();
 
