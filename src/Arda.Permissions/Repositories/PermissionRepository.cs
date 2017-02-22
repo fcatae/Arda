@@ -27,7 +27,7 @@ namespace Arda.Permissions.Repositories
             _context = context;
             _cache = cache;
         }
-
+        
         public bool SetUserPermissionsAndCode(string uniqueName, string code)
         {
             var userPermissions = (from u in _context.Users
@@ -85,18 +85,25 @@ namespace Arda.Permissions.Repositories
             _context.SaveChanges();
 
             //Update the cache
-            CacheViewModel propertiesToCache;
+            CacheViewModel propertiesToCache = new CacheViewModel();
+            byte[] arrPropertiesSerializedCached = null;
+
             try
             {
-                //User is on cache:
-                var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
-                propertiesToCache = new CacheViewModel(propertiesSerializedCached);
+                // may raise exception
+                arrPropertiesSerializedCached = _cache.Get(uniqueName);
+
+                // if data is not cached
+                if(arrPropertiesSerializedCached != null)
+                {
+                    string propertiesSerializedCached = Util.GetString(arrPropertiesSerializedCached);
+                    propertiesToCache = new CacheViewModel(propertiesSerializedCached);
+                }
             }
-            catch
+            catch (StackExchange.Redis.RedisConnectionException)
             {
-                //User is not on cache:
-                propertiesToCache = new CacheViewModel();
-            }
+                // Ignore transient network errors
+            }            
 
             var userPermissions = (from up in _context.UsersPermissions
                                    join r in _context.Resources on up.ResourceID equals r.ResourceID
