@@ -29,33 +29,36 @@ namespace Arda.Common.Utils
         public static string GetUserPhoto(string user)
         {
             var key = "photo_" + user;
+            byte[] arrPicture = null;
+
             try
             {
                 //Try from Cache:
+                arrPicture = _cache.Get(key);
+
+                if( arrPicture != null )
+                {
+                    var photo = Util.GetString(arrPicture);
+                    return photo;
+                }
+            }
+            catch (StackExchange.Redis.RedisConnectionException)
+            {
+                // Ignore transient network errors
+            }
+
+            //Try from DB:
+
+            // Getting the response of remote service
+            var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/saveuserphotooncache?=" + user, user, "").Result;
+            if (response.IsSuccessStatusCode)
+            {
                 var photo = Util.GetString(_cache.Get(key));
                 return photo;
             }
-            catch (Exception)
+            else
             {
-                //Try from DB:
-                try
-                {
-                    // Getting the response of remote service
-                    var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/saveuserphotooncache?=" + user, user, "").Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var photo = Util.GetString(_cache.Get(key));
-                        return photo;
-                    }
-                    else
-                    {
-                        return string.Empty;
-                    }
-                }
-                catch (Exception)
-                {
-                    return string.Empty;
-                }
+                return string.Empty;
             }
         }
 
