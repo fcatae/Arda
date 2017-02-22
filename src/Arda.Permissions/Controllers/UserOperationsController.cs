@@ -25,25 +25,33 @@ namespace Arda.Permissions.Controllers
             // TODO: REQUIRES REVIEWING
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
-            try
-            {
-                if (uniqueName != null)
-                {
-                    var menu = _permission.GetUserMenuSerialized(uniqueName);
-                    return menu;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                //Cache doesn't exists
-                //TODO: Returns a message requiring to login again
-                var menu = _permission.GetUserMenuSerialized(uniqueName);
-                return menu;
+            if (uniqueName == null)
+                throw new InvalidOperationException("Request.Header[unique_name] is null");
 
-                // WARNING: NEVER REACH THIS POINT
-                throw ex;
-            }
+            var menu = _permission.GetUserMenuSerialized(uniqueName);
+            return menu;
+
+            // In the past, this code had to be called twice when data was not cached
+            // However, GetUserMenuSerialized should never fail due to caching
+            // I am removing this code now - let's see if the problem happens again
+
+            //try
+            //{
+            //    if (uniqueName != null)
+            //    {
+            //        var menu = _permission.GetUserMenuSerialized(uniqueName);
+            //        return menu;
+            //    }
+            //    return null;
+            //}
+            //catch (Exception ex)
+            //{
+            //    //Cache doesn't exists
+            //    //TODO: Returns a message requiring to login again
+            //    var menu = _permission.GetUserMenuSerialized(uniqueName);
+            //    return menu;
+            //    throw ex;
+            //}
         }
 
         [HttpGet]
