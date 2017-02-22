@@ -27,7 +27,28 @@ namespace Arda.Permissions.Repositories
             _context = context;
             _cache = cache;
         }
-        
+
+
+        CacheViewModel GetUserPermissionsAndCode(string uniqueName, string code)
+        {
+            var userPermissions = (from u in _context.Users
+                                   join up in _context.UsersPermissions on u.UniqueName equals up.UniqueName
+                                   join r in _context.Resources on up.ResourceID equals r.ResourceID
+                                   join m in _context.Modules on r.ModuleID equals m.ModuleID
+                                   where up.UniqueName == uniqueName && r.ResourceSequence > 0
+                                   orderby r.CategorySequence, r.ResourceSequence
+                                   select new PermissionsToBeCachedViewModel
+                                   {
+                                       Endpoint = m.Endpoint,
+                                       Module = m.ModuleName,
+                                       Resource = r.ResourceName,
+                                       Category = r.Category,
+                                       DisplayName = r.DisplayName
+                                   }).ToList();
+
+            return new CacheViewModel(code, userPermissions);
+        }
+
         public bool SetUserPermissionsAndCode(string uniqueName, string code)
         {
             var userPermissions = (from u in _context.Users
@@ -382,51 +403,74 @@ namespace Arda.Permissions.Repositories
         public string GetUserMenuSerialized(string uniqueName)
         {
             var menu = new List<Tuple<string, Tuple<string, string, string>>>();
-            string propertiesSerializedCached;
+            string propertiesSerializedCached = null;
+            byte[] arraySerializedCached = null;
 
             try
             {
-                propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+                arraySerializedCached = _cache.Get(uniqueName);
             }
-            catch (Exception)
+            catch (StackExchange.Redis.RedisConnectionException)
             {
-                SetUserPermissionsAndCode(uniqueName, string.Empty);
-                propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+                // Ignore transient network failures
+            }
+
+
+            if (arraySerializedCached != null)
+            {
+                propertiesSerializedCached = Util.GetString(arraySerializedCached);
+            }
+            else
+            {
+                var cachedView = GetUserPermissionsAndCode(uniqueName, string.Empty);
+                propertiesSerializedCached = cachedView.ToString();
             }
 
             try
             {
-                var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
+                _cache.Set(uniqueName, Util.GetBytes(propertiesSerializedCached));
+            }
+            catch (StackExchange.Redis.RedisConnectionException)
+            {
+                // Ignore transient network failures
+            }
 
-                foreach (var p in permissions)
+            //try
+            //{
+            //    propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+            //}
+            //catch (Exception)
+            //{
+            //    SetUserPermissionsAndCode(uniqueName, string.Empty);
+            //    propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+            //}
+
+            var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
+
+            foreach (var p in permissions)
+            {
+                if (!p.Endpoint.Contains("/api"))
                 {
-                    if (!p.Endpoint.Contains("/api"))
-                    {
-                        string category = p.Category;
-                        string display = p.DisplayName;
-                        string controller = p.Module;
-                        string action = p.Resource;
-                        //string url = p.Endpoint + "/" + p.Module + "/" + p.Resource;
+                    string category = p.Category;
+                    string display = p.DisplayName;
+                    string controller = p.Module;
+                    string action = p.Resource;
+                    //string url = p.Endpoint + "/" + p.Module + "/" + p.Resource;
 
-                        menu.Add(Tuple.Create(category, Tuple.Create(display, controller, action)));
-                    }
+                    menu.Add(Tuple.Create(category, Tuple.Create(display, controller, action)));
                 }
-
-                var menuGrouped = (from m in menu
-                                   group m.Item2 by m.Item1 into g
-                                   select new
-                                   {
-                                       Category = g.Key,
-                                       Items = g.ToList()
-                                   }).ToList();
-
-
-                return JsonConvert.SerializeObject(menuGrouped);
             }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
+
+            var menuGrouped = (from m in menu
+                               group m.Item2 by m.Item1 into g
+                               select new
+                               {
+                                   Category = g.Key,
+                                   Items = g.ToList()
+                               }).ToList();
+
+
+            return JsonConvert.SerializeObject(menuGrouped);
         }
 
         public PermissionStatus GetUserStatus(string uniqueName)
