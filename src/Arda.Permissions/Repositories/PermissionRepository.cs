@@ -305,43 +305,45 @@ namespace Arda.Permissions.Repositories
 
         public bool SendNotificationOfNewUserByEmail(string uniqueName)
         {
-            EmailLogic clientEmail = new EmailLogic();
+            return true;
 
-            // Mounting parameters and message.
-            var Configuration = new ConfigurationBuilder().AddJsonFile("secrets.json").Build();
-            var admin = Configuration["Email:Administrator"];
+            //EmailLogic clientEmail = new EmailLogic();
 
-            string ToName = "Arda Administrator";
-            string ToEmail = admin;
-            string Subject = "[ARDA] A new user has been logged @ Arda";
+            //// Mounting parameters and message.
+            //var Configuration = new ConfigurationBuilder().AddJsonFile("secrets.json").Build();
+            //var admin = Configuration["Email:Administrator"];
 
-            StringBuilder StructureModified = new StringBuilder();
-            StructureModified = EmailMessages.GetEmailMessageStructure();
+            //string ToName = "Arda Administrator";
+            //string ToEmail = admin;
+            //string Subject = "[ARDA] A new user has been logged @ Arda";
 
-            // Replacing the generic title by the customized.
-            StructureModified.Replace("[MessageTitle]", "Hi " + ToName + ", someone requested access to the system");
+            //StringBuilder StructureModified = new StringBuilder();
+            //StructureModified = EmailMessages.GetEmailMessageStructure();
 
-            // Replacing the generic subtitle by the customized.
-            StructureModified.Replace("[MessageSubtitle]", "Who did the request was <strong>" + uniqueName + "</strong>. If you deserve, can access 'Users' area and distribute the appropriated permissions.");
+            //// Replacing the generic title by the customized.
+            //StructureModified.Replace("[MessageTitle]", "Hi " + ToName + ", someone requested access to the system");
 
-            // Replacing the generic message body by the customized.
-            StructureModified.Replace("[MessageBody]", "Details about the request: </br></br><ul><li>Email: " + uniqueName + "</li><li>Date/time access: " + DateTime.Now + "</li></ul>");
+            //// Replacing the generic subtitle by the customized.
+            //StructureModified.Replace("[MessageSubtitle]", "Who did the request was <strong>" + uniqueName + "</strong>. If you deserve, can access 'Users' area and distribute the appropriated permissions.");
 
-            // Replacing the generic callout box.
-            StructureModified.Replace("[MessageCallout]", "For more details about the request, send a message to <strong>arda@microsoft.com</strong>.");
+            //// Replacing the generic message body by the customized.
+            //StructureModified.Replace("[MessageBody]", "Details about the request: </br></br><ul><li>Email: " + uniqueName + "</li><li>Date/time access: " + DateTime.Now + "</li></ul>");
 
-            // Creating a object that will send the message.
-            EmailLogic EmailObject = new EmailLogic();
+            //// Replacing the generic callout box.
+            //StructureModified.Replace("[MessageCallout]", "For more details about the request, send a message to <strong>arda@microsoft.com</strong>.");
 
-            try
-            {
-                var EmailTask = EmailObject.SendEmailAsync(ToName, ToEmail, Subject, StructureModified.ToString());
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            //// Creating a object that will send the message.
+            //EmailLogic EmailObject = new EmailLogic();
+
+            //try
+            //{
+            //    var EmailTask = EmailObject.SendEmailAsync(ToName, ToEmail, Subject, StructureModified.ToString());
+            //    return true;
+            //}
+            //catch (Exception)
+            //{
+            //    return false;
+            //}
         }
 
         // Generate initial and basic permissions set to new users.
