@@ -212,44 +212,81 @@ namespace Arda.Permissions.Repositories
             }
         }
 
-        public bool VerifyUserAccessToResource(string uniqueName, string module, string resource)
+        CacheViewModel GetUserPermissionsCached(string uniqueName)
         {
+            CacheViewModel cachedView = null;
+            byte[] arraySerializedCached = null;
+
+            if (uniqueName == null)
+                throw new ArgumentNullException("GetUserPermissionsCached(uniqueName: null)");
+
             try
             {
-                var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
-                if (propertiesSerializedCached != null)
-                {
-                    var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
-
-                    var perm = (from p in permissions
-                                where p.Resource.ToLower().Equals(resource) && p.Module.ToLower().Equals(module)
-                                select p).First();
-
-                    if (perm != null)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
+                arraySerializedCached = _cache.Get(uniqueName);
             }
-            catch (Exception ex)
+            catch(StackExchange.Redis.RedisConnectionException)
             {
-                if (ex.Message == "Sequence contains no elements")
-                {
-                    return false;
-                }
-                else
-                {
-                    throw;
-                }
+                // Ignore transient network issues
             }
+
+            if( arraySerializedCached != null )
+            {
+                var propertiesSerializedCached = Util.GetString(arraySerializedCached);
+                cachedView = new CacheViewModel(propertiesSerializedCached);
+            }
+
+            return cachedView;
+        }
+
+        public bool VerifyUserAccessToResource(string uniqueName, string module, string resource)
+        {
+            // THIS IMPLEMENTATION IS WRONG! 
+            // If the cache is clean, then it will not properly verify the user access
+
+            //try
+            //{
+            //    var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+            //    if (propertiesSerializedCached != null)
+            //    {
+            //        var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
+
+            //        var perm = (from p in permissions
+            //                    where p.Resource.ToLower().Equals(resource) && p.Module.ToLower().Equals(module)
+            //                    select p).First();
+
+            //        return (perm != null);
+            //    }
+            //    else
+            //    {
+            //        return false;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    if (ex.Message == "Sequence contains no elements")
+            //    {
+            //        return false;
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
+
+            var cachedView = GetUserPermissionsCached(uniqueName);
+
+            if (cachedView != null)
+            {
+                var permissions = cachedView.Permissions;
+
+                var perm = (from p in permissions
+                            where p.Resource.ToLower().Equals(resource) && p.Module.ToLower().Equals(module)
+                            select p).First();
+
+                return (perm != null);
+            }
+
+            return false;
         }
 
         public bool VerifyIfUserIsInUserPermissionsDatabase(string uniqueName)
