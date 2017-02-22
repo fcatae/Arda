@@ -350,57 +350,59 @@ namespace Arda.Kanban.Repositories
             }
         }
 
+        [Obsolete]
         public bool SendNotificationAboutNewOrUpdatedWorkload(string uniqueName, int newOrUpdate)
         {
-            EmailLogic clientEmail = new EmailLogic();
+            return true;
+            //EmailLogic clientEmail = new EmailLogic();
 
-            // Mounting parameters and message.
-            string ToName = Util.GetUserAlias(uniqueName);
-            string ToEmail = uniqueName;
-            string Subject = "";
+            //// Mounting parameters and message.
+            //string ToName = Util.GetUserAlias(uniqueName);
+            //string ToEmail = uniqueName;
+            //string Subject = "";
 
-            StringBuilder StructureModified = new StringBuilder();
-            StructureModified = EmailMessages.GetEmailMessageStructure();
+            //StringBuilder StructureModified = new StringBuilder();
+            //StructureModified = EmailMessages.GetEmailMessageStructure();
 
-            // Replacing the generic title by the customized.
-            StructureModified.Replace("[MessageTitle]", "Hi " + ToName + ", we have news to you: ");
+            //// Replacing the generic title by the customized.
+            //StructureModified.Replace("[MessageTitle]", "Hi " + ToName + ", we have news to you: ");
 
-            if (newOrUpdate == 0) // new workload
-            {
-                Subject += "[ARDA] New workload available to you";
+            //if (newOrUpdate == 0) // new workload
+            //{
+            //    Subject += "[ARDA] New workload available to you";
 
-                // Replacing the generic subtitle by the customized.
-                StructureModified.Replace("[MessageSubtitle]", "A new <strong>Workload</strong> was created and signed to you.");
+            //    // Replacing the generic subtitle by the customized.
+            //    StructureModified.Replace("[MessageSubtitle]", "A new <strong>Workload</strong> was created and signed to you.");
 
-                // Replacing the generic message body by the customized.
-                StructureModified.Replace("[MessageBody]", "To see your new workload, please, click on the link bellow.");
-            }
-            else
-            {
-                Subject += "[ARDA] Existing workload has been updated";
+            //    // Replacing the generic message body by the customized.
+            //    StructureModified.Replace("[MessageBody]", "To see your new workload, please, click on the link bellow.");
+            //}
+            //else
+            //{
+            //    Subject += "[ARDA] Existing workload has been updated";
 
-                // Replacing the generic subtitle by the customized.
-                StructureModified.Replace("[MessageSubtitle]", "A existent <strong>Workload</strong> signed to you was updated.");
+            //    // Replacing the generic subtitle by the customized.
+            //    StructureModified.Replace("[MessageSubtitle]", "A existent <strong>Workload</strong> signed to you was updated.");
 
-                // Replacing the generic message body by the customized.
-                StructureModified.Replace("[MessageBody]", "To see your workload updated, please, click on the link bellow.");
-            }
+            //    // Replacing the generic message body by the customized.
+            //    StructureModified.Replace("[MessageBody]", "To see your workload updated, please, click on the link bellow.");
+            //}
 
-            // Replacing the generic callout box.
-            StructureModified.Replace("[MessageCallout]", "Dashboard (Kanban): <a href='/Dashboard/Index'>My workloads</a>");
+            //// Replacing the generic callout box.
+            //StructureModified.Replace("[MessageCallout]", "Dashboard (Kanban): <a href='/Dashboard/Index'>My workloads</a>");
 
-            // Creating a object that will send the message.
-            EmailLogic EmailObject = new EmailLogic();
+            //// Creating a object that will send the message.
+            //EmailLogic EmailObject = new EmailLogic();
 
-            try
-            {
-                var EmailTask = EmailObject.SendEmailAsync(ToName, ToEmail, Subject, StructureModified.ToString());
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            //try
+            //{
+            //    var EmailTask = EmailObject.SendEmailAsync(ToName, ToEmail, Subject, StructureModified.ToString());
+            //    return true;
+            //}
+            //catch (Exception)
+            //{
+            //    return false;
+            //}
         }
     }
 }
