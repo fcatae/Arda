@@ -23,7 +23,6 @@ namespace Arda.Permissions
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("local-secret.json", optional: true)
                 .AddJsonFile("microservices.json", true)
-                .AddEnvironmentVariables();
 
             if (env.IsEnvironment("Development"))
             {
@@ -32,7 +31,7 @@ namespace Arda.Permissions
                 builder.AddUserSecrets();
             }
 
-            builder.AddEnvironmentVariables();
+            builder = builder.AddEnvironmentVariables();
             Configuration = builder.Build();//.ReloadOnChanged("appsettings.json");
         }
 

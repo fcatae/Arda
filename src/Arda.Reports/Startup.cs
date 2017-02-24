@@ -29,7 +29,7 @@ namespace Arda.Reports
                 builder.AddUserSecrets();
             }
 
-            builder.AddEnvironmentVariables();
+            builder = builder.AddEnvironmentVariables();
             Configuration = builder.Build();//.ReloadOnChanged("appsettings.json");
         }
 

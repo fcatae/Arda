@@ -22,8 +22,7 @@ namespace Arda.Kanban
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("local-secret.json", true)
-                .AddJsonFile("microservices.json", true)
-                .AddEnvironmentVariables();
+                .AddJsonFile("microservices.json", true);
 
             if (env.IsEnvironment("Development"))
             {
@@ -32,7 +31,7 @@ namespace Arda.Kanban
                 builder.AddUserSecrets();
             }
 
-            builder.AddEnvironmentVariables();
+            builder = builder.AddEnvironmentVariables();
             Configuration = builder.Build();//.ReloadOnChanged("appsettings.json");
         }
 
