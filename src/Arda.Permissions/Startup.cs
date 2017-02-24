@@ -22,7 +22,7 @@ namespace Arda.Permissions
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("local-secret.json", optional: true)
-                .AddJsonFile("microservices.json", true)
+                .AddJsonFile("microservices.json", true);
 
             if (env.IsEnvironment("Development"))
             {
@@ -81,6 +81,8 @@ namespace Arda.Permissions
             loggerFactory.AddDebug();
 
             app.UseApplicationInsightsRequestTelemetry();
+            
+            app.UseDeveloperExceptionPage();
 
             app.UseApplicationInsightsExceptionTelemetry();
 
