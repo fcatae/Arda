@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  arda.kanban:
+    image: user/arda.kanban${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80"

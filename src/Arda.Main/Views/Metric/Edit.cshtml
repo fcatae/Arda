@@ -1,0 +1,137 @@
+﻿@model Arda.Common.ViewModels.Main.MetricViewModel
+<section class="concontainer-fluid">
+    <div id="message">
+        <!-- Message dynamically inputed here -->
+    </div>
+    <div class="col-xs-12">
+        
+        <div class="row">
+            <header class="ctn-header-dashboard">
+
+                <!-- Title -->
+                <div class="col-xs-12 col-lg-3 col-md-4">
+                    <h2>
+                        Metrics
+                    </h2>
+                    <p>Editing "@Model.MetricName"</p>
+                </div>
+
+                <!-- Some information -->
+                <div class="col-xs-12 col-lg-3 col-md-4">
+
+                </div>
+
+                <!-- Clear some garbage -->
+                <div class="clearfix"></div>
+
+
+            </header>
+
+            <div style="margin-top:20px;">
+
+                <div class="col-xs-12 col-md-8" style="border-right:1px solid #efefef;">
+
+                    <form id="form-edit-metric" role="form">
+                        <div class="form-group">
+                            <label for="MetricID">Code:</label>
+                            <input type="text" class="form-control" id="MetricID" name="MetricID" value="@Model.MetricID" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="FiscalYearID">Fiscal Year:</label>
+                            <select class="form-control" id="FiscalYearID" name="FiscalYearID">
+                                <!--Dynamically Content-->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="MetricCategory">Category:</label>
+                            <input type="text" class="form-control" id="MetricCategory" name="MetricCategory" list="CategoriesList"  value="@Model.MetricCategory">
+                            <datalist id="CategoriesList">
+                                <!--Dynamically Content-->
+                            </datalist>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="MetricName">Name:</label>
+                            <input type="text" class="form-control" id="MetricName" name="MetricName" value="@Model.MetricName">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Description">Description:</label>
+                            <textarea class="form-control" id="Description" name="Description" rows="5">@Model.Description</textarea>
+                        </div>
+
+                        <div class="data-sorting-buttons">
+                            <button id="btnUpdate" type="submit" class="ds-button-update"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                        </div>
+
+                    </form>
+
+                    
+                </div>
+                <div class="col-xs-6 col-md-4">
+                    <h3>
+                        New metric
+                    </h3>
+                    <p>
+                        To add a new Metric, please click on button bellow. <br />
+                        <div class="data-sorting-buttons">
+                            <a asp-controller="Metric" asp-action="Add" class="ds-button-update"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
+                        </div>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+
+
+    $(function () {
+        //Initialize:
+        Initialize();
+        //Get FY values:
+        $.getJSON('/FiscalYear/ListAllFiscalYears', '', callbackGetFYTextual);
+        //Get Last Categories:
+        $.getJSON('/Metric/ListAllCategories', '', callbackGetCategories);
+    });
+
+    function Initialize() {
+
+    }
+
+    function callbackGetFYTextual(data) {
+        data = data.aaData;
+
+        var searchWord = '/details/';
+        var len = searchWord.length;
+        var options = [];
+        for (var i = 0; i < data.length; i++) {
+            var text = data[i][0];
+
+            var n = (data[i][2]).search(searchWord) + len;
+            var key = (data[i][2]).substring(n, n + 36);
+
+            if ("@Model.FiscalYearID" == key) {
+                options.push('<option value="' + key + '" selected>' + text + '</option>');
+            } else {
+                options.push('<option value="' + key + '">' + text + '</option>');
+            }
+        }
+        $('#FiscalYearID').html(options.join(''));
+    }
+
+    function callbackGetCategories(data) {
+        var options = [];
+        for (var i = 0; i < data.length; i++) {
+            //var text = data[i];
+            var key = data[i];
+            options.push('<option value="' + key + '">on ARDA</option>');
+        }
+        $('#CategoriesList').html(options.join(''));
+    }
+
+</script>

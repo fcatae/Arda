@@ -1,0 +1,229 @@
+﻿@model Arda.Common.ViewModels.Main.UserMainViewModel
+
+<div id="msgSuccess" class="alert alert-success" style="display: none;">
+    <a href="#" class="close" onclick="$('.alert').hide()">&times;</a>
+    <strong>Success!</strong>
+</div>
+
+<div id="msgWarning" class="alert alert-warning" style="display: none;">
+    <a href="#" class="close"  onclick="$('.alert').hide()">&times;</a>
+    <strong>You must select at least one permission!</strong>
+</div>
+
+<div id="msgError" class="alert alert-danger" style="display: none;">
+    <a href="#" class="close" onclick="$('.alert').hide()">&times;</a>
+    <strong>Error!</strong>
+</div>
+
+<section class="concontainer-fluid">
+
+    <div class="col-xs-12">
+        <div class="row">
+            <header class="ctn-header-dashboard">
+
+                <!-- Title -->
+                <div class="col-xs-12 col-lg-9 col-md-8">
+                    <h2>
+                        User
+                    </h2>
+                    <p>Editing "@Model.Name"</p>
+                </div>
+
+                <!-- Clear some garbage -->
+                <div class="clearfix"></div>
+
+            </header>
+
+            <div id="UserInfoPanel">
+                <div class="col-lg-3 col-md-3 col-xs-12">
+                    <div id="userInfo" class="panel-user-info">
+                        <form role="form">
+                            <img id="UserPhoto" width="200" height="200" src="@ViewBag.Photo" />
+                            <input type="hidden" class="form-control" id="UserName" value="@Model.Name" disabled>
+                            <input type="hidden" class="form-control" id="UserEmail" value="@Model.Email" disabled>
+                            <p class="text-center"><strong id="displayName">@Model.Name</strong></p>
+                            <p class="text-center"><i class="fa fa-envelope"></i> <span id="mail">@Model.Email</span></p>
+                        </form>
+                    </div>
+                </div>
+                <div id="permissionsPanel" class="col-lg-9 col-md-9 col-xs-12 panel-permissions-panel">
+                    <div class="col-lg-12 cold-md-12 col-xs-12"><h2 class="title-manager-sec">Permissions:</h2></div>
+                    <div id="PermissionsList"></div>
+                    <footer class="col-lg-12 col-md-12 col-xs-12 panel-footer-permissions">
+
+                        <div class="data-sorting-buttons">
+                            <button id="btnUpdate" type="button" class="ds-button-update"><i class="fa fa-retweet" aria-hidden="true"></i>Set Permissions</button>
+                        </div>
+
+                        <div class="data-sorting-buttons">
+                            <button id="btnBan" type="button" class="ds-button-warning"><i class="fa fa-ban" aria-hidden="true"></i>Ban User</button>
+                        </div>
+
+                        <div class="data-sorting-buttons">
+                            <button id="btnClean" type="button" class="ds-button-reset">Clean</button>
+                        </div>
+                        
+                        <div class="clearfix"></div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    @*var token = '@ViewBag.Token';*@
+
+    $(function () {
+        //Initialize:
+        Initialize();
+
+        var user = $('#UserEmail').val();
+
+        //Get All Permissions:
+        $.getJSON('/users/GetAllResources', '', callbackGetResourceItems);
+        //Get User Permissions:
+        $.ajax({
+            url: '/users/GetUserPermissions?user=' + user,
+            type: "GET",
+            cache: false,
+            success: function (data, textStatus, jqXHR) {
+                callbackGetUserPermissions(data);
+            }
+        });
+    });
+
+    function Initialize() {
+        $('#btnUpdate').click(updatePermissions);
+        $('#btnBan').click(banUser);
+    }
+
+    function callbackGetResourceItems(data) {
+        for (var i = 0; i < data.length; i++) {
+            var category = data[i].Category;
+            var resources = data[i].Resources;
+
+            var item = $('<div class="col-lg-4 col-md-4 cold-xs-12 panel-permissions-item">');
+            var title = $('<h2 class="title-permission-list">').text(category);
+            item.append(title);
+
+            var divControls = $('<div>').css('margin', '0');
+            for (var j = 0; j < resources.length; j++) {
+                var res = resources[j];
+                var divControl = '<div class="input-group permission-group">' +
+                                    '<input type="checkbox" class="permissions-item" id="permission_' + j + category + '" category="' + category + '" resource="' + res + '">' +
+                                    '<label for="permission_' + j + category + '">' + res + '</label>' +
+                                 '</div>';
+                divControls.append(divControl);
+            }
+            item.append(divControls);
+            $('#PermissionsList').append(item);
+        }
+
+        $('.permission-group').on('click', function (e) {
+            var checkBox = $(this).children(":first").find('input');
+            var value = checkBox.prop('checked');
+            if (value == true) {
+                checkBox.prop('checked', false);
+            } else {
+                checkBox.prop('checked', true);
+            }
+        });
+    }
+
+    function callbackGetUserPermissions(data) {
+        data = data.permissions;
+        console.log(data);
+        var items = $('.permissions-item');
+        for (var i = 0; i < data.length; i++) {
+            var cat = data[i].category;
+            var res = data[i].resource;
+            items.each(function () {
+                var obj = $(this);
+                var attr = [];
+                if (obj.attr('category') == cat && obj.attr('resource') == res) {
+                    obj.prop('checked', true);
+                }
+            });
+        }
+    }
+
+    function updatePermissions() {
+        var items = $('.permissions-item');
+
+        var selected = []
+        items.each(function () {
+            var obj = $(this);
+            var attr = [];
+            if (obj.prop('checked')) {
+                attr.push(obj.attr('category'));
+                attr.push(obj.attr('resource'));
+                selected.push(attr);
+            }
+        });
+
+        if (selected.length > 0) {
+            var permissions = '{ "permissions" : [';
+            //var permissions = '[';
+            for (var i = 0; i < selected.length; i++) {
+                permissions += '{ "category":"' + selected[i][0] + '" , "resource":"' + selected[i][1] + '" }';
+                if (i < selected.length - 1) {
+                    permissions += ',';
+                }
+            }
+            //permissions += ']';
+            permissions += ']}';
+
+            var user = $('#UserEmail').val();
+            var url = '/users/UpdatePermissions?user=' + user;
+
+
+            $.ajax({
+                url: url,
+                type: "PUT",
+                contentType: "application/json",
+                data: permissions,
+                success: function (data, textStatus, jqXHR) { 
+                    $('html,body').scrollTop(0);
+                    if (data.IsSuccessStatusCode) {
+                        $('#msgSuccess').fadeIn();
+                        GoToAllUsers(2500);
+                    } else {
+                        $('#msgError').fadeIn();
+                    }
+                }
+            });
+        } else {
+            $('html,body').scrollTop(0);
+            $('#msgWarning').fadeIn();
+        }
+    }
+
+    function banUser() {
+        var permissions = '{ "permissions" : []}';
+        var user = $('#UserEmail').val();
+        var url = '/users/UpdatePermissions?user=' + user;
+
+        $.ajax({
+            url: url,
+            type: "PUT",
+            data: permissions,
+            success: function (data, textStatus, jqXHR) {
+                if (data.IsSuccessStatusCode) {
+                    $('html,body').scrollTop(0);
+                    $('#msgSuccess').fadeIn();
+                    GoToAllUsers(2500);
+                } else {
+                    $('html,body').scrollTop(0);
+                    $('#msgError').fadeIn();
+                }
+            }
+        });
+    }
+
+    function GoToAllUsers(miliseconds) {
+        setTimeout(function ()
+        { window.location.href = '/Users'; }, miliseconds);
+    }
+
+</script>
