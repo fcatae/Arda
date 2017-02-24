@@ -22,7 +22,8 @@ namespace Arda.Permissions
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("local-secret.json", optional: true)
-                .AddJsonFile("microservices.json", true);
+                .AddJsonFile("microservices.json", true)
+                .AddEnvironmentVariables();
 
             if (env.IsEnvironment("Development"))
             {
