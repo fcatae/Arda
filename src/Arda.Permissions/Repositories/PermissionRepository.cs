@@ -483,7 +483,7 @@ namespace Arda.Permissions.Repositories
             var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
             var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
 
-            var permToReview = permissions.First(p => p.Module == "Users" && p.Resource == "Review");
+            var permToReview = permissions.FirstOrDefault(p => p.Module == "Users" && p.Resource == "Review");
             if (permToReview != null)
             {
                 return true;
