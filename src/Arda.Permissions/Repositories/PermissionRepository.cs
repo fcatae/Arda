@@ -510,7 +510,7 @@ namespace Arda.Permissions.Repositories
                            Status = (int)users.Status
                        };
 
-            return data;
+            return data.ToArray();
         }
 
         public IEnumerable<ResourcesViewModel> GetAllPermissions()
@@ -557,7 +557,7 @@ namespace Arda.Permissions.Repositories
                            Status = (int)users.Status
                        };
 
-            return data;
+            return data.ToArray();
         }
 
         public UserMainViewModel GetUser(string uniqueName)
