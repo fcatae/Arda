@@ -24,12 +24,15 @@ namespace Arda.Kanban
                 .AddJsonFile("local-secret.json", true)
                 .AddJsonFile("microservices.json", true);
 
-            if (env.IsEnvironment("Development"))
-            {
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
-                builder.AddUserSecrets();
-            }
+                if (env.IsDevelopment())
+                {
+                    builder.AddUserSecrets();
+                }
+                if (!env.IsProduction())
+                {
+                    // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
+                    builder.AddApplicationInsightsSettings(developerMode: true);
+                }
 
             builder = builder.AddEnvironmentVariables();
             Configuration = builder.Build();//.ReloadOnChanged("appsettings.json");

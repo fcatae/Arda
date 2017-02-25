@@ -22,11 +22,14 @@ namespace Arda.Reports
                 .AddJsonFile("local-secret.json", true)
                 .AddJsonFile("microservices.json", true);
 
-            if (env.IsEnvironment("Development"))
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets();
+            }
+            if (!env.IsProduction())
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
-                builder.AddUserSecrets();
             }
 
             builder = builder.AddEnvironmentVariables();
