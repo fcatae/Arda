@@ -2,24 +2,15 @@
 using Xunit;
 using Arda.Kanban.Models;
 using Arda.Kanban.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests
 {
     public class FiscalYear
     {
-        KanbanContext GetDbContext()
-        {
-            var opts = (new DbContextOptionsBuilder<KanbanContext>())
-                            .UseSqlServer("connestring");
-
-            return new KanbanContext(opts.Options);
-        }
-
         [Fact]
         public void GetAllFiscalYears_Should_ReturnAllValues() 
         {
-            var dbContext = GetDbContext();
+            var dbContext = ArdaTestMgr.GetDbContext();
 
             FiscalYearRepository fiscalYear = new FiscalYearRepository(dbContext);
 
