@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "IntegrationTests.Arda.Kanban.Repositories": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,15 +1,41 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Arda.Kanban.Models;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace IntegrationTests
 {
     public class ArdaTestMgr
     {
+        public class TestFileNotFoundException : Exception
+        {
+            public TestFileNotFoundException(string message) : base(message)
+            {
+            }
+        }
+
+        public class FailedTestException : Exception
+        {
+            private string _expectedText;
+            private string _message;
+            private object _resultObject;
+            private string _resultText;
+
+            public FailedTestException(string message, object resultObject, string resultText, string expectedText) : base(message)
+            {
+                this._message = message;
+                this._resultObject = resultObject;
+                this._resultText = resultText;
+                this._expectedText = expectedText;
+            }
+        }
+
+        public static bool AllowCreateResultFile = false;
         private static IConfigurationRoot Configuration;
 
         static ArdaTestMgr()
@@ -39,6 +65,51 @@ namespace IntegrationTests
                             .UseSqlServer(connectionString);
 
             return new KanbanContext(opts.Options);
+        }
+
+        public static string SerializeObject(object obj)
+        {
+            if (obj == null)
+                return "(null)";
+
+            return JsonConvert.SerializeObject(obj);
+        }
+
+        public static string ReadFile(string filename)
+        {
+            using (var reader = File.OpenText(filename))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        public static void WriteFile(string filename, string text)
+        {
+            using (var writer = File.CreateText(filename))
+            {
+                writer.Write(text);
+            }
+        }
+
+        public static void CheckResult(object obj, [System.Runtime.CompilerServices.CallerMemberName] string member="")
+        {
+            string filename = $"files/{member}.json";
+
+            string result = SerializeObject(obj);
+
+            try
+            {
+                string expected = ReadFile(filename);
+
+                if (result != expected)
+                    throw new FailedTestException(member, obj, result, expected);
+            }
+            catch(FileNotFoundException) when (AllowCreateResultFile)
+            {
+                WriteFile(filename + ".result", result);
+
+                throw new TestFileNotFoundException(filename);
+            }
         }
     }
 }
