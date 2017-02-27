@@ -10,9 +10,9 @@ namespace IntegrationTests
 
             ArdaTestMgr.AllowCreateResultFile = true;
 
-            var test = new Technology();
+            var test = new Workload();
 
-            test.Technology_GetAllTechnologies_Should_ReturnAllValues();
+            test.Workload_EditWorkload_Should_NotFailWithEmptyMetrics();
         }
     }
 }
