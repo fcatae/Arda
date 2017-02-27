@@ -18,5 +18,34 @@ namespace IntegrationTests
 
             ArdaTestMgr.CheckResult(list);
         }
+
+        public void FiscalYear_AddNewFiscalYear_Should_AddRow()
+        {
+            FiscalYearRepository fiscalYear = new FiscalYearRepository(ArdaTestMgr.GetDbContext());
+
+            var before = fiscalYear.GetAllFiscalYears().ToArray();
+
+            // Add row
+            var row = before[0];
+
+            Guid fiscalYearGuid = Guid.Parse("{aaaa0000-622a-4656-85df-39edc26be080}");
+
+            row.FiscalYearID = fiscalYearGuid;
+            row.FullNumericFiscalYearMain = 2021;
+            row.TextualFiscalYearMain = "TEST-2021";
+
+            fiscalYear.AddNewFiscalYear(row);
+
+            var after = fiscalYear.GetAllFiscalYears().ToArray();
+
+            Assert.Equal(before.Length, after.Length - 1);
+
+            var newrow = (from r in after
+                         where r.FiscalYearID == fiscalYearGuid
+                         select r).ToArray()[0];
+
+            ArdaTestMgr.CheckResult(row);
+        }
+
     }
 }
