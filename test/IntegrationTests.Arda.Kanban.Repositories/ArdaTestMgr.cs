@@ -83,25 +83,16 @@ namespace IntegrationTests
         {
             using (var context = ArdaTestMgr.GetTransactionContext())
             {
-                //FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
-                //var lista = fiscalYear.GetAllFiscalYears().ToArray();
                 var before = testClass.GetSnapshot(context).ToArray();
                 string beforeText = SerializeObject(before);
-
-                //var fiscalYearId = lista.Min(r => r.FiscalYearID);
-                //var row = fiscalYear.GetFiscalYearByID(fiscalYearId);
 
                 var returnObject = testFunction(before, context);
 
                 string returnObjectText = SerializeObject(returnObject);
 
-                //var after = testClass.GetSnapshot(context);
-                //string afterText = SerializeObject(after);
-
                 string result = $"BEFORE:\n=======\n{beforeText}\n\nCOMMAND: {testName}\n\nAFTER:\n======\n{returnObjectText}";
 
                 CompareResults(result, member);
-                //ArdaTestMgr.CheckResult(row);
             }
         }
 
@@ -128,31 +119,6 @@ namespace IntegrationTests
                 throw;
             }
         }
-
-        public static void CheckResult(object obj, [System.Runtime.CompilerServices.CallerMemberName] string member="")
-        {
-            string filename = $"files/{member}.json";
-
-            string result = SerializeObject(obj);
-
-            try
-            {
-                string expected = ReadFile(filename);
-
-                if (result != expected)
-                {
-                    throw new FailedTestException(member, obj, result, expected);
-                }
-            }
-            catch(IntegrationTestException)
-            {
-                if (AllowCreateResultFile)
-                {
-                    WriteFile(filename + ".result", result);
-                }
-
-                throw;
-            }
-        }
+        
     }
 }
