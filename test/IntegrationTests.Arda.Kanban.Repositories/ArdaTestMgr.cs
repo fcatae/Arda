@@ -50,9 +50,20 @@ namespace IntegrationTests
 
         public static string ReadFile(string filename)
         {
-            using (var reader = File.OpenText(filename))
+            StreamReader reader = null;
+
+            try
             {
+                reader = File.OpenText(filename);
                 return reader.ReadToEnd();
+            }
+            catch(FileNotFoundException)
+            {
+                throw new TestFileNotFoundException(filename);
+            }
+            finally
+            {
+                reader.Dispose();
             }
         }
 
@@ -75,13 +86,18 @@ namespace IntegrationTests
                 string expected = ReadFile(filename);
 
                 if (result != expected)
+                {
                     throw new FailedTestException(member, obj, result, expected);
+                }
             }
-            catch(FileNotFoundException) when (AllowCreateResultFile)
+            catch(IntegrationTestException)
             {
-                WriteFile(filename + ".result", result);
+                if (AllowCreateResultFile)
+                {
+                    WriteFile(filename + ".result", result);
+                }
 
-                throw new TestFileNotFoundException(filename);
+                throw;
             }
         }
     }

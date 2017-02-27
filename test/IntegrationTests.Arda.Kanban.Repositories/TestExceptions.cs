@@ -5,14 +5,21 @@ using System.Threading.Tasks;
 
 namespace IntegrationTests
 {
-    public class TestFileNotFoundException : Exception
+    public class IntegrationTestException : Exception
+    {
+        public IntegrationTestException(string message) : base(message)
+        {
+        }
+    }
+
+    public class TestFileNotFoundException : IntegrationTestException
     {
         public TestFileNotFoundException(string message) : base(message)
         {
         }
     }
 
-    public class FailedTestException : Exception
+    public class FailedTestException : IntegrationTestException
     {
         private string _expectedText;
         private string _message;

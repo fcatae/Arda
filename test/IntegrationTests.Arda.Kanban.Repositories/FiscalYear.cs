@@ -22,6 +22,20 @@ namespace IntegrationTests
             }
         }
 
+        [Fact]
+        public void FiscalYear_GetFiscalYearByID_Should_ReturnExactlyOne()
+        {
+            using (var context = ArdaTestMgr.GetTransactionContext())
+            {
+                FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+
+                var list = fiscalYear.GetAllFiscalYears();
+
+                ArdaTestMgr.CheckResult(list);
+            }
+        }
+
+        [Fact]
         public void FiscalYear_AddNewFiscalYear_Should_AddRow()
         {
             using (var context = ArdaTestMgr.GetTransactionContext())
