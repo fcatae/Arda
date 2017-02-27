@@ -33,7 +33,7 @@ namespace IntegrationTests
             return Configuration["Storage:SqlServer-Kanban:ConnectionString"];
         }
 
-        public static KanbanContext GetTransactionContext()
+        public static TransactionalKanbanContext GetTransactionContext()
         {
             string connectionString = GetConnectionString();
 
@@ -45,7 +45,7 @@ namespace IntegrationTests
             if (obj == null)
                 return "(null)";
 
-            return JsonConvert.SerializeObject(obj);
+            return JsonConvert.SerializeObject(obj, Formatting.Indented);
         }
 
         public static string ReadFile(string filename)
@@ -73,6 +73,59 @@ namespace IntegrationTests
             using (var writer = File.CreateText(filename))
             {
                 writer.Write(text);
+            }
+        }
+
+        public static void Validate<R>(ISupportSnapshot<R> testClass, 
+                                            string testName, 
+                                            Func<R[],KanbanContext,object> testFunction, 
+                                            [System.Runtime.CompilerServices.CallerMemberName] string member = "")
+        {
+            using (var context = ArdaTestMgr.GetTransactionContext())
+            {
+                //FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+                //var lista = fiscalYear.GetAllFiscalYears().ToArray();
+                var before = testClass.GetSnapshot(context).ToArray();
+                string beforeText = SerializeObject(before);
+
+                //var fiscalYearId = lista.Min(r => r.FiscalYearID);
+                //var row = fiscalYear.GetFiscalYearByID(fiscalYearId);
+
+                var returnObject = testFunction(before, context);
+
+                string returnObjectText = SerializeObject(returnObject);
+
+                //var after = testClass.GetSnapshot(context);
+                //string afterText = SerializeObject(after);
+
+                string result = $"BEFORE:\n=======\n{beforeText}\n\nCOMMAND: {testName}\n\nAFTER:\n======\n{returnObjectText}";
+
+                CompareResults(result, member);
+                //ArdaTestMgr.CheckResult(row);
+            }
+        }
+
+        public static void CompareResults(string result, string member)
+        {
+            string filename = $"files/{member}.json";
+
+            try
+            {
+                string expected = ReadFile(filename);
+
+                if (result != expected)
+                {
+                    throw new FailedTestException(member, null, result, expected);
+                }
+            }
+            catch (IntegrationTestException)
+            {
+                if (AllowCreateResultFile)
+                {
+                    WriteFile(filename + ".result", result);
+                }
+
+                throw;
             }
         }
 

@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Linq;
 using Xunit;
+using System.Collections.Generic;
 using Arda.Kanban.Models;
 using Arda.Kanban.Repositories;
-using System.Collections.Generic;
+using Arda.Common.ViewModels.Main;
 
 namespace IntegrationTests
 {
-    public class FiscalYear
+    public class FiscalYear : ISupportSnapshot<FiscalYearViewModel>
     {
+        public IEnumerable<FiscalYearViewModel> GetSnapshot(TransactionalKanbanContext context)
+        {
+            FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+
+            return fiscalYear.GetAllFiscalYears().ToArray();
+        }
+
         [Fact]
         public void FiscalYear_GetAllFiscalYears_Should_ReturnAllValues() 
         {
@@ -25,17 +33,20 @@ namespace IntegrationTests
         [Fact]
         public void FiscalYear_GetFiscalYearByID_Should_ReturnExactlyOne()
         {
-            using (var context = ArdaTestMgr.GetTransactionContext())
-            {
-                FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+            int YEAR = 2018;
 
-                var list = fiscalYear.GetAllFiscalYears().ToArray();
-                var fiscalYearId = list.Min(r => r.FiscalYearID);
+            ArdaTestMgr.Validate(this, $"FiscalYear.GetFiscalYearByID({YEAR})",
+                (list, ctx) => {
+                    FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
 
-                var row = fiscalYear.GetFiscalYearByID(fiscalYearId);
+                    var fiscalYearId = (from r in list
+                                        where r.FullNumericFiscalYearMain == YEAR
+                                        select r.FiscalYearID).First();
 
-                ArdaTestMgr.CheckResult(row);
-            }
+                    var row = fiscalYear.GetFiscalYearByID(fiscalYearId);
+
+                    return row;
+                });
         }
 
         [Fact]
