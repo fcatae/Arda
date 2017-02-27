@@ -35,7 +35,6 @@ namespace IntegrationTests
             string USER_UNIQUENAME = "newuser@domain.com";
             string USER_NAME = "New User 1";
 
-
             ArdaTestMgr.Validate(this, $"User.AddNewUser({USER_UNIQUENAME},{USER_NAME})",
                 (list, ctx) => {
                     UserRepository user = new UserRepository(ctx);
@@ -52,20 +51,21 @@ namespace IntegrationTests
                 });
         }
 
-        //[Fact]
-        //public void User_AddNewFiscalYear_Should_AddRow()
-        //{
-        //    string GUID = "{aaaa0000-622a-4656-85df-39edc26be080}";
+        [Fact]
+        public void User_AddNewFiscalYear_Should_AddRow()
+        {
+            string USER_UNIQUENAME = "guest@ardademo.onmicrosoft.com";
 
-        //    ArdaTestMgr.Validate(this, $"User.Bla({GUID})",
-        //        (list, ctx) => {
-        //            UserRepository user = new UserRepository(ctx);
+            ArdaTestMgr.Validate(this, $"user.DeleteUserByID({USER_UNIQUENAME})",
+                (list, ctx) =>
+                {
+                    UserRepository user = new UserRepository(ctx);
 
-        //            user.AddNewUser(row);
+                    user.DeleteUserByID(USER_UNIQUENAME);
 
-        //            return user.GetAllUsers();
-        //        });
-        //}
+                    return user.GetAllUsers();
+                });
+        }
 
     }
 }
