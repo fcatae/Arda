@@ -36,21 +36,18 @@ BEFORE:
   }
 ]
 
-COMMAND: Appointment.GetAllAppointment()
+COMMAND: AppointmentRepository.GetAppointmentByID(068397FA-A41E-443F-823D-E2A6585BD322)
 
 AFTER:
 ======
-[
-  {
-    "_AppointmentDate": "2016-01-22T00:00:00",
-    "_WorkloadTitle": "Attend Event"
-  },
-  {
-    "_AppointmentDate": "2016-01-21T00:00:00",
-    "_WorkloadTitle": "Attend Event"
-  },
-  {
-    "_AppointmentDate": "2016-01-20T00:00:00",
-    "_WorkloadTitle": "Attend Event"
-  }
-]
+{
+  "_AppointmentID": "068397fa-a41e-443f-823d-e2a6585bd322",
+  "_AppointmentComment": "Manage",
+  "_AppointmentDate": "2016-01-22T00:00:00",
+  "_AppointmentHoursDispensed": 24,
+  "_AppointmentTE": 0.00,
+  "_AppointmentUserUniqueName": "admin@ardademo.onmicrosoft.com",
+  "_AppointmentWorkloadWBID": "c1507019-1d97-4629-8015-c01bf02ce6ab",
+  "_AppointmentUserName": null,
+  "_WorkloadTitle": "Attend Event"
+}
