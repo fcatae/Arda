@@ -69,8 +69,9 @@ namespace IntegrationTests
             string METRIC_NAME = "My Metric Name";
             string METRIC_DESCRIPTION = "My very long description of the metric blah blah blah...";
             string METRIC_FISCALYEAR_GUID = "c6a45416-81a2-4034-adac-c7eab5225ece"; // 2018
+            int YEAR = 2018;
 
-            ArdaTestMgr.Validate(this, $"Metric.AddNewMetric({GUID},{METRIC_CATEGORY},{METRIC_NAME},LongDescription, (Year:2018) {METRIC_FISCALYEAR_GUID})",
+            ArdaTestMgr.Validate(this, $"Metric.AddNewMetric({GUID},{METRIC_CATEGORY},{METRIC_NAME},LongDescription, (Year:{YEAR}) {METRIC_FISCALYEAR_GUID})",
                 (list, ctx) =>
                 {
                     MetricRepository metric = new MetricRepository(ctx);
@@ -94,33 +95,44 @@ namespace IntegrationTests
                 });
         }
 
+        [Fact]
+        public void Metric_EditMetricByID_Should_ChangeRow()
+        {
+            string METRIC_GUID = "{819193e6-ea01-4c4e-a948-fc44453b2604}"; // Education : Azure Training
+            string METRIC_CATEGORY = "Updated Metric Category";
+            string METRIC_NAME = "Updated Metric Name";
+            string METRIC_DESCRIPTION = "Updated description blah blah blah...";
+            string METRIC_FISCALYEAR_GUID = "c6a45416-81a2-4034-adac-c7eab5225ece"; // 2018
+            int YEAR = 2018;
+
+            ArdaTestMgr.Validate(this, $"Metric.EditMetricByID({METRIC_GUID},{METRIC_CATEGORY},{METRIC_NAME},LongDescription, (Year:{YEAR}) {METRIC_FISCALYEAR_GUID})",
+                (list, ctx) =>
+                {
+                    MetricRepository metric = new MetricRepository(ctx);
+
+                    var row = new MetricViewModel()
+                    {
+                        MetricID = Guid.Parse(METRIC_GUID),
+                        MetricCategory = METRIC_CATEGORY,
+                        MetricName = METRIC_NAME,
+                        Description = METRIC_DESCRIPTION,
+                        FiscalYearID = Guid.Parse(METRIC_FISCALYEAR_GUID),
+
+                        // Ignored data
+                        FullNumericFiscalYear = 0,
+                        TextualFiscalYear = "IGNORED"
+                    };
+
+                    metric.EditMetricByID(row);
+                    
+                    return metric.GetAllMetrics();
+                });
+
+        }
         // TODO:
-        //EditMetricByID
+        //
         //DeleteMetricByID
 
-
-        //[Fact]
-        //public void FiscalYear_EditFiscalYearByID_Should_ChangeRow()
-        //{
-        //    string GUID = "{e0fd2d01-020e-475f-9c28-a90f5d857877}";
-        //    int YEAR = 2021;
-        //    string YEARTXT = "TEST-2021";
-
-        //    ArdaTestMgr.Validate(this, $"FiscalYear.EditFiscalYearByID({GUID},{YEAR},{YEARTXT})",
-        //        (list, ctx) => {
-        //            FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
-
-        //            var row = list[0];
-
-        //            row.FullNumericFiscalYearMain = YEAR;
-        //            row.TextualFiscalYearMain = YEARTXT;
-
-        //            fiscalYear.EditFiscalYearByID(row);
-
-        //            return fiscalYear.GetAllFiscalYears();
-        //        });
-
-        //}
 
 
 
