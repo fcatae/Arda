@@ -19,3 +19,7 @@ INSERT [dbo].[Technologies] ([TechnologyID], [TechnologyName]) VALUES (N'B2B1BCE
 INSERT [dbo].[Technologies] ([TechnologyID], [TechnologyName]) VALUES (N'9C263D44-2C11-48CD-B876-5EBB540BBF51', N'Infra')
 INSERT [dbo].[Technologies] ([TechnologyID], [TechnologyName]) VALUES (N'CEC4B7BB-4F14-4118-AE31-29BC39AE93D8', N'IoT')
 INSERT [dbo].[Technologies] ([TechnologyID], [TechnologyName]) VALUES (N'AF5D8796-0CA2-4D54-84F7-D3194F5F2426', N'Web & Mobile')
+
+INSERT [Users](UniqueName, Name) VALUES ('user@ardademo.onmicrosoft.com', 'User1')
+INSERT [Users](UniqueName, Name) VALUES ('admin@ardademo.onmicrosoft.com', 'Admin')
+INSERT [Users](UniqueName, Name) VALUES ('guest@ardademo.onmicrosoft.com', 'Guest User')
