@@ -29,10 +29,25 @@ namespace IntegrationTests
                     return rows;
                 });
         }
+        
+        [Fact]
+        public void Metric_GetAllMetrics_Should_ReturnFilteredData()
+        {
+            int YEAR = 2017;
 
+            ArdaTestMgr.Validate(this, $"Metric.GetAllMetrics({YEAR})",
+                (list, ctx) =>
+                {
+                    MetricRepository metric = new MetricRepository(ctx);
+
+                    var row = metric.GetAllMetrics(YEAR);
+
+                    return row;
+                });
+        }
+        
         // TODO:
         //AddNewMetric
-        //GetAllMetrics
         //GetAllMetrics(int year)
         //GetMetricByID
         //EditMetricByID
