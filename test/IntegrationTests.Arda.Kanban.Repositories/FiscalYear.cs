@@ -20,14 +20,13 @@ namespace IntegrationTests
         [Fact]
         public void FiscalYear_GetAllFiscalYears_Should_ReturnAllValues() 
         {
-            using (var context = ArdaTestMgr.GetTransactionContext())
-            {
-                FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+            ArdaTestMgr.Validate(this, $"FiscalYear.GetAllFiscalYears()",
+                (list, ctx) => {
+                    var rows = from r in list
+                               select r.FullNumericFiscalYearMain;
 
-                var list = fiscalYear.GetAllFiscalYears();
-
-                ArdaTestMgr.CheckResult(list);
-            }
+                    return rows;
+                });
         }
 
         [Fact]
