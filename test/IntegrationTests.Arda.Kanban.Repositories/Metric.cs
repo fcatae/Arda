@@ -33,7 +33,6 @@ namespace IntegrationTests
         [Fact]
         public void Metric_GetAllMetrics_Should_ReturnFilteredData()
         {
-            string METRIC_FISCALYEAR_GUID = "d38759ab-e310-46f0-a6c3-b0594c2531ab"; // 2017
             int YEAR = 2017;
 
             ArdaTestMgr.Validate(this, $"Metric.GetAllMetrics({YEAR})",
