@@ -141,7 +141,7 @@ namespace IntegrationTests
 
                     var row = appointment.DeleteAppointmentByID(Guid.Parse(GUID));
 
-                    return row;
+                    return appointment.GetAllAppointments();
                 });
         }
 
