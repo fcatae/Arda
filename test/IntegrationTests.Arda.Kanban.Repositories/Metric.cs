@@ -129,30 +129,21 @@ namespace IntegrationTests
                 });
 
         }
-        // TODO:
-        //
-        //DeleteMetricByID
 
+        [Fact]
+        public void Metric_DeleteMetricByID_Should_ReturnRemoveExactlyOne()
+        {
+            string METRIC_GUID = "{819193e6-ea01-4c4e-a948-fc44453b2604}"; // Education : Azure Training
 
+            ArdaTestMgr.Validate(this, $"Metric.DeleteMetricByID({METRIC_GUID})",
+                (list, ctx) =>
+                {
+                    MetricRepository metric = new MetricRepository(ctx);
+                    
+                    metric.DeleteMetricByID(Guid.Parse(METRIC_GUID));
 
-
-        //[Fact]
-        //public void FiscalYear_DeleteFiscalYearByID_Should_ReturnRemoveExactlyOne()
-        //{
-        //    int YEAR = 2018;
-
-        //    ArdaTestMgr.Validate(this, $"FiscalYear.DeleteFiscalYearByID({YEAR})",
-        //        (list, ctx) => {
-        //            FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
-
-        //            var fiscalYearId = (from row in list
-        //                                where row.FullNumericFiscalYearMain == YEAR
-        //                                select row.FiscalYearID).First();
-
-        //            fiscalYear.DeleteFiscalYearByID(fiscalYearId);
-
-        //            return fiscalYear.GetAllFiscalYears();
-        //        });
-        //}
+                    return metric.GetAllMetrics();
+                });
+        }
     }
 }
