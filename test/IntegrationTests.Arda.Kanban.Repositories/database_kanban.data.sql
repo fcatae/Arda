@@ -32,11 +32,16 @@ INSERT [WorkloadBacklogs] (WBID, WBTitle, WBDescription, WBCreatedBy, WBActivity
 DECLARE @WBID UNIQUEIDENTIFIER = 'C1507019-1D97-4629-8015-C01BF02CE6AB'
 
 INSERT [WorkloadBacklogMetrics] (WBMetricID, MetricMetricID, WorkloadBacklogWBID) VALUES ('BB11B40A-6231-44D2-8F49-B6FE3460ADBA', '20297652-9BE6-4560-AA36-586F99893FEF', @WBID)
-INSERT [WorkloadBacklogMetrics] (WBMetricID, MetricMetricID, WorkloadBacklogWBID) VALUES ('95F2ABE8-439C-45F9-ABCA-0010F8C3A83C', '45979112-AFF6-4BFA-878B-02BAA8FD1074', @WBID)
 
 INSERT [WorkloadBacklogTechnologies] (WBUTechnologyID, TechnologyTechnologyID, WorkloadBacklogWBID) VALUES ('200FBE3B-6361-4287-994B-AB34AFF1C0CE', 'B2B1BCE9-DF05-4FBF-ABB7-89617D396B4C', @WBID)
 INSERT [WorkloadBacklogTechnologies] (WBUTechnologyID, TechnologyTechnologyID, WorkloadBacklogWBID) VALUES ('50F71F81-DBB7-413E-BEA2-F69CB8E162DF', 'CEC4B7BB-4F14-4118-AE31-29BC39AE93D8', @WBID)
 
 INSERT [WorkloadBacklogUsers] (WBUserID, UserUniqueName, WorkloadBacklogWBID) VALUES ('7764CDDE-F51D-41AC-B1B1-11B2A1D485BA', 'user@ardademo.onmicrosoft.com', @WBID)
 INSERT [WorkloadBacklogUsers] (WBUserID, UserUniqueName, WorkloadBacklogWBID) VALUES ('169E3201-282B-4740-A372-1CE228C68348', 'admin@ardademo.onmicrosoft.com', @WBID)
-INSERT [WorkloadBacklogUsers] (WBUserID, UserUniqueName, WorkloadBacklogWBID) VALUES ('BC7D605B-21FB-4182-91DB-D968C71D8E6A', 'guest@ardademo.onmicrosoft.com', @WBID)
+
+-- DECLARE @WBID UNIQUEIDENTIFIER = 'C1507019-1D97-4629-8015-C01BF02CE6AB'
+
+INSERT [Appointments] (AppointmentID, AppointmentComment, AppointmentDate, AppointmentHoursDispensed, AppointmentTE, AppointmentUserUniqueName, AppointmentWorkloadWBID) VALUES
+('895D50C0-A152-4D82-B9F9-E8300335F1A5', 'Track time', '2016-01-20', 16, 0, 'user@ardademo.onmicrosoft.com', @WBID),
+('D0D34F1B-9B6A-4C8A-A5FE-F56256917FC8', 'Study', '2016-01-21', 8, 0, 'user@ardademo.onmicrosoft.com', @WBID),
+('068397FA-A41E-443F-823D-E2A6585BD322', 'Manage', '2016-01-22', 24, 0, 'admin@ardademo.onmicrosoft.com', @WBID)
