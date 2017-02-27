@@ -12,29 +12,6 @@ namespace IntegrationTests
 {
     public class ArdaTestMgr
     {
-        public class TestFileNotFoundException : Exception
-        {
-            public TestFileNotFoundException(string message) : base(message)
-            {
-            }
-        }
-
-        public class FailedTestException : Exception
-        {
-            private string _expectedText;
-            private string _message;
-            private object _resultObject;
-            private string _resultText;
-
-            public FailedTestException(string message, object resultObject, string resultText, string expectedText) : base(message)
-            {
-                this._message = message;
-                this._resultObject = resultObject;
-                this._resultText = resultText;
-                this._expectedText = expectedText;
-            }
-        }
-
         public static bool AllowCreateResultFile = false;
         private static IConfigurationRoot Configuration;
 
@@ -45,8 +22,7 @@ namespace IntegrationTests
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", true)
                 .AddJsonFile("local-secret.json", true)
-                .AddJsonFile("microservices.json", true)
-                .AddUserSecrets("arda-20160816073715")
+                .AddUserSecrets("IntegrationTests.Arda.Kanban.Repositories-20170226092351")
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
@@ -57,14 +33,11 @@ namespace IntegrationTests
             return Configuration["Storage:SqlServer-Kanban:ConnectionString"];
         }
 
-        public static KanbanContext GetDbContext()
+        public static KanbanContext GetTransactionContext()
         {
             string connectionString = GetConnectionString();
 
-            var opts = (new DbContextOptionsBuilder<KanbanContext>())
-                            .UseSqlServer(connectionString);
-
-            return new KanbanContext(opts.Options);
+            return TransactionalKanbanContext.Create(connectionString);
         }
 
         public static string SerializeObject(object obj)
