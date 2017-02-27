@@ -52,34 +52,26 @@ namespace IntegrationTests
         [Fact]
         public void FiscalYear_AddNewFiscalYear_Should_AddRow()
         {
-            using (var context = ArdaTestMgr.GetTransactionContext())
-            {
-                FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+            string GUID = "{aaaa0000-622a-4656-85df-39edc26be080}";
+            int YEAR = 2021;
+            string YEARTXT = "TEST-2021";
 
-                var before = fiscalYear.GetAllFiscalYears().ToArray();
+            ArdaTestMgr.Validate(this, $"FiscalYear.AddNewFiscalYear({GUID},{YEAR},{YEARTXT})",
+                (list, ctx) => {
+                    FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
 
-                // Add row
-                var row = before[0];
+                    var row = list[0];
 
-                Guid fiscalYearGuid = Guid.Parse("{aaaa0000-622a-4656-85df-39edc26be080}");
+                    Guid fiscalYearGuid = Guid.Parse(GUID);
 
-                row.FiscalYearID = fiscalYearGuid;
-                row.FullNumericFiscalYearMain = 2021;
-                row.TextualFiscalYearMain = "TEST-2021";
+                    row.FiscalYearID = fiscalYearGuid;
+                    row.FullNumericFiscalYearMain = YEAR;
+                    row.TextualFiscalYearMain = YEARTXT;
 
-                fiscalYear.AddNewFiscalYear(row);
+                    fiscalYear.AddNewFiscalYear(row);
 
-                var after = fiscalYear.GetAllFiscalYears().ToArray();
-
-                Assert.Equal(before.Length, after.Length - 1);
-
-                var newrow = (from r in after
-                              where r.FiscalYearID == fiscalYearGuid
-                              select r).ToArray()[0];
-
-                ArdaTestMgr.CheckResult(row);
-            }
-
+                    return fiscalYear.GetAllFiscalYears();
+                });
         }
 
         [Fact]
