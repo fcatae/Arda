@@ -10,9 +10,9 @@ namespace IntegrationTests
 
             ArdaTestMgr.AllowCreateResultFile = true;
 
-            var test = new Actitivy();
+            var test = new Technology();
 
-            test.Actitivy_GetAllActivities_Should_ReturnAllValues();
+            test.Technology_GetAllTechnologies_Should_ReturnAllValues();
         }
     }
 }

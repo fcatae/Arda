@@ -1,0 +1,31 @@
+BEFORE:
+=======
+[
+  {
+    "TechnologyID": "b2b1bce9-df05-4fbf-abb7-89617d396b4c",
+    "TechnologyName": "Analytics"
+  },
+  {
+    "TechnologyID": "9c263d44-2c11-48cd-b876-5ebb540bbf51",
+    "TechnologyName": "Infra"
+  },
+  {
+    "TechnologyID": "cec4b7bb-4f14-4118-ae31-29bc39ae93d8",
+    "TechnologyName": "IoT"
+  },
+  {
+    "TechnologyID": "af5d8796-0ca2-4d54-84f7-d3194f5f2426",
+    "TechnologyName": "Web & Mobile"
+  }
+]
+
+COMMAND: Technology.GetAllTechnologies()
+
+AFTER:
+======
+[
+  "Analytics",
+  "Infra",
+  "IoT",
+  "Web & Mobile"
+]
