@@ -9,8 +9,4 @@ namespace IntegrationTests
     {
         IEnumerable<R> GetSnapshot(TransactionalKanbanContext context);
     }
-
-    public class TableSnapshot
-    {
-    }
 }
