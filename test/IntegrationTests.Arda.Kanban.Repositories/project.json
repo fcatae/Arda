@@ -25,5 +25,6 @@
         "portable-net451+win8"
       ]
     }
-  }
+  },
+  "userSecretsId": "IntegrationTests.Arda.Kanban.Repositories-20170226092351"
 }
