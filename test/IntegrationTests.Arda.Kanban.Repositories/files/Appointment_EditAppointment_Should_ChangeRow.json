@@ -1,0 +1,53 @@
+BEFORE:
+=======
+[
+  {
+    "_AppointmentID": "068397fa-a41e-443f-823d-e2a6585bd322",
+    "_AppointmentComment": null,
+    "_AppointmentDate": "2016-01-22T00:00:00",
+    "_AppointmentHoursDispensed": 24,
+    "_AppointmentTE": 0.0,
+    "_AppointmentUserUniqueName": "admin@ardademo.onmicrosoft.com",
+    "_AppointmentWorkloadWBID": "c1507019-1d97-4629-8015-c01bf02ce6ab",
+    "_AppointmentUserName": null,
+    "_WorkloadTitle": "Attend Event"
+  },
+  {
+    "_AppointmentID": "d0d34f1b-9b6a-4c8a-a5fe-f56256917fc8",
+    "_AppointmentComment": null,
+    "_AppointmentDate": "2016-01-21T00:00:00",
+    "_AppointmentHoursDispensed": 8,
+    "_AppointmentTE": 0.0,
+    "_AppointmentUserUniqueName": "user@ardademo.onmicrosoft.com",
+    "_AppointmentWorkloadWBID": "c1507019-1d97-4629-8015-c01bf02ce6ab",
+    "_AppointmentUserName": null,
+    "_WorkloadTitle": "Attend Event"
+  },
+  {
+    "_AppointmentID": "895d50c0-a152-4d82-b9f9-e8300335f1a5",
+    "_AppointmentComment": null,
+    "_AppointmentDate": "2016-01-20T00:00:00",
+    "_AppointmentHoursDispensed": 16,
+    "_AppointmentTE": 0.0,
+    "_AppointmentUserUniqueName": "user@ardademo.onmicrosoft.com",
+    "_AppointmentWorkloadWBID": "c1507019-1d97-4629-8015-c01bf02ce6ab",
+    "_AppointmentUserName": null,
+    "_WorkloadTitle": "Attend Event"
+  }
+]
+
+COMMAND: AppointmentRepository.EditAppointment(068397FA-A41E-443F-823D-E2A6585BD322)
+
+AFTER:
+======
+{
+  "_AppointmentID": "068397fa-a41e-443f-823d-e2a6585bd322",
+  "_AppointmentComment": "Updated appointment",
+  "_AppointmentDate": "2111-11-11T00:00:00",
+  "_AppointmentHoursDispensed": 100,
+  "_AppointmentTE": 123.45,
+  "_AppointmentUserUniqueName": "admin@ardademo.onmicrosoft.com",
+  "_AppointmentWorkloadWBID": "c1507019-1d97-4629-8015-c01bf02ce6ab",
+  "_AppointmentUserName": null,
+  "_WorkloadTitle": "Attend Event"
+}
