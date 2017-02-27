@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Arda.Common.Interfaces.Permissions;
-using Arda.Common.ViewModels.Main;
+using Arda.Permissions.Models.Repositories;
+using Arda.Permissions.ViewModels;
 
 namespace Arda.Permissions.Controllers
 {

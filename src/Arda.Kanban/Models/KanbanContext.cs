@@ -1,5 +1,4 @@
-﻿using Arda.Common.Models.Kanban;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Arda.Kanban.Models
 {

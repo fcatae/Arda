@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Arda.Common.Utils;
 using System.Net.Http;
-using Arda.Common.ViewModels.Main;
 using System.Net;
 using Arda.Common.JSON;
 using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
+using Arda.Main.ViewModels;
 
 namespace Arda.Main.Controllers
 {

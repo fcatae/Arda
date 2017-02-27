@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Arda.Common.Utils;
 using System.Net.Http;
-using Arda.Common.ViewModels.Main;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
@@ -14,6 +13,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.IO;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+using Arda.Main.ViewModels;
 
 namespace Arda.Main.Controllers
 {
