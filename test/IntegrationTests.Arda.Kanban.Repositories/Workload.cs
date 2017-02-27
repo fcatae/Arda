@@ -29,93 +29,109 @@ namespace IntegrationTests
                 });
         }
 
-        //[Fact]
-        //public void FiscalYear_GetFiscalYearByID_Should_ReturnExactlyOne()
-        //{
-        //    int YEAR = 2018;
+        [Fact]
+        public void Workload_AddNewWorkload_Should_AddRow()
+        {
+            ArdaTestMgr.Validate(this, $"Workload.AddNewWorkload()",
+                (list, ctx) => {
+                    WorkloadRepository workload = new WorkloadRepository(ctx);
 
-        //    ArdaTestMgr.Validate(this, $"FiscalYear.GetFiscalYearByID({YEAR})",
-        //        (list, ctx) => {
-        //            FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
+                    var rows = from r in list
+                               select r.WBTitle;
 
-        //            var fiscalYearId = (from r in list
-        //                                where r.FullNumericFiscalYearMain == YEAR
-        //                                select r.FiscalYearID).First();
+                    var row = new WorkloadViewModel()
+                    {
+                        // TODO: fill
+                    };
 
-        //            var row = fiscalYear.GetFiscalYearByID(fiscalYearId);
+                    workload.AddNewWorkload(row);
 
-        //            return row;
-        //        });
-        //}
+                    return rows;
+                });
+        }
+        
+        [Fact]
+        public void Workload_DeleteWorkloadByID_Should_ReturnRemoveExactlyOne()
+        {
+            string GUID = "{...}";
 
-        //[Fact]
-        //public void FiscalYear_AddNewFiscalYear_Should_AddRow()
-        //{
-        //    string GUID = "{aaaa0000-622a-4656-85df-39edc26be080}";
-        //    int YEAR = 2021;
-        //    string YEARTXT = "TEST-2021";
+            ArdaTestMgr.Validate(this, $"Workload.DeleteWorkloadByID({GUID})",
+                (list, ctx) => {
+                    WorkloadRepository workload = new WorkloadRepository(ctx);
+                    
+                    workload.DeleteWorkloadByID(Guid.Parse(GUID));
 
-        //    ArdaTestMgr.Validate(this, $"FiscalYear.AddNewFiscalYear({GUID},{YEAR},{YEARTXT})",
-        //        (list, ctx) => {
-        //            FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
+                    return workload.GetAllWorkloads();
+                });
+        }
 
-        //            var row = list[0];
+        [Fact]
+        public void Workload_GetWorkloadByID_Should_ReturnExactlyOne()
+        {
+            string GUID = "{...}";
 
-        //            Guid fiscalYearGuid = Guid.Parse(GUID);
+            ArdaTestMgr.Validate(this, $"Workload.GetWorkloadByID({GUID})",
+                (list, ctx) => {
+                    WorkloadRepository workload = new WorkloadRepository(ctx);
 
-        //            row.FiscalYearID = fiscalYearGuid;
-        //            row.FullNumericFiscalYearMain = YEAR;
-        //            row.TextualFiscalYearMain = YEARTXT;
+                    var row = workload.GetWorkloadByID(Guid.Parse(GUID));
 
-        //            fiscalYear.AddNewFiscalYear(row);
+                    return row;
+                });
+        }
 
-        //            return fiscalYear.GetAllFiscalYears();
-        //        });
-        //}
+        [Fact]
+        public void Workload_GetWorkloadsByUser_Should_ReturnUserData()
+        {
+            string USER_UNIQUENAME = "admin@ardademo.onmicrosoft.com";
 
-        //[Fact]
-        //public void FiscalYear_EditFiscalYearByID_Should_ChangeRow()
-        //{
-        //    string GUID = "{d38759ab-e310-46f0-a6c3-b0594c2531ab}";
-        //    int YEAR = 2021;
-        //    string YEARTXT = "TEST-2021";
+            ArdaTestMgr.Validate(this, $"Workload.GetWorkloadsByUser({USER_UNIQUENAME})",
+                (list, ctx) => {
+                    WorkloadRepository workload = new WorkloadRepository(ctx);
 
-        //    ArdaTestMgr.Validate(this, $"FiscalYear.EditFiscalYearByID({GUID},{YEAR},{YEARTXT})",
-        //        (list, ctx) => {
-        //            FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
+                    var rows = workload.GetWorkloadsByUser(USER_UNIQUENAME);
 
-        //            var row = list[0];
+                    return rows;
+                });
+        }
 
-        //            row.FiscalYearID = Guid.Parse(GUID);
-        //            row.FullNumericFiscalYearMain = YEAR;
-        //            row.TextualFiscalYearMain = YEARTXT;
+        [Fact]
+        public void Workload_EditWorkload_Should_ChangeRow()
+        {
+            string GUID = "{...}";
 
-        //            fiscalYear.EditFiscalYearByID(row);
+            ArdaTestMgr.Validate(this, $"Workload.EditWorkload({GUID})",
+                (list, ctx) => {
+                    WorkloadRepository workload = new WorkloadRepository(ctx);
 
-        //            return fiscalYear.GetAllFiscalYears();
-        //        });            
+                    var row = (from r in list
+                               where r.WBID == Guid.Parse(GUID)
+                               select r).First();
 
-        //}
+                    // edit
+
+                    workload.EditWorkload(row);
+
+                    return workload.GetAllWorkloads();
+                });
+        }        
+
+        [Fact]
+        public void Workload_UpdateWorkloadStatus_Should_UpdateOneStatus()
+        {
+            string GUID = "{...}";
+            int STATUS = 4;
+
+            ArdaTestMgr.Validate(this, $"Workload.UpdateWorkloadStatus({GUID},{STATUS})",
+                (list, ctx) => {
+                    WorkloadRepository workload = new WorkloadRepository(ctx);
+
+                    var row = workload.UpdateWorkloadStatus(Guid.Parse(GUID), STATUS);
+
+                    return row;
+                });
+        }
 
 
-
-        //[Fact]
-        //public void FiscalYear_DeleteFiscalYearByID_Should_ReturnRemoveExactlyOne()
-        //{
-        //    int YEAR = 2018;
-
-        //    ArdaTestMgr.Validate(this, $"FiscalYear.DeleteFiscalYearByID({YEAR})",
-        //        (list, ctx) => {
-        //            FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
-
-        //            var fiscalYearId = (from row in list
-        //                                where row.FullNumericFiscalYearMain == YEAR
-        //                                select row.FiscalYearID).First();
-
-        //            fiscalYear.DeleteFiscalYearByID(fiscalYearId);
-
-        //            return fiscalYear.GetAllFiscalYears();
-        //        });            
-        //    }
     }
 }
