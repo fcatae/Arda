@@ -71,5 +71,33 @@ namespace IntegrationTests
 
         }
 
+
+
+        [Fact]
+        public void FiscalYear_DeleteFiscalYearByID_Should_ReturnRemoveExactlyOne()
+        {
+            using (var context = ArdaTestMgr.GetTransactionContext())
+            {
+                FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+
+                var before = fiscalYear.GetAllFiscalYears().ToArray();
+
+                // Remove row
+                var fiscalYearId = (from row in before
+                                    where row.FullNumericFiscalYearMain == 2018
+                                    select row.FiscalYearID).First();
+                                
+                bool ret = fiscalYear.DeleteFiscalYearByID(fiscalYearId);
+
+                Assert.True(ret);
+
+                var after = fiscalYear.GetAllFiscalYears().ToArray();
+
+                Assert.Equal(before.Length, after.Length + 1);
+
+                ArdaTestMgr.CheckResult(after);
+            }
+        }
+
     }
 }
