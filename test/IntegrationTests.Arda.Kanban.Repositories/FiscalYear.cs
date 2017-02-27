@@ -29,9 +29,12 @@ namespace IntegrationTests
             {
                 FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
 
-                var list = fiscalYear.GetAllFiscalYears();
+                var list = fiscalYear.GetAllFiscalYears().ToArray();
+                var fiscalYearId = list.Min(r => r.FiscalYearID);
 
-                ArdaTestMgr.CheckResult(list);
+                var row = fiscalYear.GetFiscalYearByID(fiscalYearId);
+
+                ArdaTestMgr.CheckResult(row);
             }
         }
 

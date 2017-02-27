@@ -12,7 +12,7 @@ namespace IntegrationTests
 
             var test = new FiscalYear();
 
-            test.FiscalYear_GetAllFiscalYears_Should_ReturnAllValues();
+            test.FiscalYear_GetFiscalYearByID_Should_ReturnExactlyOne();
         }
     }
 }
