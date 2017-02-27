@@ -2,7 +2,12 @@ BEFORE:
 =======
 [
   {
-    "FiscalYearID": "e0fd2d01-020e-475f-9c28-a90f5d857877",
+    "FiscalYearID": "d8043c31-eba9-41c8-81a1-ebc828d81dcb",
+    "FullNumericFiscalYearMain": 2016,
+    "TextualFiscalYearMain": "FY16"
+  },
+  {
+    "FiscalYearID": "d38759ab-e310-46f0-a6c3-b0594c2531ab",
     "FullNumericFiscalYearMain": 2017,
     "TextualFiscalYearMain": "FY17"
   },
@@ -13,18 +18,23 @@ BEFORE:
   }
 ]
 
-COMMAND: FiscalYear.EditFiscalYearByID({e0fd2d01-020e-475f-9c28-a90f5d857877},2021,TEST-2021)
+COMMAND: FiscalYear.EditFiscalYearByID({d38759ab-e310-46f0-a6c3-b0594c2531ab},2021,TEST-2021)
 
 AFTER:
 ======
 [
+  {
+    "FiscalYearID": "d8043c31-eba9-41c8-81a1-ebc828d81dcb",
+    "FullNumericFiscalYearMain": 2016,
+    "TextualFiscalYearMain": "FY16"
+  },
   {
     "FiscalYearID": "c6a45416-81a2-4034-adac-c7eab5225ece",
     "FullNumericFiscalYearMain": 2018,
     "TextualFiscalYearMain": "FY18"
   },
   {
-    "FiscalYearID": "e0fd2d01-020e-475f-9c28-a90f5d857877",
+    "FiscalYearID": "d38759ab-e310-46f0-a6c3-b0594c2531ab",
     "FullNumericFiscalYearMain": 2021,
     "TextualFiscalYearMain": "TEST-2021"
   }
