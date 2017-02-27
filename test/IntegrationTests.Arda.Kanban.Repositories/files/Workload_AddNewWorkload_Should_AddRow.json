@@ -16,12 +16,10 @@ BEFORE:
     "WBActivity": "06c15279-9afb-4723-af61-33eaf8974d47",
     "WBFilesList": [],
     "WBMetrics": [
-      "45979112-aff6-4bfa-878b-02baa8fd1074",
       "20297652-9be6-4560-aa36-586f99893fef"
     ],
     "WBUsers": [
       "admin@ardademo.onmicrosoft.com",
-      "guest@ardademo.onmicrosoft.com",
       "user@ardademo.onmicrosoft.com"
     ],
     "WBTechnologies": [
@@ -96,12 +94,10 @@ AFTER:
     "WBActivity": "06c15279-9afb-4723-af61-33eaf8974d47",
     "WBFilesList": [],
     "WBMetrics": [
-      "45979112-aff6-4bfa-878b-02baa8fd1074",
       "20297652-9be6-4560-aa36-586f99893fef"
     ],
     "WBUsers": [
       "admin@ardademo.onmicrosoft.com",
-      "guest@ardademo.onmicrosoft.com",
       "user@ardademo.onmicrosoft.com"
     ],
     "WBTechnologies": [
