@@ -63,7 +63,8 @@ namespace IntegrationTests
             }
             finally
             {
-                reader.Dispose();
+                if(reader != null)
+                    reader.Dispose();
             }
         }
 
