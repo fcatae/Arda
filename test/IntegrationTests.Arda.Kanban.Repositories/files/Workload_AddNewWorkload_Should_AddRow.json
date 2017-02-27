@@ -1,0 +1,130 @@
+BEFORE:
+=======
+[
+  {
+    "WBID": "c1507019-1d97-4629-8015-c01bf02ce6ab",
+    "WBIsWorkload": true,
+    "WBStatus": 1,
+    "WBStartDate": "2017-01-15T00:00:00",
+    "WBEndDate": "2017-12-31T00:00:00",
+    "WBTitle": "Attend Event",
+    "WBDescription": "Blah 2",
+    "WBExpertise": 2,
+    "WBComplexity": 3,
+    "WBCreatedBy": "admin@ardademo.onmicrosoft.com",
+    "WBCreatedDate": "2017-01-01T00:00:00",
+    "WBActivity": "06c15279-9afb-4723-af61-33eaf8974d47",
+    "WBFilesList": [],
+    "WBMetrics": [
+      "45979112-aff6-4bfa-878b-02baa8fd1074",
+      "20297652-9be6-4560-aa36-586f99893fef"
+    ],
+    "WBUsers": [
+      "admin@ardademo.onmicrosoft.com",
+      "guest@ardademo.onmicrosoft.com",
+      "user@ardademo.onmicrosoft.com"
+    ],
+    "WBTechnologies": [
+      "b2b1bce9-df05-4fbf-abb7-89617d396b4c",
+      "cec4b7bb-4f14-4118-ae31-29bc39ae93d8"
+    ]
+  },
+  {
+    "WBID": "90cac674-18c0-4139-8aae-f9711bd2d5f4",
+    "WBIsWorkload": false,
+    "WBStatus": 2,
+    "WBStartDate": "2016-01-02T00:00:00",
+    "WBEndDate": "2016-12-31T00:00:00",
+    "WBTitle": "First commit",
+    "WBDescription": "Blah 1",
+    "WBExpertise": 1,
+    "WBComplexity": 0,
+    "WBCreatedBy": "user@ardademo.onmicrosoft.com",
+    "WBCreatedDate": "2016-01-01T00:00:00",
+    "WBActivity": "1f265df5-adbe-4b7b-a05a-451af058c482",
+    "WBFilesList": [],
+    "WBMetrics": [],
+    "WBUsers": [],
+    "WBTechnologies": []
+  }
+]
+
+COMMAND: Workload.AddNewWorkload()
+
+AFTER:
+======
+[
+  {
+    "WBID": "aaaa0022-fd15-428c-9b24-14e6467977ad",
+    "WBIsWorkload": true,
+    "WBStatus": 3,
+    "WBStartDate": "2021-01-25T00:00:00",
+    "WBEndDate": "2021-01-30T00:00:00",
+    "WBTitle": "My Initial Workload",
+    "WBDescription": "My Workload Description",
+    "WBExpertise": 2,
+    "WBComplexity": 1,
+    "WBCreatedBy": "admin@ardademo.onmicrosoft.com",
+    "WBCreatedDate": "2021-01-20T00:00:00",
+    "WBActivity": "1f265df5-adbe-4b7b-a05a-451af058c482",
+    "WBFilesList": [],
+    "WBMetrics": [
+      "6da887cb-9edd-42cb-87c9-83ac772d9b65",
+      "45979112-aff6-4bfa-878b-02baa8fd1074"
+    ],
+    "WBUsers": [
+      "admin@ardademo.onmicrosoft.com",
+      "user@ardademo.onmicrosoft.com"
+    ],
+    "WBTechnologies": [
+      "9c263d44-2c11-48cd-b876-5ebb540bbf51",
+      "af5d8796-0ca2-4d54-84f7-d3194f5f2426"
+    ]
+  },
+  {
+    "WBID": "c1507019-1d97-4629-8015-c01bf02ce6ab",
+    "WBIsWorkload": true,
+    "WBStatus": 1,
+    "WBStartDate": "2017-01-15T00:00:00",
+    "WBEndDate": "2017-12-31T00:00:00",
+    "WBTitle": "Attend Event",
+    "WBDescription": "Blah 2",
+    "WBExpertise": 2,
+    "WBComplexity": 3,
+    "WBCreatedBy": "admin@ardademo.onmicrosoft.com",
+    "WBCreatedDate": "2017-01-01T00:00:00",
+    "WBActivity": "06c15279-9afb-4723-af61-33eaf8974d47",
+    "WBFilesList": [],
+    "WBMetrics": [
+      "45979112-aff6-4bfa-878b-02baa8fd1074",
+      "20297652-9be6-4560-aa36-586f99893fef"
+    ],
+    "WBUsers": [
+      "admin@ardademo.onmicrosoft.com",
+      "guest@ardademo.onmicrosoft.com",
+      "user@ardademo.onmicrosoft.com"
+    ],
+    "WBTechnologies": [
+      "b2b1bce9-df05-4fbf-abb7-89617d396b4c",
+      "cec4b7bb-4f14-4118-ae31-29bc39ae93d8"
+    ]
+  },
+  {
+    "WBID": "90cac674-18c0-4139-8aae-f9711bd2d5f4",
+    "WBIsWorkload": false,
+    "WBStatus": 2,
+    "WBStartDate": "2016-01-02T00:00:00",
+    "WBEndDate": "2016-12-31T00:00:00",
+    "WBTitle": "First commit",
+    "WBDescription": "Blah 1",
+    "WBExpertise": 1,
+    "WBComplexity": 0,
+    "WBCreatedBy": "user@ardademo.onmicrosoft.com",
+    "WBCreatedDate": "2016-01-01T00:00:00",
+    "WBActivity": "1f265df5-adbe-4b7b-a05a-451af058c482",
+    "WBFilesList": [],
+    "WBMetrics": [],
+    "WBUsers": [],
+    "WBTechnologies": []
+  }
+]
