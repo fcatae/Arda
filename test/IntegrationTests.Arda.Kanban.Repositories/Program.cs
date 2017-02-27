@@ -10,9 +10,9 @@ namespace IntegrationTests
 
             ArdaTestMgr.AllowCreateResultFile = true;
 
-            var test = new FiscalYear();
+            var test = new Metric();
 
-            test.FiscalYear_DeleteFiscalYearByID_Should_ReturnRemoveExactlyOne();
+            test.Metric_GetAllMetrics_Should_ReturnAllValues();
         }
     }
 }
