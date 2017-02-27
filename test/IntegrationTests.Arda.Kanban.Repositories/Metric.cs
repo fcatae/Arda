@@ -45,11 +45,26 @@ namespace IntegrationTests
                     return row;
                 });
         }
-        
+
+        public void Metric_GetMetricByID_Should_ReturnSingleRow()
+        {
+            string METRIC_GUID = "{819193e6-ea01-4c4e-a948-fc44453b2604}"; // Education GUID
+
+            ArdaTestMgr.Validate(this, $"Metric.GetMetricByID({METRIC_GUID})",
+                (list, ctx) =>
+                {
+                    MetricRepository metric = new MetricRepository(ctx);
+
+                    var row = metric.GetMetricByID(Guid.Parse(METRIC_GUID));
+
+                    return row;
+                });
+        }
+
         // TODO:
         //AddNewMetric
         //GetAllMetrics(int year)
-        //GetMetricByID
+        //
         //EditMetricByID
         //DeleteMetricByID
 
