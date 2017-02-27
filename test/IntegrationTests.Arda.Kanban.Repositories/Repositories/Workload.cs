@@ -116,6 +116,21 @@ namespace IntegrationTests
         }
 
         [Fact]
+        public void Workload_GetWorkloadsByUser_Should_NotReturnUseCreatedByField()
+        {
+            string USER_UNIQUENAME = "user@ardademo.onmicrosoft.com";
+
+            ArdaTestMgr.Validate(this, $"Workload.GetWorkloadsByUser({USER_UNIQUENAME})",
+                (list, ctx) => {
+                    WorkloadRepository workload = new WorkloadRepository(ctx);
+
+                    var rows = workload.GetWorkloadsByUser(USER_UNIQUENAME);
+
+                    return rows;
+                });
+        }
+
+        [Fact]
         public void Workload_EditWorkload_Should_ChangeRow()
         {
             string GUID = "{90cac674-18c0-4139-8aae-f9711bd2d5f4}";
