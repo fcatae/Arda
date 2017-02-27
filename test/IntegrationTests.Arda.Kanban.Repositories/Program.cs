@@ -12,7 +12,7 @@ namespace IntegrationTests
 
             var test = new FiscalYear();
 
-            test.FiscalYear_DeleteFiscalYearByID_Should_ReturnRemoveExactlyOne();
+            test.FiscalYear_EditFiscalYearByID_Should_ChangeRow();
         }
     }
 }

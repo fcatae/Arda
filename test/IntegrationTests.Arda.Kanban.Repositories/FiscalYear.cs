@@ -71,6 +71,30 @@ namespace IntegrationTests
 
         }
 
+        [Fact]
+        public void FiscalYear_EditFiscalYearByID_Should_ChangeRow()
+        {
+            using (var context = ArdaTestMgr.GetTransactionContext())
+            {
+                FiscalYearRepository fiscalYear = new FiscalYearRepository(context);
+
+                var before = fiscalYear.GetAllFiscalYears().ToArray();
+
+                // Edit row
+                var row = before[0];
+
+                row.FullNumericFiscalYearMain = 2021;
+                row.TextualFiscalYearMain = "TEST-2021";
+
+                fiscalYear.EditFiscalYearByID(row);
+
+                var after = fiscalYear.GetAllFiscalYears().ToArray();
+                
+                ArdaTestMgr.CheckResult(row);
+            }
+
+        }
+
 
 
         [Fact]
