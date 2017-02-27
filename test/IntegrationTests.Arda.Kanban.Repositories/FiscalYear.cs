@@ -76,7 +76,7 @@ namespace IntegrationTests
         [Fact]
         public void FiscalYear_EditFiscalYearByID_Should_ChangeRow()
         {
-            string GUID = "{e0fd2d01-020e-475f-9c28-a90f5d857877}";
+            string GUID = "{d38759ab-e310-46f0-a6c3-b0594c2531ab}";
             int YEAR = 2021;
             string YEARTXT = "TEST-2021";
 
@@ -85,7 +85,8 @@ namespace IntegrationTests
                     FiscalYearRepository fiscalYear = new FiscalYearRepository(ctx);
 
                     var row = list[0];
-                    
+
+                    row.FiscalYearID = Guid.Parse(GUID);
                     row.FullNumericFiscalYearMain = YEAR;
                     row.TextualFiscalYearMain = YEARTXT;
 

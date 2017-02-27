@@ -12,7 +12,7 @@ namespace IntegrationTests
 {
     public class ArdaTestMgr
     {
-        public static bool AllowCreateResultFile = false;
+        public static bool AllowCreateResultFile = true;
         private static IConfigurationRoot Configuration;
 
         static ArdaTestMgr()
