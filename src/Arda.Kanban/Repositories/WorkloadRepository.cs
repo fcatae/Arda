@@ -152,46 +152,64 @@ namespace Arda.Kanban.Repositories
             var activity = _context.Activities.First(a => a.ActivityID == workload.WBActivity);
             //Load related Metrics:
             var metricList = new List<WorkloadBacklogMetric>();
-            foreach (var mId in workload.WBMetrics)
+
+            if (workload.WBMetrics != null)
             {
-                var metric = _context.Metrics.First(m => m.MetricID == mId);
-                metricList.Add(new WorkloadBacklogMetric()
+                foreach (var mId in workload.WBMetrics)
                 {
-                    Metric = metric
-                });
+                    var metric = _context.Metrics.First(m => m.MetricID == mId);
+                    metricList.Add(new WorkloadBacklogMetric()
+                    {
+                        Metric = metric
+                    });
+                }
             }
+
             //Load related Technologies:
             var technologyList = new List<WorkloadBacklogTechnology>();
-            foreach (var tId in workload.WBTechnologies)
+
+            if( workload.WBTechnologies != null )
             {
-                var technology = _context.Technologies.First(t => t.TechnologyID == tId);
-                technologyList.Add(new WorkloadBacklogTechnology()
+                foreach (var tId in workload.WBTechnologies)
                 {
-                    Technology = technology
-                });
+                    var technology = _context.Technologies.First(t => t.TechnologyID == tId);
+                    technologyList.Add(new WorkloadBacklogTechnology()
+                    {
+                        Technology = technology
+                    });
+                }
             }
+
             //Load related Users:
             var userList = new List<WorkloadBacklogUser>();
-            foreach (var uniqueName in workload.WBUsers)
+            if( workload.WBUsers != null )
             {
-                var user = _context.Users.First(u => u.UniqueName == uniqueName);
-                userList.Add(new WorkloadBacklogUser()
+                foreach (var uniqueName in workload.WBUsers)
                 {
-                    User = user
-                });
+                    var user = _context.Users.First(u => u.UniqueName == uniqueName);
+                    userList.Add(new WorkloadBacklogUser()
+                    {
+                        User = user
+                    });
+                }
             }
             //Associate related Files:
             var filesList = new List<File>();
-            foreach (var f in workload.WBFilesList)
+
+            if (workload.WBFilesList != null)
             {
-                filesList.Add(new File()
+                foreach (var f in workload.WBFilesList)
                 {
-                    FileID = f.Item1,
-                    FileLink = f.Item2,
-                    FileName = f.Item3,
-                    FileDescription = string.Empty,
-                });
+                    filesList.Add(new File()
+                    {
+                        FileID = f.Item1,
+                        FileLink = f.Item2,
+                        FileName = f.Item3,
+                        FileDescription = string.Empty,
+                    });
+                }
             }
+
             //Update workload object:
             workloadToBeUpdated.WBActivity = activity;
             //workloadToBeUpdated.WBAppointments = null;
