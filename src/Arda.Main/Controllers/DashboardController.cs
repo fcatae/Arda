@@ -8,8 +8,8 @@ using System.Net.Http;
 using Arda.Main.Utils;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Net.Http.Headers;
+using Arda.Main.ViewModels;
 using Newtonsoft.Json;
-using Arda.Common.ViewModels.Main;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 

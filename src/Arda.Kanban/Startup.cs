@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Arda.Kanban.Models;
-using Arda.Common.Interfaces.Kanban;
+using Arda.Kanban.Models.Repositories;
 using Arda.Kanban.Repositories;
 using Swashbuckle.AspNetCore.Swagger;
 

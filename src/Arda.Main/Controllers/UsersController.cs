@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Http;
-using Arda.Common.ViewModels.Main;
-using Arda.Common.ViewModels.Kanban;
 using Arda.Common.Utils;
 using System.Net;
 using Arda.Common.JSON;
+using Arda.Main.ViewModels;
 using Microsoft.Extensions.Caching.Distributed;
 
 //TODO: Refactor name Users to User
