@@ -36,6 +36,13 @@ namespace IntegrationTests
         {
             if(_connection != null)
             {
+                try
+                {
+                    SqlCommand rollbackCmd = new SqlCommand("ROLLBACK", _connection);
+                    rollbackCmd.ExecuteNonQuery();
+                }
+                catch { }
+
                 _connection.Dispose();
                 _connection = null;
             }
