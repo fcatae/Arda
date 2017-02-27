@@ -18,14 +18,57 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Appointment_GetAllAppointment_Should_ReturnAllValues() 
+        public void Appointment_GetAllAppointments_Should_ReturnAllValues() 
         {
-            ArdaTestMgr.Validate(this, $"Appointment.GetAllAppointment()",
+            ArdaTestMgr.Validate(this, $"Appointment.GetAllAppointments()",
                 (list, ctx) => {
                     var rows = from r in list
                                select new { r._AppointmentDate, r._WorkloadTitle };
 
                     return rows;
+                });
+        }
+        
+        [Fact]
+        public void Appointment_GetAllAppointments_Should_NotReturnUserName()
+        {
+            ArdaTestMgr.Validate(this, $"Appointment.GetAllAppointments()",
+                (list, ctx) => {
+                    var rows = from r in list
+                               select new { r._AppointmentUserUniqueName, r._AppointmentUserName };
+
+                    return rows;
+                });
+        }
+
+        [Fact]
+        public void Appointment_GetAllAppointmentsByUser_DoesNot_ReturnUserName()
+        {
+            string USER_UNIQUE_NAME = "user@ardademo.onmicrosoft.com";
+
+            ArdaTestMgr.Validate(this, $"AppointmentRepository.GetAllAppointments({USER_UNIQUE_NAME})",
+                (list, ctx) => {
+                    AppointmentRepository appointment = new AppointmentRepository(ctx);
+
+                    var row = from r in appointment.GetAllAppointments(USER_UNIQUE_NAME)
+                              select new { r._AppointmentUserUniqueName, r._AppointmentUserName };
+
+                    return row;
+                });
+        }
+
+        [Fact]
+        public void Appointment_GetAppointmentByID_DoesNot_ReturnUserName()
+        {
+            string GUID = "068397FA-A41E-443F-823D-E2A6585BD322";
+
+            ArdaTestMgr.Validate(this, $"AppointmentRepository.GetAppointmentByID({GUID})",
+                (list, ctx) => {
+                    AppointmentRepository appointment = new AppointmentRepository(ctx);
+
+                    var row = appointment.GetAppointmentByID(Guid.Parse(GUID));                              
+
+                    return new { row._AppointmentUserUniqueName, row._AppointmentUserName }; ;
                 });
         }
 
@@ -47,7 +90,7 @@ namespace IntegrationTests
         [Fact]
         public void Appointment_GetAppointmentByID_Should_ReturnExactlyOne()
         {
-            string GUID = "";
+            string GUID = "068397FA-A41E-443F-823D-E2A6585BD322";
 
             ArdaTestMgr.Validate(this, $"AppointmentRepository.GetAppointmentByID({GUID})",
                 (list, ctx) => {
@@ -91,21 +134,20 @@ namespace IntegrationTests
                         _AppointmentHoursDispensed = 8,
                         _AppointmentID = Guid.Parse(GUID),
                         _AppointmentTE = (decimal)100.0,
-                        _AppointmentUserName = "User 1",
                         _AppointmentUserUniqueName = "user@ardademo.onmicrosoft.com",
                         _AppointmentWorkloadWBID = Guid.Parse(WORKLOAD_GUID)
                     };
 
                     appointment.AddNewAppointment(row);
 
-                    return row;
+                    return appointment.GetAllAppointments();
                 });
         }
 
         [Fact]
         public void Appointment_EditAppointment_Should_ChangeRow()
         {
-            string GUID = "";
+            string GUID = "068397FA-A41E-443F-823D-E2A6585BD322";
             string WORKLOAD_GUID = "c1507019-1d97-4629-8015-c01bf02ce6ab";
 
             ArdaTestMgr.Validate(this, $"AppointmentRepository.EditAppointment({GUID})",
@@ -119,7 +161,6 @@ namespace IntegrationTests
                         _AppointmentHoursDispensed = 24,
                         _AppointmentID = Guid.Parse(GUID),
                         _AppointmentTE = (decimal)123.40,
-                        _AppointmentUserName = "User 1",
                         _AppointmentUserUniqueName = "user@ardademo.onmicrosoft.com",
                         _AppointmentWorkloadWBID = Guid.Parse(WORKLOAD_GUID)
                     };

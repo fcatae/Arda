@@ -10,9 +10,9 @@ namespace IntegrationTests
 
             ArdaTestMgr.AllowCreateResultFile = true;
 
-            var test = new Workload();
+            var test = new Appointment();
 
-            test.Workload_EditWorkload_Should_NotFailWithEmptyMetrics();
+            test.Appointment_GetAllAppointments_Should_ReturnAllValues();
         }
     }
 }
