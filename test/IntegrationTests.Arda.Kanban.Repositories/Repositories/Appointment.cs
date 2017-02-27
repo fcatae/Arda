@@ -133,7 +133,7 @@ namespace IntegrationTests
         [Fact]
         public void Appointment_DeleteAppointmentByID_Should_ReturnRemoveExactlyOne()
         {
-            string GUID = "";
+            string GUID = "068397fa-a41e-443f-823d-e2a6585bd322";
 
             ArdaTestMgr.Validate(this, $"AppointmentRepository.DeleteAppointmentByID({GUID})",
                 (list, ctx) => {
@@ -197,6 +197,33 @@ namespace IntegrationTests
 
                     return appointment.GetAppointmentByID(Guid.Parse(GUID));
             });
+        }
+
+        [Fact]
+        public void Appointment_EditAppointment_DoesNot_ChangeUserAndWorkload()
+        {
+            string GUID = "068397FA-A41E-443F-823D-E2A6585BD322";
+            string WORKLOAD_GUID = "90cac674-18c0-4139-8aae-f9711bd2d5f4";
+
+            ArdaTestMgr.Validate(this, $"AppointmentRepository.EditAppointment({GUID})",
+                (list, ctx) => {
+                    AppointmentRepository appointment = new AppointmentRepository(ctx);
+
+                    var row = new AppointmentViewModel()
+                    {
+                        _AppointmentComment = "Updated appointment",
+                        _AppointmentDate = DateTime.Parse("2111-11-11"),
+                        _AppointmentHoursDispensed = 100,
+                        _AppointmentID = Guid.Parse(GUID),
+                        _AppointmentTE = (decimal)123.45,
+                        _AppointmentUserUniqueName = "user@ardademo.onmicrosoft.com",
+                        _AppointmentWorkloadWBID = Guid.Parse(WORKLOAD_GUID)
+                    };
+
+                    appointment.EditAppointment(row);
+
+                    return appointment.GetAppointmentByID(Guid.Parse(GUID));
+                });
         }
     }
 }
