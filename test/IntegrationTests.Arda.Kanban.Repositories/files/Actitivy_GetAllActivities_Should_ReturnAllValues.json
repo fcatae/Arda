@@ -1,0 +1,26 @@
+BEFORE:
+=======
+[
+  {
+    "ActivityID": "d23d46ac-9d8c-43f5-b673-8b169b04081f",
+    "ActivityName": "Hackatons"
+  },
+  {
+    "ActivityID": "1f265df5-adbe-4b7b-a05a-451af058c482",
+    "ActivityName": "POC"
+  },
+  {
+    "ActivityID": "06c15279-9afb-4723-af61-33eaf8974d47",
+    "ActivityName": "Presentation"
+  }
+]
+
+COMMAND: Actitivy.GetAllActivities()
+
+AFTER:
+======
+[
+  "Hackatons",
+  "POC",
+  "Presentation"
+]

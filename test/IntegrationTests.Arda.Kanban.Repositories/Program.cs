@@ -10,9 +10,9 @@ namespace IntegrationTests
 
             ArdaTestMgr.AllowCreateResultFile = true;
 
-            var test = new Metric();
+            var test = new Actitivy();
 
-            test.Metric_GetAllMetrics_Should_ReturnFilteredData();
+            test.Actitivy_GetAllActivities_Should_ReturnAllValues();
         }
     }
 }
