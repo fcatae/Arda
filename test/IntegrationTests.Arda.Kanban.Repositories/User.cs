@@ -18,6 +18,18 @@ namespace IntegrationTests
         }
 
         [Fact]
+        public void User_GetAllUsers_Should_ReturnAllValues()
+        {
+            ArdaTestMgr.Validate(this, $"User.GetAllUsers()",
+                (list, ctx) => {
+                    var rows = from r in list
+                               select r.Name;
+
+                    return rows;
+                });
+        }
+
+        [Fact]
         public void User_AddNewUser_Should_AddRow()
         {
             string USER_UNIQUENAME = "newuser@domain.com";
