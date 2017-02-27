@@ -18,7 +18,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void FiscalYear_GetAllFiscalYears_Should_ReturnAllValues() 
+        public void FiscalYear_GetAllFiscalYears() 
         {
             ArdaTestMgr.Validate(this, $"FiscalYear.GetAllFiscalYears()",
                 (list, ctx) => {
@@ -30,7 +30,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void FiscalYear_GetFiscalYearByID_Should_ReturnExactlyOne()
+        public void FiscalYear_GetFiscalYearByID()
         {
             int YEAR = 2018;
 
@@ -49,7 +49,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void FiscalYear_AddNewFiscalYear_Should_AddRow()
+        public void FiscalYear_AddNewFiscalYear()
         {
             string GUID = "{aaaa0000-622a-4656-85df-39edc26be080}";
             int YEAR = 2021;
@@ -74,7 +74,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void FiscalYear_EditFiscalYearByID_Should_ChangeRow()
+        public void FiscalYear_EditFiscalYearByID()
         {
             string GUID = "{d38759ab-e310-46f0-a6c3-b0594c2531ab}";
             int YEAR = 2021;
@@ -100,7 +100,7 @@ namespace IntegrationTests
 
 
         [Fact]
-        public void FiscalYear_DeleteFiscalYearByID_Should_ReturnRemoveExactlyOne()
+        public void FiscalYear_DeleteFiscalYearByID()
         {
             int YEAR = 2018;
 

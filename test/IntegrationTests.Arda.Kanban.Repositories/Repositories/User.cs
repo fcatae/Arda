@@ -18,7 +18,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void User_GetAllUsers_Should_ReturnAllValues()
+        public void User_GetAllUsers()
         {
             ArdaTestMgr.Validate(this, $"User.GetAllUsers()",
                 (list, ctx) => {
@@ -30,7 +30,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void User_AddNewUser_Should_AddRow()
+        public void User_AddNewUser()
         {
             string USER_UNIQUENAME = "newuser@domain.com";
             string USER_NAME = "New User 1";
@@ -52,7 +52,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void User_DeleteUserByID_Should_AddRow()
+        public void User_DeleteUserByID()
         {
             string USER_UNIQUENAME = "guest@ardademo.onmicrosoft.com";
 

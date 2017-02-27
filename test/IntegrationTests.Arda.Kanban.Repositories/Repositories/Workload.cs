@@ -18,7 +18,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Workload_GetAllWorkloads_Should_ReturnAllValues() 
+        public void Workload_GetAllWorkloads() 
         {
             ArdaTestMgr.Validate(this, $"Workload.GetAllWorkloads()",
                 (list, ctx) => {
@@ -30,7 +30,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Workload_AddNewWorkload_Should_AddRow()
+        public void Workload_AddNewWorkload()
         {
             WorkloadViewModel WORKLOAD1 = new WorkloadViewModel()
             {
@@ -60,7 +60,7 @@ namespace IntegrationTests
                 }
             };
 
-            ArdaTestMgr.Validate(this, $"Workload.AddNewWorkload()",
+            ArdaTestMgr.Validate(this, $"Workload.AddNewWorkload({WORKLOAD1.WBID})",
                 (list, ctx) => {
                     WorkloadRepository workload = new WorkloadRepository(ctx);
                     
@@ -71,7 +71,7 @@ namespace IntegrationTests
         }
         
         [Fact]
-        public void Workload_DeleteWorkloadByID_Should_ReturnRemoveExactlyOne()
+        public void Workload_DeleteWorkloadByID()
         {
             string GUID = "{C1507019-1D97-4629-8015-C01BF02CE6AB}";
 
@@ -86,7 +86,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Workload_GetWorkloadByID_Should_ReturnExactlyOne()
+        public void Workload_GetWorkloadByID()
         {
             string GUID = "{C1507019-1D97-4629-8015-C01BF02CE6AB}";
 
@@ -101,7 +101,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Workload_GetWorkloadsByUser_Should_ReturnUserData()
+        public void Workload_GetWorkloadsByUser()
         {
             string USER_UNIQUENAME = "admin@ardademo.onmicrosoft.com";
 
@@ -116,7 +116,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Workload_GetWorkloadsByUser_Should_NotReturnUseCreatedByField()
+        public void Workload_GetWorkloadsByUser_DoesNot_ReturnUseCreatedByField()
         {
             string USER_UNIQUENAME = "user@ardademo.onmicrosoft.com";
 
@@ -131,7 +131,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Workload_EditWorkload_Should_ChangeRow()
+        public void Workload_EditWorkload()
         {
             string GUID = "{90cac674-18c0-4139-8aae-f9711bd2d5f4}";
             
@@ -216,7 +216,7 @@ namespace IntegrationTests
                 });
         }
         [Fact]
-        public void Workload_UpdateWorkloadStatus_Should_UpdateOneStatus()
+        public void Workload_UpdateWorkloadStatus()
         {
             string GUID = "{C1507019-1D97-4629-8015-C01BF02CE6AB}";
             int STATUS = 4;

@@ -18,7 +18,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Appointment_GetAllAppointments_Should_ReturnAllValues() 
+        public void Appointment_GetAllAppointments() 
         {
             ArdaTestMgr.Validate(this, $"Appointment.GetAllAppointments()",
                 (list, ctx) => {
@@ -101,7 +101,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Appointment_GetAllAppointments_Should_FilterByUser()
+        public void Appointment_GetAllAppointments_ByUser()
         {
             string USER_UNIQUE_NAME = "user@ardademo.onmicrosoft.com";
 
@@ -116,7 +116,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Appointment_GetAppointmentByID_Should_ReturnExactlyOne()
+        public void Appointment_GetAppointmentByID()
         {
             string GUID = "068397FA-A41E-443F-823D-E2A6585BD322";
 
@@ -131,7 +131,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Appointment_DeleteAppointmentByID_Should_ReturnRemoveExactlyOne()
+        public void Appointment_DeleteAppointmentByID()
         {
             string GUID = "068397fa-a41e-443f-823d-e2a6585bd322";
 
@@ -146,7 +146,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Appointment_AddNewAppointment_Should_AddRow()
+        public void Appointment_AddNewAppointment()
         {
             string GUID = "5348CCBE-7BED-4B5C-A2CE-E3E872F2CBC5";
             string WORKLOAD_GUID = "c1507019-1d97-4629-8015-c01bf02ce6ab";
@@ -173,7 +173,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Appointment_EditAppointment_Should_ChangeRow()
+        public void Appointment_EditAppointment()
         {
             string GUID = "068397FA-A41E-443F-823D-E2A6585BD322";
             string WORKLOAD_GUID = "c1507019-1d97-4629-8015-c01bf02ce6ab";

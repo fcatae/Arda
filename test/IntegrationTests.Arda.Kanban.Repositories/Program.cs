@@ -10,9 +10,8 @@ namespace IntegrationTests
 
             ArdaTestMgr.AllowCreateResultFile = true;
 
-            var test = new Appointment();
-
-            test.Appointment_GetAllAppointments_Should_ReturnAllValues();
+            //var test = new Appointment();
+            //test.ppointment_GetAllAppointments_Should_ReturnAllValues();
         }
     }
 }

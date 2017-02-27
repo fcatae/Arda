@@ -18,7 +18,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Technology_GetAllTechnologies_Should_ReturnAllValues() 
+        public void Technology_GetAllTechnologies() 
         {
             ArdaTestMgr.Validate(this, $"Technology.GetAllTechnologies()",
                 (list, ctx) => {

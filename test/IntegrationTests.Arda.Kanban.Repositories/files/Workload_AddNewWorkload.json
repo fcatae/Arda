@@ -47,7 +47,7 @@ BEFORE:
   }
 ]
 
-COMMAND: Workload.AddNewWorkload()
+COMMAND: Workload.AddNewWorkload(aaaa0022-fd15-428c-9b24-14e6467977ad)
 
 AFTER:
 ======

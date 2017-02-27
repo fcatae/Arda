@@ -19,7 +19,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Metric_GetAllMetrics_Should_ReturnAllValues()
+        public void Metric_GetAllMetrics()
         {
             ArdaTestMgr.Validate(this, $"Metric.GetAllMetrics()",
                 (list, ctx) => {
@@ -31,7 +31,7 @@ namespace IntegrationTests
         }
         
         [Fact]
-        public void Metric_GetAllMetrics_Should_ReturnFilteredData()
+        public void Metric_GetAllMetrics_ByYear()
         {
             int YEAR = 2017;
 
@@ -46,7 +46,7 @@ namespace IntegrationTests
                 });
         }
 
-        public void Metric_GetMetricByID_Should_ReturnSingleRow()
+        public void Metric_GetMetricByID()
         {
             string METRIC_GUID = "{819193e6-ea01-4c4e-a948-fc44453b2604}"; // Education GUID
 
@@ -62,7 +62,7 @@ namespace IntegrationTests
         }
         
         [Fact]
-        public void Metric_AddNewMetric_Should_AddRow()
+        public void Metric_AddNewMetric()
         {
             string GUID = "{aaaa0011-622a-4656-85df-39edc26be080}";
             string METRIC_CATEGORY = "My Metric Category";
@@ -96,7 +96,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Metric_EditMetricByID_Should_ChangeRow()
+        public void Metric_EditMetricByID()
         {
             string METRIC_GUID = "{45979112-aff6-4bfa-878b-02baa8fd1074}"; // Education : Azure Training
             string METRIC_CATEGORY = "Updated Metric Category";
@@ -131,7 +131,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Metric_DeleteMetricByID_Should_ReturnRemoveExactlyOne()
+        public void Metric_DeleteMetricByID()
         {
             string METRIC_GUID = "{45979112-aff6-4bfa-878b-02baa8fd1074}"; // Education : Azure Training
 
