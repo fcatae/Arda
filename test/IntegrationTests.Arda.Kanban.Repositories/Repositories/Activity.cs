@@ -18,7 +18,7 @@ namespace IntegrationTests
         }
 
         [Fact]
-        public void Actitivy_GetAllActivities_Should_ReturnAllValues() 
+        public void Actitivy_GetAllActivities() 
         {
             ArdaTestMgr.Validate(this, $"Actitivy.GetAllActivities()",
                 (list, ctx) => {
