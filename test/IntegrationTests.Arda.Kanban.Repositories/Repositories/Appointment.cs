@@ -30,12 +30,24 @@ namespace IntegrationTests
         }
         
         [Fact]
-        public void Appointment_GetAllAppointments_Should_NotReturnUserName()
+        public void Appointment_GetAllAppointments_DoesNot_ReturnUserName()
         {
             ArdaTestMgr.Validate(this, $"Appointment.GetAllAppointments()",
                 (list, ctx) => {
                     var rows = from r in list
                                select new { r._AppointmentUserUniqueName, r._AppointmentUserName };
+
+                    return rows;
+                });
+        }
+
+        [Fact]
+        public void Appointment_GetAllAppointments_DoesNot_ReturnComment()
+        {
+            ArdaTestMgr.Validate(this, $"Appointment.GetAllAppointments()",
+                (list, ctx) => {
+                    var rows = from r in list
+                               select new { r._AppointmentComment };
 
                     return rows;
                 });
@@ -52,6 +64,22 @@ namespace IntegrationTests
 
                     var row = from r in appointment.GetAllAppointments(USER_UNIQUE_NAME)
                               select new { r._AppointmentUserUniqueName, r._AppointmentUserName };
+
+                    return row;
+                });
+        }
+
+        [Fact]
+        public void Appointment_GetAllAppointmentsByUser_DoesNot_ReturnComment()
+        {
+            string USER_UNIQUE_NAME = "user@ardademo.onmicrosoft.com";
+
+            ArdaTestMgr.Validate(this, $"AppointmentRepository.GetAllAppointments({USER_UNIQUE_NAME})",
+                (list, ctx) => {
+                    AppointmentRepository appointment = new AppointmentRepository(ctx);
+
+                    var row = from r in appointment.GetAllAppointments(USER_UNIQUE_NAME)
+                              select new { r._AppointmentComment };
 
                     return row;
                 });
@@ -157,17 +185,17 @@ namespace IntegrationTests
                     var row = new AppointmentViewModel()
                     {
                         _AppointmentComment = "Updated appointment",
-                        _AppointmentDate = DateTime.Parse("2020-01-20"),
-                        _AppointmentHoursDispensed = 24,
+                        _AppointmentDate = DateTime.Parse("2111-11-11"),
+                        _AppointmentHoursDispensed = 100,
                         _AppointmentID = Guid.Parse(GUID),
-                        _AppointmentTE = (decimal)123.40,
+                        _AppointmentTE = (decimal)123.45,
                         _AppointmentUserUniqueName = "user@ardademo.onmicrosoft.com",
                         _AppointmentWorkloadWBID = Guid.Parse(WORKLOAD_GUID)
                     };
 
                     appointment.EditAppointment(row);
 
-                    return row;
+                    return appointment.GetAppointmentByID(Guid.Parse(GUID));
             });
         }
     }
