@@ -1,0 +1,56 @@
+BEFORE:
+=======
+[
+  {
+    "MetricID": "7479b502-74b9-4673-9e2f-d35f7fd19edd",
+    "MetricCategory": "Community",
+    "MetricName": "Customer SAT",
+    "Description": "Customer satisfaction.",
+    "FiscalYearID": "e0fd2d01-020e-475f-9c28-a90f5d857877",
+    "FullNumericFiscalYear": 2017,
+    "TextualFiscalYear": "FY17"
+  },
+  {
+    "MetricID": "819193e6-ea01-4c4e-a948-fc44453b2604",
+    "MetricCategory": "Education",
+    "MetricName": "Azure Training",
+    "Description": "Azure training for students",
+    "FiscalYearID": "e0fd2d01-020e-475f-9c28-a90f5d857877",
+    "FullNumericFiscalYear": 2017,
+    "TextualFiscalYear": "FY17"
+  },
+  {
+    "MetricID": "821acb1a-2761-48a6-9e18-509c67a06c80",
+    "MetricCategory": "ISVs",
+    "MetricName": "Evangelism",
+    "Description": "Workshops and Events",
+    "FiscalYearID": "e0fd2d01-020e-475f-9c28-a90f5d857877",
+    "FullNumericFiscalYear": 2017,
+    "TextualFiscalYear": "FY17"
+  }
+]
+
+COMMAND: Metric.Edit(row[1], 2018) -> Metric.GetAllMetrics(2017)
+
+AFTER:
+======
+[
+  {
+    "MetricID": "7479b502-74b9-4673-9e2f-d35f7fd19edd",
+    "MetricCategory": "Community",
+    "MetricName": "Customer SAT",
+    "Description": "Customer satisfaction.",
+    "FiscalYearID": "e0fd2d01-020e-475f-9c28-a90f5d857877",
+    "FullNumericFiscalYear": 2017,
+    "TextualFiscalYear": "FY17"
+  },
+  {
+    "MetricID": "821acb1a-2761-48a6-9e18-509c67a06c80",
+    "MetricCategory": "ISVs",
+    "MetricName": "Evangelism",
+    "Description": "Workshops and Events",
+    "FiscalYearID": "e0fd2d01-020e-475f-9c28-a90f5d857877",
+    "FullNumericFiscalYear": 2017,
+    "TextualFiscalYear": "FY17"
+  }
+]

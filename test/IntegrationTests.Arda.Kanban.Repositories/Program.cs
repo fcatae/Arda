@@ -12,7 +12,7 @@ namespace IntegrationTests
 
             var test = new Metric();
 
-            test.Metric_GetAllMetrics_Should_ReturnAllValues();
+            test.Metric_GetAllMetrics_Should_ReturnFilteredData();
         }
     }
 }
