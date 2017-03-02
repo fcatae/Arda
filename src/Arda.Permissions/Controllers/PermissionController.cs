@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using Arda.Common.Interfaces.Permissions;
-using Arda.Common.Models.Permissions;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net;
-using Arda.Common.ViewModels.Main;
 using System.Collections.Generic;
+using Arda.Permissions.Models;
+using Arda.Permissions.Models.Repositories;
+using Arda.Permissions.ViewModels;
 using Newtonsoft.Json;
 
 namespace Arda.Permissions.Controllers

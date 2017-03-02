@@ -7,8 +7,8 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Authorization;
 using Arda.Common.JSON;
 using Arda.Common.Utils;
-using Arda.Common.ViewModels.Main;
 using System.Net;
+using Arda.Main.ViewModels;
 
 namespace Arda.Main.Controllers
 {

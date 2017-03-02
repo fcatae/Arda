@@ -1,13 +1,12 @@
 ﻿using Arda.Common.ViewModels.Main;
-using Arda.Common.Interfaces.Kanban;
 using Arda.Kanban.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Arda.Common.Models.Kanban;
 using Arda.Common.Email;
 using System.Text;
 using Arda.Common.Utils;
+using Arda.Kanban.Models.Repositories;
 
 namespace Arda.Kanban.Repositories
 {

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net;
-using Arda.Common.ViewModels.Kanban;
-using Arda.Common.Interfaces.Kanban;
+using Arda.Kanban.Models.Repositories;
+using Arda.Kanban.ViewModels;
 using Newtonsoft.Json;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Arda.Kanban.Models;
-using Arda.Common.Interfaces.Kanban;
+using Arda.Kanban.Models.Repositories;
 using Arda.Kanban.Repositories;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -22,17 +22,19 @@ namespace Arda.Kanban
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json")
                 .AddJsonFile("local-secret.json", true)
-                .AddJsonFile("microservices.json", true)
-                .AddEnvironmentVariables();
+                .AddJsonFile("microservices.json", true);
 
-            if (env.IsEnvironment("Development"))
-            {
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
-                builder.AddUserSecrets();
-            }
+                if (env.IsDevelopment())
+                {
+                    builder.AddUserSecrets();
+                }
+                if (!env.IsProduction())
+                {
+                    // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
+                    builder.AddApplicationInsightsSettings(developerMode: true);
+                }
 
-            builder.AddEnvironmentVariables();
+            builder = builder.AddEnvironmentVariables();
             Configuration = builder.Build();//.ReloadOnChanged("appsettings.json");
         }
 

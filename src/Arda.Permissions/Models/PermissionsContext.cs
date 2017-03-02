@@ -1,7 +1,6 @@
-﻿using Arda.Common.Models.Permissions;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace Arda.Kanban.Models
+namespace Arda.Permissions.Models
 {
     public class PermissionsContext : DbContext
     {

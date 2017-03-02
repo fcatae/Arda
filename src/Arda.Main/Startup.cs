@@ -22,11 +22,17 @@ namespace Arda.Main
 
             if (env.IsDevelopment())
             {
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: true);
                 builder.AddUserSecrets();
             }
+
+            if (!env.IsProduction())
+            {
+                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
+                builder.AddApplicationInsightsSettings(developerMode: true);
+            }
+
             Configuration = builder.Build();
+
         }
 
         public IConfigurationRoot Configuration { get; set; }

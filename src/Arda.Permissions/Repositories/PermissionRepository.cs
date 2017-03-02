@@ -1,18 +1,13 @@
-﻿using Arda.Common.Interfaces.Permissions;
-using Arda.Common.Models.Permissions;
-using System;
+﻿using System;
 using System.Linq;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Text;
-using Arda.Common.ViewModels.Permissions;
 using Arda.Common.Utils;
-using Arda.Common.Email;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Arda.Common.ViewModels.Main;
-using Arda.Kanban.Models;
 using System.Net.Http;
-using Microsoft.Extensions.Configuration;
+using Arda.Permissions.Models;
+using Arda.Permissions.Models.Repositories;
+using Arda.Permissions.ViewModels;
 
 namespace Arda.Permissions.Repositories
 {
@@ -383,7 +378,7 @@ namespace Arda.Permissions.Repositories
             _context.SaveChanges();
 
             //Save on Kanban
-            var kanbanUser = new Common.ViewModels.Kanban.UserKanbanViewModel()
+            var kanbanUser = new UserKanbanViewModel()
             {
                 UniqueName = user.UniqueName,
                 Name = user.Name
@@ -483,7 +478,7 @@ namespace Arda.Permissions.Repositories
             var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
             var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
 
-            var permToReview = permissions.First(p => p.Module == "Users" && p.Resource == "Review");
+            var permToReview = permissions.FirstOrDefault(p => p.Module == "Users" && p.Resource == "Review");
             if (permToReview != null)
             {
                 return true;
@@ -510,7 +505,7 @@ namespace Arda.Permissions.Repositories
                            Status = (int)users.Status
                        };
 
-            return data;
+            return data.ToArray();
         }
 
         public IEnumerable<ResourcesViewModel> GetAllPermissions()
@@ -557,7 +552,7 @@ namespace Arda.Permissions.Repositories
                            Status = (int)users.Status
                        };
 
-            return data;
+            return data.ToArray();
         }
 
         public UserMainViewModel GetUser(string uniqueName)

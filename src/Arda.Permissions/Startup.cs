@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Arda.Permissions.Models;
+using Arda.Permissions.Models.Repositories;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Arda.Kanban.Models;
 using Microsoft.EntityFrameworkCore;
-using Arda.Common.Interfaces.Permissions;
 using Arda.Permissions.Repositories;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
@@ -24,14 +24,17 @@ namespace Arda.Permissions
                 .AddJsonFile("local-secret.json", optional: true)
                 .AddJsonFile("microservices.json", true);
 
-            if (env.IsEnvironment("Development"))
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets();
+            }
+            if (!env.IsProduction())
             {
                 // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
                 builder.AddApplicationInsightsSettings(developerMode: true);
-                builder.AddUserSecrets();
             }
 
-            builder.AddEnvironmentVariables();
+            builder = builder.AddEnvironmentVariables();
             Configuration = builder.Build();//.ReloadOnChanged("appsettings.json");
         }
 
@@ -81,6 +84,8 @@ namespace Arda.Permissions
             loggerFactory.AddDebug();
 
             app.UseApplicationInsightsRequestTelemetry();
+            
+            app.UseDeveloperExceptionPage();
 
             app.UseApplicationInsightsExceptionTelemetry();
 
