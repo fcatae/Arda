@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Arda.Common.ViewModels.Main;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
 using Arda.Kanban.Models.Repositories;
+using Arda.Kanban.ViewModels;
 
 namespace Arda.Kanban.Controllers
 {
