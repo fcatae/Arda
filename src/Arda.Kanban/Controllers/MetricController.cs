@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
-using Arda.Common.ViewModels.Main;
 using Arda.Kanban.Models.Repositories;
+using Arda.Kanban.ViewModels;
 
 namespace Arda.Kanban.Controllers
 {

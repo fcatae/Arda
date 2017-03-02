@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Arda.Common.ViewModels.Main;
+using Arda.Kanban.ViewModels;
 
 namespace Arda.Kanban.Models.Repositories
 {
