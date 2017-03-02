@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Arda.Common.ViewModels.Main;
 using Arda.Kanban.Models;
 using Arda.Kanban.Models.Repositories;
+using Arda.Kanban.ViewModels;
 
 namespace Arda.Kanban.Repositories
 {
