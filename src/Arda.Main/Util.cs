@@ -112,7 +112,8 @@ namespace Arda.Common.Utils
             {
                 var responseStr = await responseSend.Content.ReadAsStringAsync();
 
-                return responseStr;
+                if( responseStr != "" )
+                    return responseStr;
             }
 
             return null;
