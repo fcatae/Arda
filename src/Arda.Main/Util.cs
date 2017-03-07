@@ -28,7 +28,7 @@ namespace Arda.Common.Utils
 
         public static string GetUserPhotoFromRemote(string user)
         {
-            var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/getuserphotofromcache?=" + user, user, "").Result;
+            var response = ConnectToRemoteService(HttpMethod.Get, PermissionsURL + "api/permission/getuserphotofromcache?uniqueName=" + user, user, "").Result;
             if (response.IsSuccessStatusCode)
             {
                 var photo = response.Content.ReadAsStringAsync().Result;
