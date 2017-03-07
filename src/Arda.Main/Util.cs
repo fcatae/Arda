@@ -19,26 +19,39 @@ namespace Arda.Common.Utils
         public static string ReportsURL;
         public static string PermissionsURL;
 
-        private static IDistributedCache _cache;
+        private static IDistributedCache _cacheDontUse;
 
         static Util()
         {
 
         }
 
+        public static string GetUserPhotoFromRemote(string user)
+        {
+            var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/getuserphotofromcache?=" + user, user, "").Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var photo = response.Content.ReadAsStringAsync().Result;
+                return photo;
+            }
+
+            return null;
+        }
+
+
         public static string GetUserPhoto(string user)
         {
-            var key = "photo_" + user;
-            byte[] arrPicture = null;
+            //var key = "photo_" + user;
+            string arrPicture = null;
 
             try
             {
                 //Try from Cache:
-                arrPicture = _cache.Get(key);
+                arrPicture = GetUserPhotoFromRemote(user); // _cache.Get(key);
 
                 if( arrPicture != null )
                 {
-                    var photo = Util.GetString(arrPicture);
+                    var photo = arrPicture; // Util.GetString(arrPicture);
                     return photo;
                 }
             }
@@ -53,7 +66,9 @@ namespace Arda.Common.Utils
             var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/saveuserphotooncache?=" + user, user, "").Result;
             if (response.IsSuccessStatusCode)
             {
-                var photo = Util.GetString(_cache.Get(key));
+                arrPicture = GetUserPhotoFromRemote(user); // _cache.Get(key);
+
+                var photo = arrPicture; // Util.GetString(_cache.Get(key));
                 return photo;
             }
             else
@@ -199,14 +214,7 @@ namespace Arda.Common.Utils
             MainURL = config["Endpoints:ardaapp"];
             PermissionsURL = config["Endpoints:permissions-service"];
             KanbanURL = config["Endpoints:kanban-service"];
-            ReportsURL = config["Endpoints:reports-service"];
-
-
-            _cache = new RedisCache(new RedisCacheOptions
-            {
-                Configuration = config["Storage:Redis:Configuration"],
-                InstanceName = config["Storage:Redis:InstanceName"]
-            });
+            ReportsURL = config["Endpoints:reports-service"];            
         }
     }
 }
