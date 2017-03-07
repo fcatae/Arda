@@ -194,7 +194,6 @@ CREATE TABLE [dbo].[Users](
 	[UniqueName] ASC
 )WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF)
 )
-INSERT Users VALUES ('user@ardademo.onmicrosoft.com', 'User 1')
 
 GO
 /****** Object:  Table [dbo].[WorkloadBacklogMetrics]    Script Date: 2/6/2017 11:33:25 PM ******/
