@@ -1,29 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{69D73E25-A65F-467D-9B99-39A4FF0939F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9714C647-533A-4427-BEDC-02691D6FA357}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		global.json = global.json
 	EndProjectSection
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Arda.Common", "src\Arda.Common\Arda.Common.xproj", "{FC756ED9-F692-4BD9-9321-1E65D6032BC9}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Arda.Kanban", "src\Arda.Kanban\Arda.Kanban.xproj", "{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Arda.Main", "src\Arda.Main\Arda.Main.xproj", "{D0C4D841-525E-4576-BBEE-CDA79C52CDEA}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Arda.Permissions", "src\Arda.Permissions\Arda.Permissions.xproj", "{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Arda.Reports", "src\Arda.Reports\Arda.Reports.xproj", "{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D0D55668-DD95-4B7F-9803-19C2757FAA21}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "IntegrationTests.Arda.Kanban.Repositories", "test\IntegrationTests.Arda.Kanban.Repositories\IntegrationTests.Arda.Kanban.Repositories.xproj", "{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Common", "src\Arda.Common\Arda.Common.csproj", "{FC756ED9-F692-4BD9-9321-1E65D6032BC9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Kanban", "src\Arda.Kanban\Arda.Kanban.csproj", "{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Main", "src\Arda.Main\Arda.Main.csproj", "{D0C4D841-525E-4576-BBEE-CDA79C52CDEA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Permissions", "src\Arda.Permissions\Arda.Permissions.csproj", "{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Reports", "src\Arda.Reports\Arda.Reports.csproj", "{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Arda.Kanban.Repositories", "test\IntegrationTests.Arda.Kanban.Repositories\IntegrationTests.Arda.Kanban.Repositories.csproj", "{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

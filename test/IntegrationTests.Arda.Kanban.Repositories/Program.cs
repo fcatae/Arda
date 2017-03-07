@@ -4,7 +4,7 @@ namespace IntegrationTests
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void TestMain(string[] args)
         {
             Console.WriteLine("Hello world");
 
