@@ -29,7 +29,7 @@ Model está definido como:
 
 Diferente dos demais modelos que estão no Main:
 
-    using Arda.Common.ViewModels.Main;
+    using Arda.Kanban.ViewModels;
 
 
 

@@ -54,7 +54,7 @@ namespace IntegrationTests
 
             try
             {
-                reader = File.OpenText(filename);
+                reader = System.IO.File.OpenText(filename);
                 return reader.ReadToEnd();
             }
             catch(FileNotFoundException)
@@ -70,7 +70,7 @@ namespace IntegrationTests
 
         public static void WriteFile(string filename, string text)
         {
-            using (var writer = File.CreateText(filename))
+            using (var writer = System.IO.File.CreateText(filename))
             {
                 writer.Write(text);
             }

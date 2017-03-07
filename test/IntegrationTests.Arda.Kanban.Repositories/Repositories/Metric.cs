@@ -5,7 +5,7 @@ using Xunit;
 using System.Threading.Tasks;
 using Arda.Kanban.Models;
 using Arda.Kanban.Repositories;
-using Arda.Common.ViewModels.Main;
+using Arda.Kanban.ViewModels;
 
 namespace IntegrationTests
 {
