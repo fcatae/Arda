@@ -148,6 +148,13 @@ namespace Arda.Permissions.Controllers
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
+                
+        [HttpGet]
+        [Route("getuserphotofromcache")]
+        public string GetUserPhotoFromCache([FromQuery]string uniqueName)
+        {
+            return _permission.GetUserPhotoFromCache(uniqueName);            
+        }
 
         [HttpPut]
         [Route("saveuserphotooncache")]
