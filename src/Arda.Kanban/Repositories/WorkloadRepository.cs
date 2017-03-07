@@ -351,14 +351,7 @@ namespace Arda.Kanban.Repositories
                              }).ToList();
 
 
-            if (workloads != null)
-            {
-                return workloads;
-            }
-            else
-            {
-                return null;
-            }
+            return workloads;
         }
 
         [Obsolete]
