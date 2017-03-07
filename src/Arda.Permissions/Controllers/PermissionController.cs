@@ -153,7 +153,9 @@ namespace Arda.Permissions.Controllers
         [Route("getuserphotofromcache")]
         public string GetUserPhotoFromCache([FromQuery]string uniqueName)
         {
-            return _permission.GetUserPhotoFromCache(uniqueName);            
+            string photo = _permission.GetUserPhotoFromCache(uniqueName);
+
+            return JsonConvert.SerializeObject( _permission.GetUserPhotoFromCache(uniqueName) );
         }
 
         [HttpPut]
