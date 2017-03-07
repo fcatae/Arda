@@ -343,16 +343,13 @@ namespace Arda.Kanban.Repositories
                                  _WorkloadExpertise = wb.WBExpertise.ToString(),
                                  _WorkloadUsers = (from wbusers in _context.WorkloadBacklogUsers
                                                    where wbusers.WorkloadBacklog.WBID == wb.WBID
-                                                   select new Tuple<string, string>(wbusers.User.UniqueName, wbusers.User.Name)).ToList()
+                                                   select new Tuple<string, string>(wbusers.User.UniqueName, wbusers.User.Name)).ToList(),
+
+                                 _WorkloadHours = (from a in _context.Appointments
+                                                   where a.AppointmentWorkload.WBID == a.AppointmentWorkloadWBID
+                                                   select a.AppointmentHoursDispensed).Sum()
                              }).ToList();
 
-            foreach (var w in workloads)
-            {
-                var hours = (from a in _context.Appointments
-                             where a.AppointmentWorkload.WBID == w._WorkloadID
-                             select a.AppointmentHoursDispensed).ToList();
-                w._WorkloadHours = hours.Sum();
-            }
 
             if (workloads != null)
             {
