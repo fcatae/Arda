@@ -55,7 +55,10 @@ namespace IntegrationTests
             try
             {
                 reader = System.IO.File.OpenText(filename);
-                return reader.ReadToEnd();
+
+                string body = reader.ReadToEnd();
+
+                return body.Replace("\r", "").Replace("\n","");
             }
             catch(FileNotFoundException)
             {
@@ -91,7 +94,7 @@ namespace IntegrationTests
                 string returnObjectText = SerializeObject(returnObject);
 
                 string result = $"BEFORE:\n=======\n{beforeText}\n\nCOMMAND: {testName}\n\nAFTER:\n======\n{returnObjectText}";
-
+                
                 CompareResults(result, member);
             }
         }
@@ -104,7 +107,10 @@ namespace IntegrationTests
             {
                 string expected = ReadFile(filename);
 
-                if (result != expected)
+                string cleanResult = result.Replace("\r", "").Replace("\n", "");
+                string cleanExpected = expected.Replace("\r", "").Replace("\n", "");
+
+                if (cleanResult != cleanExpected)
                 {
                     throw new FailedTestException(member, null, result, expected);
                 }
