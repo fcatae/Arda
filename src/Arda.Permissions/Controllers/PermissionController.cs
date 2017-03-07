@@ -155,7 +155,7 @@ namespace Arda.Permissions.Controllers
         {
             string photo = _permission.GetUserPhotoFromCache(uniqueName);
 
-            return JsonConvert.SerializeObject( _permission.GetUserPhotoFromCache(uniqueName) );
+            return _permission.GetUserPhotoFromCache(uniqueName);
         }
 
         [HttpPut]

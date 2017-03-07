@@ -28,14 +28,9 @@ namespace Arda.Common.Utils
 
         public static string GetUserPhotoFromRemote(string user)
         {
-            var response = ConnectToRemoteService(HttpMethod.Get, PermissionsURL + "api/permission/getuserphotofromcache?uniqueName=" + user, user, "").Result;
-            if (response.IsSuccessStatusCode)
-            {
-                var photo = response.Content.ReadAsStringAsync().Result;
-                return photo;
-            }
+            var photo = ConnectToRemoteServiceString(HttpMethod.Get, PermissionsURL + "api/permission/getuserphotofromcache?uniqueName=" + user, user, "").Result;
 
-            return null;
+            return photo;
         }
 
 
@@ -101,6 +96,26 @@ namespace Arda.Common.Utils
             var responseConverted = JsonConvert.DeserializeObject<T>(responseJson);
 
             return responseConverted;
+        }
+
+        public static async Task<string> ConnectToRemoteServiceString(HttpMethod method, string url, string uniqueName, string code)
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(method, url);
+
+            request.Headers.Add("unique_name", uniqueName);
+            request.Headers.Add("code", code);
+
+            var responseSend = await client.SendAsync(request);
+
+            if(responseSend.IsSuccessStatusCode)
+            {
+                var responseStr = await responseSend.Content.ReadAsStringAsync();
+
+                return responseStr;
+            }
+
+            return null;
         }
 
         public static async Task<HttpResponseMessage> ConnectToRemoteService(HttpMethod method, string url, string uniqueName, string code)
