@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
-using Arda.Common.Interfaces.Reports;
-using Arda.Reports.Repositories;
+//using Arda.Common.Interfaces.Reports;
+//using Arda.Reports.Repositories;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace Arda.Reports
@@ -58,7 +58,7 @@ namespace Arda.Reports
             }));
             
             // Registering additional services.
-            services.AddScoped<IReportsRepository, ReportsRepository>();
+            // services.AddScoped<IReportsRepository, ReportsRepository>();
             
             services.AddSwaggerGen(c =>
             {
