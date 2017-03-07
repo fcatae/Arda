@@ -574,7 +574,7 @@ namespace Arda.Permissions.Repositories
             var key = "photo_" + uniqueName;
             byte[] arr = _cache.Get(key);
 
-            return Util.GetString(arr);
+            return ( arr != null ) ? Util.GetString(arr) : null;
         }
 
         public bool SaveUserPhotoOnCache(string uniqueName)
