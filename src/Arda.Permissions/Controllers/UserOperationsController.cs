@@ -69,9 +69,14 @@ namespace Arda.Permissions.Controllers
 
         [HttpGet]
         [Route("verifyifuseradmin")]
-        public bool VerifyIfUserAdmin()
+        public bool VerifyIfUserAdmin([FromQuery]string optionalUsername)
         {
-            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            var uniqueName = optionalUsername;
+            
+            if( uniqueName == null || uniqueName == "" )
+            {
+                HttpContext.Request.Headers["unique_name"].ToString();
+            }
 
             if (uniqueName != null)
             {
