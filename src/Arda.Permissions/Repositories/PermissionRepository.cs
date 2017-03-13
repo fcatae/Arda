@@ -475,7 +475,12 @@ namespace Arda.Permissions.Repositories
 
         public bool VerifyIfUserAdmin(string uniqueName)
         {
-            var propertiesSerializedCached = Util.GetString(_cache.Get(uniqueName));
+            var cache = _cache.Get(uniqueName);
+
+            if(cache == null)
+                return false;
+
+            var propertiesSerializedCached = Util.GetString(cache);
             var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
 
             var permToReview = permissions.FirstOrDefault(p => p.Module == "Users" && p.Resource == "Review");
