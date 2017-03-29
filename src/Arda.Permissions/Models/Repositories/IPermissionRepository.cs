@@ -56,5 +56,7 @@ namespace Arda.Permissions.Models.Repositories
         void CacheUserPhoto(string uniqueName, string PhotoBase64);
 
         bool SaveUserPhotoOnCache(string uniqueName);
+
+        string GetUserPhotoFromCache(string uniqueName);
     }
 }
