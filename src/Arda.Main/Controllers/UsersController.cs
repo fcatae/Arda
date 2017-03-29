@@ -223,6 +223,7 @@ namespace Arda.Main.Controllers
             return photo;
         }
         
+        [ResponseCache(Duration=600)]
         [HttpGet("users/photo/{user}")]
         public string GetUserPhotoFromCache(string user)
         {
