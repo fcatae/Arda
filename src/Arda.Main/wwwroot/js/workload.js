@@ -146,7 +146,8 @@ function createTask(id, title, start, end, hours, attachments, tag, state, users
 }
 
 function getUserImageTask(user, taskId) {
-    var url = '/users/GetUserPhoto?=' + user;
+    //var url = '/users/GetUserPhoto?=' + user;
+    var url = '/users/photo/' + user;
     $.ajax({
         url: url,
         type: "GET",
