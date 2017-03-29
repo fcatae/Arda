@@ -97,6 +97,8 @@ namespace Arda.Main.Controllers
             }
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
 
+            UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
+
             if (response.IsSuccessStatusCode)
             {
                 return new HttpResponseMessage(HttpStatusCode.OK);
