@@ -329,6 +329,7 @@ namespace Arda.Kanban.Repositories
                              // wb.WBUsers.Where(u => u.User.UniqueName == uniqueName).First().WBUserID equals wbu.WBUserID
                              join uk in _context.Users on wbu.User.UniqueName equals uk.UniqueName
                              //join at in _context.Files on wb equals at.WorkloadBacklog
+                             where (int)wb.WBStatus < 3
                              where uk.UniqueName.Equals(uniqueName)
                              orderby wb.WBTitle
                              select new WorkloadsByUserViewModel
