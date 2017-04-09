@@ -18,12 +18,11 @@
       "sdkVersion": "dnx-clr-win-x86.1.0.0-rc1-update1"
     },
     "Arda.Main": {
-      "executablePath": "dotnet",
       "commandName": "Project",
-      "commandLineArgs": "run",
       "environmentVariables": {
         "Hosting:Environment": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:5000"
     },
     "Docker": {
       "launchBrowser": true,

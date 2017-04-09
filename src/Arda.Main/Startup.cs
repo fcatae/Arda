@@ -22,7 +22,7 @@ namespace Arda.Main
 
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets();
+                builder.AddUserSecrets("arda-20160816073715");
             }
 
             if (!env.IsProduction())
@@ -37,7 +37,6 @@ namespace Arda.Main
 
         public IConfigurationRoot Configuration { get; set; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             //Injecting endpoints
@@ -58,7 +57,6 @@ namespace Arda.Main
                     opts.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver();
                 });
 
-
             // Registering distributed cache approach to the application.
             services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
             {
@@ -67,26 +65,11 @@ namespace Arda.Main
             }));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(LogLevel.Trace);
             var logger = loggerFactory.CreateLogger("Default");
-
-            //app.Run(async context =>
-            //{
-            //    var connectionFeature = context.Connection;
-            //    logger.LogDebug($"Peer: {connectionFeature.RemoteIpAddress?.ToString()}:{connectionFeature.RemotePort}"
-            //        + $"{Environment.NewLine}"
-            //        + $"Sock: {connectionFeature.LocalIpAddress?.ToString()}:{connectionFeature.LocalPort}");
-
-            //    var response = $"hello, world{Environment.NewLine}";
-            //    context.Response.ContentLength = response.Length;
-            //    context.Response.ContentType = "text/plain";
-            //    await context.Response.WriteAsync(response);
-            //});
-
-
+            
             app.UseApplicationInsightsRequestTelemetry();
 
             if (env.IsDevelopment())
@@ -118,7 +101,7 @@ namespace Arda.Main
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-
+            UsageTelemetry.Track(null, ArdaUsage.ArdaMain_Start);
         }
     }
 }
