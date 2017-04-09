@@ -222,6 +222,14 @@ namespace Arda.Main.Controllers
             var photo = Util.GetUserPhoto(user);
             return photo;
         }
+        
+        [ResponseCache(Duration=600)]
+        [HttpGet("users/photo/{user}")]
+        public string GetUserPhotoFromCache(string user)
+        {
+            var photo = Util.GetUserPhoto(user);
+            return photo;
+        }
 
         #endregion
 
