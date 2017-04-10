@@ -10,19 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D0D55668-DD95-4B7F-9803-19C2757FAA21}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Common", "src\Arda.Common\Arda.Common.csproj", "{FC756ED9-F692-4BD9-9321-1E65D6032BC9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Kanban", "src\Arda.Kanban\Arda.Kanban.csproj", "{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Main", "src\Arda.Main\Arda.Main.csproj", "{D0C4D841-525E-4576-BBEE-CDA79C52CDEA}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Permissions", "src\Arda.Permissions\Arda.Permissions.csproj", "{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Reports", "src\Arda.Reports\Arda.Reports.csproj", "{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Arda.Kanban.Repositories", "test\IntegrationTests.Arda.Kanban.Repositories\IntegrationTests.Arda.Kanban.Repositories.csproj", "{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,40 +18,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FC756ED9-F692-4BD9-9321-1E65D6032BC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC756ED9-F692-4BD9-9321-1E65D6032BC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC756ED9-F692-4BD9-9321-1E65D6032BC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC756ED9-F692-4BD9-9321-1E65D6032BC9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0C4D841-525E-4576-BBEE-CDA79C52CDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0C4D841-525E-4576-BBEE-CDA79C52CDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0C4D841-525E-4576-BBEE-CDA79C52CDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0C4D841-525E-4576-BBEE-CDA79C52CDEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{FC756ED9-F692-4BD9-9321-1E65D6032BC9} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
-		{C2F98DD9-72DA-4971-8A46-F5F9BFFB8A7B} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
 		{D0C4D841-525E-4576-BBEE-CDA79C52CDEA} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
-		{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
-		{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
-		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836} = {D0D55668-DD95-4B7F-9803-19C2757FAA21}
 	EndGlobalSection
 EndGlobal

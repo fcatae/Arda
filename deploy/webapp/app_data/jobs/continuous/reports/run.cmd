@@ -1,1 +1,0 @@
-%WEBROOT_PATH%\webapp-reports.cmd
