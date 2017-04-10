@@ -20,7 +20,8 @@ namespace Arda.Kanban.Repositories
         public bool AddNewWorkload(WorkloadViewModel workload)
         {
             //Load related Activity:
-            var activity = _context.Activities.First(a => a.ActivityID == workload.WBActivity);
+            Activity activity = (workload.WBActivity == Guid.Empty) ? null : _context.Activities.First(a => a.ActivityID == workload.WBActivity);
+
             //Load related Metrics:
             var metricList = new List<WorkloadBacklogMetric>();
             if (workload.WBMetrics != null)
