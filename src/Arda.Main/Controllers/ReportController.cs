@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Arda.Common.Utils;
 using Arda.Common.ViewModels.Reports;
 using System.Net.Http;
+using System.Linq;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,6 +17,10 @@ namespace Arda.Main.Controllers
     {
         public IActionResult TimeConsuming()
         {
+            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            UsageTelemetry.Track(uniqueName, ArdaUsage.Report_Show);
+
             return View();
         }
 

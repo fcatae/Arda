@@ -4,6 +4,8 @@ function Initialize() {
     //Click events:
     //New Workload:
     $('#btnNew').click(newWorkloadState);
+    $('#btnNewSimple').click(newWorkloadStateSimple);
+
     //Workload Details:
     $('#btnDetails').click(detailsWorkloadState);
     //Reset Button:
@@ -320,6 +322,37 @@ function newWorkloadState() {
     $('#btnWorkloadSend').removeAttr("disabled");
 }
 
+function newWorkloadStateSimple() {
+    //Clean values:
+    resetWorkloadForm();
+    EnableWorkloadFields();
+
+    //Get GUID:
+    getGUID(function (data) {
+        $('#WBID').attr('value', data);
+    });
+
+    //Set submit event:
+    $('#form-workload').unbind();
+    $('#form-workload').submit(addWorkloadSimple);
+
+    //Modal Title:
+    $('#ModalTitle').text('New Workload:');
+
+    //Buttons:
+    $('#btnWorkloadSend').text('Add');
+
+    $('#btnWorkloadEdit').addClass('hidden');
+    $('#btnWorkloadDelete').addClass('hidden');
+
+    $("#btnWorkloadCancel").removeAttr("disabled");
+
+    $('#btnWorkloadReset').removeClass('hidden');
+    $('#btnWorkloadReset').removeAttr("disabled");
+
+    $('#btnWorkloadSend').removeClass('hidden');
+    $('#btnWorkloadSend').removeAttr("disabled");
+}
 function detailsWorkloadState(ev, openWorkloadGuid) {
     resetWorkloadForm();
     DisableWorkloadFields();
@@ -745,6 +778,53 @@ function addWorkload(e) {
     })
 }
 
+function addWorkloadSimple(e) {
+    //Gets bootstrap-switch component value:
+    var value = $('#WBIsWorkload').bootstrapSwitch('state');
+    //Serializes form and append bootstrap-switch value:
+    var data = new FormData(this);
+    data.append('WBIsWorkload', value);
+
+    var selectedUsers = $('#WBUsers option:selected');
+    var users = [];
+    for (var i = 0; i < selectedUsers.length; i++) {
+        var item = $(selectedUsers[i]);
+        var user = { Item1: item.val(), Item2: item.text() };
+        users.push(user);
+    }
+
+
+    var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
+    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+
+    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
+
+    validateFormSimple(e, data, function (e, data) {
+        DisableWorkloadFields();
+        $('#msg').text('Wait...');
+        $('#msg').fadeIn();
+        $.ajax({
+            url: 'Workload/AddSimple',
+            type: 'POST',
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.IsSuccessStatusCode) {
+                    $('#WorkloadModal').modal('hide');
+                    //Get GUID:
+                    getGUID(function (data) {
+                        $('#WBID').attr('value', data);
+                    });
+                    createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
+                } else {
+                    $('#msg').text('Error!');
+                }
+            }
+        });
+        e.preventDefault();
+    })
+}
 function updateWorkload(e) {
     var id = this.WBID.value;
 
@@ -868,6 +948,53 @@ function validateForm(e, data, callback) {
             field.siblings().children("button").removeClass('error');
         }
     }
+
+    var msg = $('#msg');
+    if (ctrl) {
+        callback(e, data);
+    } else {
+        msg.fadeIn();
+        msg.text('Please, fill the mandatory fields.');
+        e.preventDefault();
+    }
+}
+
+function validateFormSimple(e, data, callback) {
+    var ctrl = true;
+
+    var textFields = [/*'#WBStartDate', '#WBEndDate',*/ '#WBTitle'];
+    for (var i = 0; i < textFields.length; i++) {
+        var field = $(textFields[i]);
+        if (field.val() == "") {
+            ctrl = false;
+            field.addClass('error');
+        } else {
+            field.removeClass('error');
+        }
+    }
+
+    //var selectFields = ['#WBExpertise', '#WBActivity'];
+    //for (var i = 0; i < selectFields.length; i++) {
+    //    var field = $(selectFields[i]);
+    //    if (field.val() == -1 || field.val() == null) {
+    //        ctrl = false;
+    //        field.addClass('error');
+    //    } else {
+    //        field.removeClass('error');
+    //    }
+    //}
+
+    //var multiselectFields = ['#WBTechnologies', '#WBMetrics', '#WBUsers'];
+    //for (var i = 0; i < multiselectFields.length; i++) {
+    //    var field = $(multiselectFields[i]);
+    //    var selected = $(multiselectFields[i] + ' option:selected');
+    //    if (selected.length == 0) {
+    //        ctrl = false;
+    //        field.siblings().children("button").addClass('error');
+    //    } else {
+    //        field.siblings().children("button").removeClass('error');
+    //    }
+    //}
 
     var msg = $('#msg');
     if (ctrl) {
