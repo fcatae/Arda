@@ -170,14 +170,21 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').classList.add(tag);
 
     clone.querySelector('.task .templateTitle').textContent = taskTitle;
-    clone.querySelector('.task .templateStart').textContent = start;
-    clone.querySelector('.task .templateEnd').textContent = end;
-    clone.querySelector('.task .templateHours').textContent = hours;
-    clone.querySelector('.task .templateAttachments').textContent = attachments;
 
-    $.each(users, function (index, value) {
-        getUserImageTask(value.Item1, taskId);
-    });
+    if (clone.querySelector('.hack-force-hide-template-layout') == null) {
+        clone.querySelector('.task .templateStart').textContent = start;
+        clone.querySelector('.task .templateEnd').textContent = end;
+        clone.querySelector('.task .templateHours').textContent = hours;
+        clone.querySelector('.task .templateAttachments').textContent = attachments;
+
+        $.each(users, function (index, value) {
+            getUserImageTask(value.Item1, taskId);
+        });
+    } 
+    else {
+        // will not work
+        //clone.querySelector('.task .templateDescription').textContent = description;
+    }
 
     clone.querySelector('.task').addEventListener('dragstart', dragstart);
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
@@ -277,7 +284,7 @@ function loadTaskList(filter_type, filter_user) {
 
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
-            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users);
+            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users, task.description);
         });
     },
         filter_type,
@@ -768,7 +775,7 @@ function addWorkload(e) {
                     getGUID(function (data) {
                         $('#WBID').attr('value', data);
                     });
-                    createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
+                    createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users, workload.description);
                 } else {
                     $('#msg').text('Error!');
                 }
@@ -858,7 +865,8 @@ function updateWorkload(e) {
 
     var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, attachments: attachments, tag: tag, users: users };
 
-    validateForm(e, data, function (e, data) {
+    // hack: disable validateForm for V2 (and for the legacy code as well)
+    //validateForm(e, data, function (e, data) {
         DisableWorkloadFields();
         $('#msg').text('Wait...');
         $.ajax({
@@ -877,9 +885,8 @@ function updateWorkload(e) {
             }
         });
         e.preventDefault();
-    })
+    //})
 }
-
 function deleteWorkload() {
     var workloadID = $('#WBID').val();
     $('#msg').text('Wait...');

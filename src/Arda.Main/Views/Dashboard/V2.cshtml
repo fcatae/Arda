@@ -94,13 +94,16 @@
                         </div>
                         <div class="clearfix"></div>
                     </header>
-                    <template id="templateTask">
-                        <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
+                    
+                    <template id="templateTask"> 
+                        <!-- hack: take a look at V2 implementation for createTaskInFolder at workload.js -->
+                        <div id="templateId" class="task hack-force-hide-template-layout" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
                             <div class="folder-tasks">
                                 <div class="folder-header">
                                     <p><span class="templateTitle">templateTitle</span></p>
                                 </div>
-                                <div class="folder-body">
+                                <!-- hack: hide folder-body for Dashboard V2 implementation -->
+                                <div class="folder-body" hidden>
                                     <p>
                                         <i class="fa fa-calendar fa-task-def" aria-hidden="true">
                                         </i>
@@ -127,8 +130,9 @@
                                         </span>
                                     </p>
                                 </div>
-                                <div class="folder-footer">
-
+                                <div class="folder-body" hidden>                                    
+                                </div>
+                                <div class="folder-footer" hidden>
                                 </div>
                             </div>
                         </div>
