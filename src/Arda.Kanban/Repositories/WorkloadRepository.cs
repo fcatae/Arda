@@ -20,7 +20,8 @@ namespace Arda.Kanban.Repositories
         public bool AddNewWorkload(WorkloadViewModel workload)
         {
             //Load related Activity:
-            var activity = _context.Activities.First(a => a.ActivityID == workload.WBActivity);
+            Activity activity = (workload.WBActivity == Guid.Empty) ? null : _context.Activities.First(a => a.ActivityID == workload.WBActivity);
+
             //Load related Metrics:
             var metricList = new List<WorkloadBacklogMetric>();
             if (workload.WBMetrics != null)
@@ -329,6 +330,7 @@ namespace Arda.Kanban.Repositories
                              // wb.WBUsers.Where(u => u.User.UniqueName == uniqueName).First().WBUserID equals wbu.WBUserID
                              join uk in _context.Users on wbu.User.UniqueName equals uk.UniqueName
                              //join at in _context.Files on wb equals at.WorkloadBacklog
+                             where (int)wb.WBStatus < 3
                              where uk.UniqueName.Equals(uniqueName)
                              orderby wb.WBTitle
                              select new WorkloadsByUserViewModel
