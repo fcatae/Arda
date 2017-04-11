@@ -810,12 +810,16 @@ function addWorkloadSimple(e) {
             processData: false,
             contentType: false,
             success: function (response) {
-                if (response.IsSuccessStatusCode) {
+
+                if (response) {
                     $('#WorkloadModal').modal('hide');
                     //Get GUID:
                     getGUID(function (data) {
                         $('#WBID').attr('value', data);
                     });
+
+                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: response.WBUsers };
+
                     createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
                 } else {
                     $('#msg').text('Error!');
