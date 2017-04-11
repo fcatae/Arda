@@ -36,6 +36,8 @@ namespace Arda.Common.Utils
 
         public static string GetUserPhoto(string user)
         {
+            if (user == "undefined") throw new Exception("GetUserPhoto: user is undefined");
+
             //var key = "photo_" + user;
             string arrPicture = null;
 

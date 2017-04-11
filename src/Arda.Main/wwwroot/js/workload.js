@@ -572,7 +572,7 @@ function formatDate(dateStr, callback) {
 
 function getGUID(callback) {
     $.ajax({
-        url: 'Workload/GetGuid',
+        url: '/Workload/GetGuid',
         type: 'GET',
         processData: false,
         contentType: false,
@@ -756,7 +756,7 @@ function addWorkload(e) {
         $('#msg').text('Wait...');
         $('#msg').fadeIn();
         $.ajax({
-            url: 'Workload/Add',
+            url: '/Workload/Add',
             type: 'POST',
             data: data,
             processData: false,
@@ -804,7 +804,7 @@ function addWorkloadSimple(e) {
         $('#msg').text('Wait...');
         $('#msg').fadeIn();
         $.ajax({
-            url: 'Workload/AddSimple',
+            url: '/Workload/AddSimple',
             type: 'POST',
             data: data,
             processData: false,
@@ -818,8 +818,10 @@ function addWorkloadSimple(e) {
                         $('#WBID').attr('value', data);
                     });
 
-                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: response.WBUsers };
-
+                    // hack
+                    var user = { Item1: response.WBUsers[0], Item2: 'not-filled' };
+                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: [user] };
+                    
                     createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
                 } else {
                     $('#msg').text('Error!');
@@ -860,7 +862,7 @@ function updateWorkload(e) {
         DisableWorkloadFields();
         $('#msg').text('Wait...');
         $.ajax({
-            url: 'Workload/Update',
+            url: '/Workload/Update',
             type: 'PUT',
             data: data,
             processData: false,
@@ -883,7 +885,7 @@ function deleteWorkload() {
     $('#msg').text('Wait...');
 
     $.ajax({
-        url: 'Workload/Delete?=' + workloadID,
+        url: '/Workload/Delete?=' + workloadID,
         type: 'DELETE',
         success: function (response) {
             if (response.IsSuccessStatusCode) {
@@ -903,7 +905,7 @@ function updateImgOnDatabase() {
     data.append('img', img)
 
     $.ajax({
-        url: 'Users/PhotoUpdate',
+        url: '/Users/PhotoUpdate',
         type: 'PUT',
         data: data,
         processData: false,
