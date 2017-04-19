@@ -364,7 +364,7 @@ namespace Arda.Kanban.Repositories
 
                              where (int)wb.WBStatus == 3 // ARCHIVED
                              where uk.UniqueName.Equals(uniqueName)
-                             orderby wb.WBEndDate descending   // ORDER BY EndDate DESC
+                             orderby wb.WBStartDate descending   // ORDER BY WBStartDate DESC
                              select new WorkloadsByUserViewModel
                              {
                                  _WorkloadID = wb.WBID,
