@@ -24,6 +24,8 @@ namespace Arda.Kanban.Models.Repositories
         // Get a list of a user's workloads
         IEnumerable<WorkloadsByUserViewModel> GetWorkloadsByUser(string uniqueName);
 
+        IEnumerable<WorkloadsByUserViewModel> GetArchivedWorkloadsByUser(string uniqueName);
+
         // Update the status
         bool UpdateWorkloadStatus(Guid id, int status);
 

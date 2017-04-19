@@ -140,7 +140,7 @@ namespace Arda.Kanban.Controllers
         [Route("listarchivewithfilter")]
         public IEnumerable<WorkloadsByUserViewModel> ListArchiveWithFilter([FromQuery]string uniqueName)
         {
-            return _repository.GetWorkloadsByUser(uniqueName);
+            return _repository.GetArchivedWorkloadsByUser(uniqueName);
         }
 
         [HttpGet]

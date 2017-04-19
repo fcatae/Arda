@@ -356,6 +356,39 @@ namespace Arda.Kanban.Repositories
             return workloads;
         }
 
+        public IEnumerable<WorkloadsByUserViewModel> GetArchivedWorkloadsByUser(string uniqueName)
+        {
+            var workloads = (from wb in _context.WorkloadBacklogs
+                             join wbu in _context.WorkloadBacklogUsers on wb.WBID equals wbu.WorkloadBacklogWBID
+                             join uk in _context.Users on wbu.User.UniqueName equals uk.UniqueName
+
+                             where (int)wb.WBStatus == 3 // ARCHIVED
+                             where uk.UniqueName.Equals(uniqueName)
+                             orderby wb.WBEndDate descending   // ORDER BY EndDate DESC
+                             select new WorkloadsByUserViewModel
+                             {
+                                 _WorkloadID = wb.WBID,
+                                 _WorkloadTitle = wb.WBTitle,
+                                 _WorkloadStartDate = wb.WBStartDate,
+                                 _WorkloadEndDate = wb.WBEndDate,
+                                 _WorkloadStatus = (int)wb.WBStatus,
+                                 _WorkloadIsWorkload = wb.WBIsWorkload,
+                                 _WorkloadAttachments = wb.WBFiles.Count,
+                                 _WorkloadExpertise = wb.WBExpertise.ToString(),
+                                 _WorkloadUsers = (from wbusers in _context.WorkloadBacklogUsers
+                                                   where wbusers.WorkloadBacklog.WBID == wb.WBID
+                                                   select new Tuple<string, string>(wbusers.User.UniqueName, wbusers.User.Name)).ToList(),
+
+                                 _WorkloadHours = 0 // NOT REQUIRED HERE
+                                                    //(from a in _context.Appointments
+                                                    // where a.AppointmentWorkload.WBID == a.AppointmentWorkloadWBID
+                                                    // select a.AppointmentHoursDispensed).Sum()
+                             }).ToList();
+
+
+            return workloads;
+        }
+
         [Obsolete]
         public bool SendNotificationAboutNewOrUpdatedWorkload(string uniqueName, int newOrUpdate)
         {
