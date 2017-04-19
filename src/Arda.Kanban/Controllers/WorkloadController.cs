@@ -135,5 +135,20 @@ namespace Arda.Kanban.Controllers
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
         }
+
+        [HttpGet]
+        [Route("listarchivewithfilter")]
+        public IEnumerable<WorkloadsByUserViewModel> ListArchiveWithFilter([FromQuery]string uniqueName)
+        {
+            return _repository.GetWorkloadsByUser(uniqueName);
+        }
+
+        [HttpGet]
+        [Route("search")]
+        public IEnumerable<WorkloadsByUserViewModel> SimpleSearchWithFilter([FromQuery]string uniqueName, [FromQuery]string searchText)
+        {
+            return _repository.GetWorkloadsByUser(uniqueName);
+        }
+        
     }
 }
