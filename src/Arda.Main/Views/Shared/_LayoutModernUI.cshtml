@@ -31,13 +31,12 @@
     <script src="~/js/jasny-bootstrap.min.js"></script>
 </head>
 <body>
-
     <main class="main">
         @if (User.Identity.IsAuthenticated) {
             <header class="navbar navbar-arda navbar-default">
                 <nav class="container-fluid">
                     <a asp-controller="Dashboard" asp-action="Index" class="navbar-brand">
-                        <strong>Arda</strong> Management Tool
+                        <strong>Arda</strong> vNext
                     </a>
 
                     @await Html.PartialAsync("_PartialDynamicMenu")

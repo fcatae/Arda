@@ -110,6 +110,39 @@ namespace Arda.Main.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<WorkloadViewModel> AddSimple(ICollection<IFormFile> WBFiles, WorkloadViewModel workload)
+        {
+            //Owner:
+            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            workload.WBActivity = Guid.Empty;
+            workload.WBComplexity = 0;
+            workload.WBExpertise = 0;
+
+            //Complete WB fields:
+            workload.WBCreatedBy = uniqueName;
+            workload.WBCreatedDate = DateTime.Now;
+
+            var now = DateTime.Now;
+            var today = new DateTime(now.Year, now.Month, now.Day);
+
+            workload.WBStartDate = today;
+            workload.WBEndDate = today;
+
+            // Myself
+            workload.WBUsers = new string[] { uniqueName };
+            
+            var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
+
+            UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"ConnectToRemote(Kanban/api/workload/add) failed with HTTP ${response.StatusCode}");
+
+            return workload;
+        }
+
         [HttpPut]
         public async Task<HttpResponseMessage> Update(ICollection<IFormFile> WBFiles, List<string> oldFiles, WorkloadViewModel workload)
         {

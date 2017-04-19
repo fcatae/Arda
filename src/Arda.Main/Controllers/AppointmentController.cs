@@ -39,6 +39,8 @@ namespace Arda.Main.Controllers
 
             var responseAboutAdd = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/appointment/add", uniqueName, "", appointment);
 
+            UsageTelemetry.Track(uniqueName, ArdaUsage.Appointment_Add);
+
             if (responseAboutAdd.IsSuccessStatusCode)
             {
                 return new HttpResponseMessage(HttpStatusCode.OK);

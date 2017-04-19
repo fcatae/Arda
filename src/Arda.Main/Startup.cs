@@ -101,7 +101,7 @@ namespace Arda.Main
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            UsageTelemetry.Track(null, ArdaUsage.ArdaMain_Start);
+            UsageTelemetry.Track("[system]", ArdaUsage.ArdaMain_Start);
         }
     }
 }

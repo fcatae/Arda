@@ -1,0 +1,224 @@
+﻿@using System.Security.Principal
+@using System.Net.Http;
+@using Arda.Common.Utils
+
+@{
+    var userStatus = ViewBag.UserStatus;
+    if (userStatus == 0)
+    {
+        //Message for Situation 0: Waiting_Review
+        <section class="concontainer-fluid jumbotron">
+            <div class="col-xs-12">
+                <h1>Welcome!</h1>
+                <h4><strong>Status: </strong><span style="color:green">Waiting Review</span></h4>
+                <p>You can access this tool but unfortunally you don't have any permissions to other modules yet.</p>
+                <p>An e-mail has been sent to system admin. Watch out your e-mail, as soon you get any aditional permitions you will receive an message.</p>
+
+            </div>
+            <div class="clearfix"></div>
+        </section>
+    }
+    else if (userStatus == 1)
+    {
+        <!--Message for Situation 1: Banned_User-->
+        <section class="concontainer-fluid jumbotron">
+            <div class="col-xs-12">
+                <h1>Welcome!</h1>
+                <h4><strong>Status: </strong><span style="color:red">Permissions Denied</span></h4>
+                <br />
+                <p>The system admin has reviewed your permissions solicitation and denied it.</p>
+                <p>Your situation may change, keep your eyes open for any aditional permitions notification on your e-mail.</p>
+
+            </div>
+            <div class="clearfix"></div>
+        </section>
+
+    }
+    else if (userStatus == 2)
+    {
+        //Page for Situation 2: Permissions_Granted-->
+        var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+        var canApproveUsers = Util.ConnectToRemoteService<bool>
+            (HttpMethod.Get, Util.PermissionsURL + "api/useroperations/verifyifuseradmin", user, string.Empty).Result;
+
+        if (canApproveUsers)
+        {
+            <div id="hackIsAdmin"></div>
+        }
+
+        if (canApproveUsers)
+        {
+            int numberUsersToApprove = Util.ConnectToRemoteService<int>
+                (HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getnumberofuserstoapprove", user, string.Empty).Result;
+            if (numberUsersToApprove > 0)
+            {
+                <div class="alert alert-warning fade in">
+                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                    <strong>Warning!</strong> You have @numberUsersToApprove users pending to approve. You can review it <a asp-controller="Users" asp-action="Review">here</a>.
+                </div>
+            }
+        }
+
+        <section class="concontainer-fluid">
+            <div class="col-xs-12">
+                <div class="row">
+                    <header class="ctn-header-dashboard ctn-header-dashboard--board" style="display: none">
+                        <div class="col-xs-12 col-lg-2 col-md-6">
+                            <h2>Board</h2>
+                        </div>
+                        <div class="col-xs-12 col-lg-3 col-md-4">
+                            <input type="radio" value="1" name="type" class="dashboard-filter-field" id="dashboard-filter-type-1" checked />
+                            <label class="dashboard-filter" for="dashboard-filter-type-1">
+                                Workload
+                            </label>
+                            <input type="radio" value="2" name="type" class="dashboard-filter-field" id="dashboard-filter-type-2" />
+                            <label class="dashboard-filter" for="dashboard-filter-type-2">
+                                Backlog
+                            </label>
+                        </div>
+                        <div class="col-xs-12 col-lg-2 col-md-3">
+                            <select id="filter-assign" name="filter-assign" class="form-control dashboard-filter-assign">
+                                <option value="">Choose a team member</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-lg-2 col-md-2">
+                            <input id="search-box" class="form-control form-control--search" placeholder="Search for a workload..." type="search" />
+                        </div>
+                        <div class="col-xs-12 col-lg-3 col-md-6">
+                            <input id="_WBID" type="hidden" />
+                        </div>
+                        <div class="col-xs-12 col-lg-2 col-md-4">
+                            <div class="data-sorting-buttons">
+                                <button id="btnNew" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> New Workload</button>                                
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </header>
+                    
+                    <template id="templateTask"> 
+                        <!-- hack: take a look at V2 implementation for createTaskInFolder at workload.js -->
+                        <div id="templateId" class="task hack-force-hide-template-layout" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
+                            <div class="folder-tasks">
+                                <div class="folder-header">
+                                    <p><span class="templateTitle">templateTitle</span></p>
+                                </div>
+                                <!-- hack: hide folder-body for Dashboard V2 implementation -->
+                                <div class="folder-body" hidden>
+                                    <p>
+                                        <i class="fa fa-calendar fa-task-def" aria-hidden="true">
+                                        </i>
+                                        <span class="templateStart">
+                                            templateStart
+                                        </span>
+                                        <i class="fa fa-calendar-check-o fa-task-def" aria-hidden="true">
+                                        </i>
+                                        <span class="templateEnd">
+                                            templateEnd
+                                        </span>
+                                    </p>
+
+                                    <p>
+                                        <i class="fa fa-clock-o fa-task-def" aria-hidden="true">
+                                        </i>
+                                        <span class="templateHours">
+                                            templateHours
+                                        </span>
+                                        <i class="fa fa-paperclip fa-task-def" aria-hidden="true">
+                                        </i>
+                                        <span class="templateAttachments">
+                                            templateAttachments
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="folder-body" hidden>                                    
+                                </div>
+                                <div class="folder-footer" hidden>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                     <div class="col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-3 col-md-6">
+                                <div class="row">
+                                    <h3 class="dashboard-panel-title dashboard-panel-title--todo">todo</h3> 
+                                    <button id="btnNewSimple" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> Quick Create</button>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3 col-md-6">
+                                <div class="row">
+                                    <h3 class="dashboard-panel-title  dashboard-panel-title--doing">doing</h3>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3 col-md-6">
+                                <div class="row">
+                                    <h3 class="dashboard-panel-title dashboard-panel-title--done">done</h3>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3 col-md-6">
+                                <div class="row">
+                                    <h3 class="dashboard-panel-title dashboard-panel-title--approved">archive</h3>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 container-fluid--dashboard">
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-3 col-md-6 dashboard-panel" data-simplebar-direction="vertical">
+                                <div id="divTaskListTodo" class="folder state0" data-state="0"></div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3 col-md-6 dashboard-panel"  data-simplebar-direction="vertical">
+                                <div id="divTaskListDoing" class="folder state1" data-state="1"></div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3 col-md-6 dashboard-panel"  data-simplebar-direction="vertical">
+                                <div id="divTaskListDone" class="folder state2" data-state="2"></div>
+                            </div>
+                            <div class="col-xs-12 col-lg-3 col-md-6 dashboard-panel" data-simplebar-direction="vertical">
+                                <div id="divTaskListActive" class="folder state3" data-state="3"></div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+}
+<!-- Workload Modal -->
+@await Html.PartialAsync("_WorkloadModalSimple")
+
+<script>
+    //Global Variables:
+    var folders = $('.folder');
+    var token = '@ViewBag.Token';
+
+    //Initialization:
+    $(function () {
+        @{
+            if (ViewBag.UserStatus < 1)
+            {
+                <text>
+                    //Get the user info using Microsoft Graph:
+                    GetImage('@User',token);
+                </text>
+            }
+            else if (ViewBag.UserStatus == 2)
+            {
+                <text>
+        //Initialize:
+        Initialize();
+
+        InitializeFields();
+
+        InitializeKanban();
+
+        RefreshTaskList();
+
+        </text>
+            }
+        }
+    });
+</script>
+<script src="~/js/workload.js"></script>
+<script src="~/js/simplebar.min.js"></script>

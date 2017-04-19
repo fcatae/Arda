@@ -18,6 +18,10 @@ namespace Arda.Main.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
+        public Task<IActionResult> V2()
+        {
+            return Index();
+        }
 
         public async Task<IActionResult> Index()
         {

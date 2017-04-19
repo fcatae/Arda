@@ -11,7 +11,9 @@ namespace Arda.Main
     {
         Dashboard_Index,
         Workload_Add,
-        ArdaMain_Start
+        ArdaMain_Start,
+        Appointment_Add,
+        Report_Show
     }
 
     public static class UsageTelemetry
