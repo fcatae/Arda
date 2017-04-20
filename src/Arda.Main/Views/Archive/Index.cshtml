@@ -45,6 +45,15 @@
                         </div>*@
                         <div class="clearfix"></div>
                     </header>
+
+                    <template id="templateLabel">
+                        <h1 class="archive-label">
+                            <span class="label-month"></span>
+                            <span>/</span>
+                            <span class="label-year"></span>
+                        </h1>
+                    </template>
+
                     <template id="templateTask">
                         <div id="templateId" class="task" style="cursor: unset"> @*draggable="true"*@
                             <div class="folder-tasks">
@@ -145,7 +154,7 @@
 }
 
 <!-- Workload Modal -->
-@await Html.PartialAsync("_WorkloadModal")
+@await Html.PartialAsync("_WorkloadModal2")
 
 <script>
     //Global Variables:

@@ -1,0 +1,181 @@
+﻿<div class="modal fade" id="WorkloadModal" tabindex="-1" role="dialog" aria-labelledby="WorkloadModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="ModalTitle"></h4>
+            </div>
+            <div class="modal-body">
+
+                <form method="post" enctype="multipart/form-data" id="form-workload">
+                    <div class="row" hidden>
+                        <div id="#formWBID" class="col-md-9">
+                            <div class="form-group">
+                                <label for="WBID">Code:</label>
+                                <input type="text" class="form-control" id="WBID" name="WBID" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="WBStartDate">Start date:</label>
+                                <div class="input-group date">
+                                    <input type="text" id="WBStartDate" name="WBStartDate" class="form-control" autocomplete="off">
+                                    <span class="input-group-addon"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="WBEndDate">End date:</label>
+                                <div class="input-group date">
+                                    <input type="text" id="WBEndDate" name="WBEndDate" class="form-control" autocomplete="off">
+                                    <span class="input-group-addon"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden -->
+                        <div class="col-md-3" hidden>
+                            <div class="form-group">
+                                <label id="lblWBIsWorkload" for="WBIsWorkload">Work Type:</label>
+                                <input type="checkbox" id="WBIsWorkload" data-on-text="Workload" data-off-text="Backlog" data-off-color="info" checked="checked">
+                            </div>
+                        </div>
+                        <!-- -->
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="WBTitle">Title:</label>
+                                <input type="text" class="form-control" id="WBTitle" name="WBTitle" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="WBDescription">Description:</label>
+                                <textarea class="form-control" id="WBDescription" name="WBDescription" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="WBExpertise">Expertise:</label>
+                                <select class="form-control" id="WBExpertise" name="WBExpertise">
+                                    <option disabled selected value="-1">Select the expertise</option>
+                                    <option value="0">Management</option>
+                                    <option value="1">Project</option>
+                                    <option value="2">Program Management</option>
+                                    <option value="3">Architecture</option>
+                                    <option value="4">Coding</option>
+                                    <option value="5">Building Infra</option>
+                                    <option value="6">Internal Processes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="WBActivity">Activity:</label>
+                                <select class="form-control" id="WBActivity" name="WBActivity">
+                                    <!--Dynamically Content-->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="WBComplexity">Complexity:</label>
+                                <div style="vertical-align: top">
+                                    <input id="WBComplexity" name="WBComplexity" readonly hidden>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <p id="ComplexityLevel">Very Low</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="WBTechnologies">Technologies:</label>
+                                <select class="form-control" id="WBTechnologies" name="WBTechnologies" multiple="multiple">
+                                    <!--Dynamically Content-->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="WBMetrics">Metrics:</label>
+                                <select class="form-control" id="WBMetrics" name="WBMetrics" multiple="multiple">
+                                    <!--Dynamically Content-->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="WBUsers">Users:</label>
+                                <select class="form-control" id="WBUsers" name="WBUsers" multiple="multiple">
+                                    <!--Dynamically Content-->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" hidden>
+                        <div class="col-md-12">
+                            <label for="WBFiles">Files:</label>
+                            <div id="filesList"></div>
+                            <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+                                <div class="form-control" data-trigger="fileinput"><i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div>
+                                <span class="input-group-addon btn btn-default btn-file">
+                                    <span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span>
+                                    <input id="WBFiles" type="file" name="WBFiles" multiple>
+                                </span>
+                                <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Footer-->
+                    <div >
+                        <div class="pull-right" id="msg">
+                            
+                        </div>
+
+                        <div id="buttonsPanel">
+                            <div class="data-sorting-buttons">
+                                <button type="button" class="ds-button-reset" id="btnWorkloadCancel">Cancel</button>
+                            </div>
+
+                            <div class="data-sorting-buttons">
+                                <button type="button" class="ds-button-reset" id="btnWorkloadReset">Reset</button>
+                            </div>
+
+                            <div class="data-sorting-buttons">
+                                <button type="button" class="ds-button-update" id="btnWorkloadEdit"><i class="fa fa-retweet" aria-hidden="true"></i>Edit</button>
+                            </div>
+
+                            <div class="data-sorting-buttons">
+                                <button type="button" class="btn btn-warning" id="btnWorkloadDelete"><i class="fa fa-trash-o" aria-hidden="true"></i>Delete</button>
+                            </div>
+
+                            <div class="data-sorting-buttons">
+                                <button type="submit" class="btn btn-success" id="btnWorkloadSend"></button>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
