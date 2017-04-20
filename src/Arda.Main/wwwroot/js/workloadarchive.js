@@ -92,25 +92,26 @@ function InitializeKanban() {
 //Kanban:
 
 function dragstart(ev) {
-    ev.dataTransfer.setData('text', ev.target.id);
+    ev.preventDefault();
+    // ev.dataTransfer.setData('text', ev.target.id);
 }
 
 function dragover(ev) {
-    ev.preventDefault();
+    // ev.preventDefault();
 }
 
 function drop(ev) {
-    var target = this;
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData('text');
-    var elem = document.getElementById(data);
-    target.appendChild(elem);
+    //var target = this;
+    //ev.preventDefault();
+    //var data = ev.dataTransfer.getData('text');
+    //var elem = document.getElementById(data);
+    //target.appendChild(elem);
 
-    var state = target.dataset['state'];
-    var numstate = state | 0;
-    var task = { Id: elem.id, State: numstate };
+    //var state = target.dataset['state'];
+    //var numstate = state | 0;
+    //var task = { Id: elem.id, State: numstate };
 
-    update(task);
+    //update(task);
 }
 
 //var tasks = $('.task');
@@ -133,14 +134,14 @@ function clearTasks() {
 }
 
 function moveTask(id, state) {
-    var task_state = '.state' + state;
-    var folder = document.querySelector(task_state);
-    var taskElem = document.getElementById(id);
+    //var task_state = '.state' + state;
+    //var folder = document.querySelector(task_state);
+    //var taskElem = document.getElementById(id);
 
-    folder.appendChild(taskElem);
+    //folder.appendChild(taskElem);
 
-    var task = { Id: id, State: state };
-    update(task);
+    //var task = { Id: id, State: state };
+    //update(task);
 }
 
 function createTask(id, title, start, end, hours, attachments, tag, state, users) {
@@ -189,7 +190,8 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
         //clone.querySelector('.task .templateDescription').textContent = description;
     }
 
-    clone.querySelector('.task').addEventListener('dragstart', dragstart);
+    // clone.querySelector('.task').addEventListener('dragstart', dragstart);
+
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
     folder.appendChild(clone, true);
