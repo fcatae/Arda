@@ -20,7 +20,9 @@ namespace Arda.Main.Controllers
     {
         public IActionResult Index()
         {
-            // UsageTelemetry.Track(user, ArdaUsage.???);
+            var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            UsageTelemetry.Track(user, ArdaUsage.Dashboard_Archive);
 
             return View();
         }

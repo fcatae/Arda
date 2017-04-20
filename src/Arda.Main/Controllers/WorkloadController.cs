@@ -266,6 +266,8 @@ namespace Arda.Main.Controllers
 
             var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listarchivewithfilter?uniqueName=" + filtered_user, filtered_user, "");
 
+            UsageTelemetry.Track(filtered_user, ArdaUsage.Archive_User);
+
             var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == true)
                          .Select(x => new {
                              id = x._WorkloadID,
