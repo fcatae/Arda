@@ -57,35 +57,36 @@ function Initialize() {
 function InitializeFields() {
     //Load values:
     //Get All Activities:
-    $.getJSON('/activity/GetActivities', null, callbackGetActivities);
-    //Get User Technologies:
-    $.getJSON('/technology/GetTechnologies', null, callbackGetTechnologies);
-    //Get User Metrics:
-    $.getJSON('/metric/GetMetrics', null, callbackGetMetrics);
-    //Get User Users:
-    $.getJSON('/users/GetUsers', null, callbackGetUsers);
+    //$.getJSON('/activity/GetActivities', null, callbackGetActivities);
+    ////Get User Technologies:
+    //$.getJSON('/technology/GetTechnologies', null, callbackGetTechnologies);
+    ////Get User Metrics:
+    //$.getJSON('/metric/GetMetrics', null, callbackGetMetrics);
+    ////Get User Users:
+    //$.getJSON('/users/GetUsers', null, callbackGetUsers);
 }
 
 function InitializeKanban() {
     //Board Initialization
-    folders.map(function (i, folder) {
-        folder.addEventListener('dragover', dragover);
-        folder.addEventListener('drop', drop.bind(folder));
-    });
+    //folders.map(function (i, folder) {
+    //    folder.addEventListener('dragover', dragover);
+    //    folder.addEventListener('drop', drop.bind(folder));
+    //});
 
     $('.dashboard-filter-field').change(function () {
         RefreshTaskList();
     });
 
-    if (window.hackIsAdmin != null) {
+    // Archive: Always True
+    if (true) {
         GetUserList();
         $('#filter-assign').change(function () {
             RefreshTaskList();
         });
     }
-    else {
-        $('#filter-assign').css('visibility', 'hidden');
-    }
+    //else {
+    //    $('#filter-assign').css('visibility', 'hidden');
+    //}
 }
 
 //Kanban:
@@ -179,9 +180,9 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
         // clone.querySelector('.task .templateHours').textContent = hours;
         // clone.querySelector('.task .templateAttachments').textContent = attachments;
 
-        $.each(users, function (index, value) {
-            getUserImageTask(value.Item1, taskId);
-        });
+        //$.each(users, function (index, value) {
+        //    getUserImageTask(value.Item1, taskId);
+        //});
     } 
     else {
         // will not work
@@ -907,23 +908,23 @@ function deleteWorkload() {
     });
 }
 
-function updateImgOnDatabase() {
-    var img = $('#userImg').attr('src');
+//function updateImgOnDatabase() {
+//    var img = $('#userImg').attr('src');
 
-    var data = new FormData(this);
-    data.append('img', img)
+//    var data = new FormData(this);
+//    data.append('img', img)
 
-    $.ajax({
-        url: '/Users/PhotoUpdate',
-        type: 'PUT',
-        data: data,
-        processData: false,
-        contentType: false,
-        success: function (response) {
+//    $.ajax({
+//        url: '/Users/PhotoUpdate',
+//        type: 'PUT',
+//        data: data,
+//        processData: false,
+//        contentType: false,
+//        success: function (response) {
 
-        }
-    });
-}
+//        }
+//    });
+//}
 
 //Workload Validation:
 

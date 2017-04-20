@@ -31,13 +31,11 @@ namespace Arda.Common.Utils
         {
             try
             {
-                // Enforce serialization
-                lock(PermissionsURL)
-                {
-                    var photo = ConnectToRemoteServiceString(HttpMethod.Get, PermissionsURL + "api/permission/getuserphotofromcache?uniqueName=" + user, user, "").Result;
+                // Sometimes we have a flood of requests (needs caching)
+                // Sometimes caching fails because the first request fails - needs to check permissions API
+                var photo = ConnectToRemoteServiceString(HttpMethod.Get, PermissionsURL + "api/permission/getuserphotofromcache?uniqueName=" + user, user, "").Result;
 
-                    return photo;
-                }                
+                return photo;
             }
             catch(AggregateException exc)
             {
@@ -99,6 +97,12 @@ namespace Arda.Common.Utils
             }
             catch(AggregateException exc)
             {
+                if( exc.InnerException is JsonReaderException)
+                {
+                    var currentException = exc.InnerException as JsonReaderException;
+
+                    throw new Exception("api/permission/saveuserphotooncache: failed with JsonReaderException", currentException);
+                }
                 // may raise JsonReaderException -- when the API fails to find the corresponding picture
                 throw exc;
             }
