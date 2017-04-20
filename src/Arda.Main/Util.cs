@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
+using Microsoft.ApplicationInsights;
 
 namespace Arda.Common.Utils
 {
@@ -28,9 +29,30 @@ namespace Arda.Common.Utils
 
         public static string GetUserPhotoFromRemote(string user)
         {
-            var photo = ConnectToRemoteServiceString(HttpMethod.Get, PermissionsURL + "api/permission/getuserphotofromcache?uniqueName=" + user, user, "").Result;
+            try
+            {
+                // Enforce serialization
+                lock(PermissionsURL)
+                {
+                    var photo = ConnectToRemoteServiceString(HttpMethod.Get, PermissionsURL + "api/permission/getuserphotofromcache?uniqueName=" + user, user, "").Result;
 
-            return photo;
+                    return photo;
+                }                
+            }
+            catch(AggregateException exc)
+            {
+                if(exc.InnerException is TaskCanceledException)
+                {
+                    var currentException = exc.InnerException;
+
+                    var client = new TelemetryClient();
+                    client.TrackException(currentException);
+
+                    throw currentException;
+                }
+
+                throw exc;
+            }
         }
 
 
@@ -59,18 +81,26 @@ namespace Arda.Common.Utils
 
             //Try from DB:
 
-            // Getting the response of remote service
-            var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/saveuserphotooncache?=" + user, user, "").Result;
-            if (response.IsSuccessStatusCode)
+            try
             {
-                arrPicture = GetUserPhotoFromRemote(user); // _cache.Get(key);
+                // Getting the response of remote service
+                var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/saveuserphotooncache?=" + user, user, "").Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    arrPicture = GetUserPhotoFromRemote(user); // _cache.Get(key);
 
-                var photo = arrPicture; // Util.GetString(_cache.Get(key));
-                return photo;
+                    var photo = arrPicture; // Util.GetString(_cache.Get(key));
+                    return photo;
+                }
+                else
+                {
+                    return string.Empty;
+                }
             }
-            else
+            catch(AggregateException exc)
             {
-                return string.Empty;
+                // may raise JsonReaderException -- when the API fails to find the corresponding picture
+                throw exc;
             }
         }
 
