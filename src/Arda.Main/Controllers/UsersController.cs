@@ -9,6 +9,7 @@ using System.Net;
 using Arda.Common.JSON;
 using Arda.Main.ViewModels;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.ApplicationInsights;
 
 //TODO: Refactor name Users to User
 namespace Arda.Main.Controllers
@@ -227,8 +228,18 @@ namespace Arda.Main.Controllers
         [HttpGet("users/photo/{user}")]
         public string GetUserPhotoFromCache(string user)
         {
-            var photo = Util.GetUserPhoto(user);
-            return photo;
+            try
+            {
+                var photo = Util.GetUserPhoto(user);
+                return photo;
+            }
+            catch(TaskCanceledException ex)
+            {
+                var client = new TelemetryClient();
+                client.TrackException(new System.Exception("GetUserPhotoFromCache: thrown taskCanceledException - cache is not populated?", ex));
+
+                return "";
+            }
         }
 
         #endregion
