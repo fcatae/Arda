@@ -13,6 +13,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\js\archiveworkload.js" />
+    <Content Include="wwwroot\js\workload - Copy.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\js\workloadarchive.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="wwwroot\**\*;Views\**\*;Areas\**\Views;docker-compose.yml;Dockerfile;.dockerignore;arda.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
