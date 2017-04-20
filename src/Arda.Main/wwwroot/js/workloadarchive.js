@@ -57,13 +57,13 @@ function Initialize() {
 function InitializeFields() {
     //Load values:
     //Get All Activities:
-    //$.getJSON('/activity/GetActivities', null, callbackGetActivities);
-    ////Get User Technologies:
-    //$.getJSON('/technology/GetTechnologies', null, callbackGetTechnologies);
-    ////Get User Metrics:
-    //$.getJSON('/metric/GetMetrics', null, callbackGetMetrics);
-    ////Get User Users:
-    //$.getJSON('/users/GetUsers', null, callbackGetUsers);
+    $.getJSON('/activity/GetActivities', null, callbackGetActivities);
+    //Get User Technologies:
+    $.getJSON('/technology/GetTechnologies', null, callbackGetTechnologies);
+    //Get User Metrics:
+    $.getJSON('/metric/GetMetrics', null, callbackGetMetrics);
+    //Get User Users:
+    $.getJSON('/users/GetUsers', null, callbackGetUsers);
 }
 
 function InitializeKanban() {
@@ -92,25 +92,26 @@ function InitializeKanban() {
 //Kanban:
 
 function dragstart(ev) {
-    ev.dataTransfer.setData('text', ev.target.id);
+    ev.preventDefault();
+    // ev.dataTransfer.setData('text', ev.target.id);
 }
 
 function dragover(ev) {
-    ev.preventDefault();
+    // ev.preventDefault();
 }
 
 function drop(ev) {
-    var target = this;
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData('text');
-    var elem = document.getElementById(data);
-    target.appendChild(elem);
+    //var target = this;
+    //ev.preventDefault();
+    //var data = ev.dataTransfer.getData('text');
+    //var elem = document.getElementById(data);
+    //target.appendChild(elem);
 
-    var state = target.dataset['state'];
-    var numstate = state | 0;
-    var task = { Id: elem.id, State: numstate };
+    //var state = target.dataset['state'];
+    //var numstate = state | 0;
+    //var task = { Id: elem.id, State: numstate };
 
-    update(task);
+    //update(task);
 }
 
 //var tasks = $('.task');
@@ -133,14 +134,14 @@ function clearTasks() {
 }
 
 function moveTask(id, state) {
-    var task_state = '.state' + state;
-    var folder = document.querySelector(task_state);
-    var taskElem = document.getElementById(id);
+    //var task_state = '.state' + state;
+    //var folder = document.querySelector(task_state);
+    //var taskElem = document.getElementById(id);
 
-    folder.appendChild(taskElem);
+    //folder.appendChild(taskElem);
 
-    var task = { Id: id, State: state };
-    update(task);
+    //var task = { Id: id, State: state };
+    //update(task);
 }
 
 function createTask(id, title, start, end, hours, attachments, tag, state, users) {
@@ -189,7 +190,8 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
         //clone.querySelector('.task .templateDescription').textContent = description;
     }
 
-    clone.querySelector('.task').addEventListener('dragstart', dragstart);
+    // clone.querySelector('.task').addEventListener('dragstart', dragstart);
+
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
     folder.appendChild(clone, true);
@@ -205,9 +207,9 @@ function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, use
 
     $('#' + taskId + ' .folder-tasks .folder-footer img').remove();
 
-    $.each(users, function (index, value) {
-        getUserImageTask(value.Item1, taskId);
-    });
+    //$.each(users, function (index, value) {
+    //    getUserImageTask(value.Item1, taskId);
+    //});
 }
 
 function httpCall(action, url, data, callback, error) {
@@ -286,15 +288,56 @@ function loadTaskList(filter_type, filter_user) {
     clearTasks();
 
     gettasklist(function (tasklist) {
+
+        var lastMonthYear = '';
+
         tasklist.map(function (task) {
+            var curMonthYear = task.start.substring(3); // expect: dd/MM/yyyy
+
+            if (lastMonthYear != curMonthYear) {
+                printMonth(curMonthYear);
+
+                lastMonthYear = curMonthYear;
+            }
+
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users, task.description);
         });
     },
         filter_type,
         filter_user
     );
+
+    function printMonth(monthYear) {
+        var month = monthYear.substring(0, 2);
+        var year = monthYear.substring(3);
+
+        switch (month) {
+            case '01': createLabel('Janeiro', year); break;
+            case '02': createLabel('Fevereiro', year); break;
+            case '03': createLabel('Março', year); break;
+            case '04': createLabel('Abril', year); break;
+            case '05': createLabel('Maio', year); break;
+            case '06': createLabel('Junho', year); break;
+            case '07': createLabel('Julho', year); break;
+            case '08': createLabel('Agosto', year); break;
+            case '09': createLabel('Setembro', year); break;
+            case '10': createLabel('Outubro', year); break;
+            case '11': createLabel('Novembro', year); break;
+            case '12': createLabel('Dezembro', year); break;
+        }
+    }
 }
 
+function createLabel(month, year) {
+    var content = document.querySelector('#templateLabel').content;
+    var clone = document.importNode(content, true);
+    var folder = document.querySelector('#divTaskListActive');
+    
+    clone.querySelector('.archive-label .label-month').textContent = month;
+    clone.querySelector('.archive-label .label-year').textContent = year;
+
+    folder.appendChild(clone, true);
+}
 
 //Workloads:
 

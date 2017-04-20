@@ -45,11 +45,22 @@
                         </div>*@
                         <div class="clearfix"></div>
                     </header>
+
+                    <template id="templateLabel">
+                        <h1 class="archive-label">
+                            <span class="label-month"></span>
+                            <span>/</span>
+                            <span class="label-year"></span>
+                        </h1>
+                    </template>
+
                     <template id="templateTask">
-                        <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
+                        <div id="templateId" class="task" style="cursor: unset"> @*draggable="true"*@
                             <div class="folder-tasks">
                                 <div class="folder-header">
-                                    <p><span class="templateTitle">templateTitle</span></p>
+                                    <p>
+                                    <input type="checkbox" data-toggle="modal" data-target="#WorkloadModal" onclick="return false;"/>
+                                    <span class="templateTitle">templateTitle</span></p>
                                 </div>
                                 <div class="folder-body">
                                     <p>
@@ -141,6 +152,9 @@
         </section>
     }
 }
+
+<!-- Workload Modal -->
+@await Html.PartialAsync("_WorkloadModal2")
 
 <script>
     //Global Variables:
