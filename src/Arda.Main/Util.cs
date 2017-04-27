@@ -118,17 +118,36 @@ namespace Arda.Common.Utils
             return Encoding.UTF8.GetString(obj);
         }
 
+        public static async Task<string> ClientSendAsync(HttpMethod method, string url, string uniqueName, string code)
+        {
+            try
+            {
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(method, url);
+                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                request.Headers.Add("unique_name", uniqueName);
+                request.Headers.Add("code", code);
+
+                var response = await client.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new InvalidOperationException("Invalid HTTP code: " + response.StatusCode);
+                }
+
+                return await response.Content.ReadAsStringAsync();
+            }
+            catch (Exception httpExc)
+            {
+                throw new Exception("Could not contact endpoint: " + url, httpExc);
+            }
+        }
+
         public static async Task<T> ConnectToRemoteService<T>(HttpMethod method, string url, string uniqueName, string code)
         {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(method, url);
-            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            var responseJson = await ClientSendAsync(method, url, uniqueName, code);
 
-            request.Headers.Add("unique_name", uniqueName);
-            request.Headers.Add("code", code);
-
-            var responseRaw = await client.SendAsync(request);
-            var responseJson = responseRaw.Content.ReadAsStringAsync().Result;
             var responseConverted = JsonConvert.DeserializeObject<T>(responseJson);
 
             return responseConverted;
@@ -144,11 +163,11 @@ namespace Arda.Common.Utils
 
             var responseSend = await client.SendAsync(request);
 
-            if(responseSend.IsSuccessStatusCode)
+            if (responseSend.IsSuccessStatusCode)
             {
                 var responseStr = await responseSend.Content.ReadAsStringAsync();
 
-                if( responseStr != "" )
+                if (responseStr != "")
                     return responseStr;
             }
 
