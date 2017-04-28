@@ -115,7 +115,7 @@ namespace Arda.Main.Controllers
         }
 
         [HttpPost]
-        public async Task<HttpResponseMessage> Add(ICollection<IFormFile> WBFiles, WorkloadViewModel workload)
+        public async Task<HttpResponseMessage> Add(ICollection<IFormFile> WBFiles, WorkloadViewModel2 workload)
         {
             //Owner:
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
