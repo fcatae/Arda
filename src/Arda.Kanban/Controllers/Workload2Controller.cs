@@ -52,14 +52,7 @@ namespace Arda.Kanban.Controllers
         {
             return _extraRepo.GetWorkloads(tag);
         }
-
-        [HttpGet]
-        [Route("list")]
-        public IEnumerable<WorkloadViewModel> List()
-        {
-            return _extraRepo.GetWorkloads("tag");
-        }
-
+        
         [HttpPost]
         [Route("add")]
         public HttpResponseMessage Add()
@@ -75,7 +68,6 @@ namespace Arda.Kanban.Controllers
 
             if (response)
             {
-                _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 0);
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
             else
