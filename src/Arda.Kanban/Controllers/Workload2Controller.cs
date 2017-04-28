@@ -37,11 +37,18 @@ namespace Arda.Kanban.Controllers
             return _extraRepo.GetWorkloads(tag);
         }
 
-        [HttpPost]
-        [Route("assign")]
-        public bool Assign([FromBody]AssignInput input)
+        [HttpGet]
+        [Route("{tag}")]
+        public IEnumerable<WorkloadsByUserViewModel> GetTag(string tag)
         {
-            _extraRepo.AssignTag(Guid.Parse(input.wbid), input.tag);
+            return _extraRepo.GetWorkloads(tag);
+        }
+
+        [HttpPost]
+        [Route("{tag}/assign/{wbid}")]
+        public bool Assign([FromRoute]string tag, [FromRoute]string wbid)
+        {
+            _extraRepo.AssignTag(Guid.Parse(wbid), tag);
 
             return true;
         }
@@ -54,8 +61,8 @@ namespace Arda.Kanban.Controllers
         }
         
         [HttpPost]
-        [Route("add")]
-        public HttpResponseMessage Add()
+        [Route("{tag}/add")]
+        public HttpResponseMessage Add([FromRoute]string tag)
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
@@ -65,6 +72,8 @@ namespace Arda.Kanban.Controllers
 
             // Calling add
             var response = _repository.AddNewWorkload(workload);
+
+            _extraRepo.AssignTag(workload.WBID, tag);
 
             if (response)
             {
