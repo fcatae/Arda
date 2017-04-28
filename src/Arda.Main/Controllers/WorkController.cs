@@ -36,6 +36,7 @@ namespace Arda.Main.Controllers
 
             ViewBag.User = user;
             ViewBag.Title = workspace.ToUpper();
+            ViewBag.Work = workspace.ToLower();
 
             UsageTelemetry.Track(user, ArdaUsage.Work_Index);
 

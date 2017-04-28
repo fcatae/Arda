@@ -13,18 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\js\work.api.js" />
-    <Content Include="wwwroot\js\work.api.ui.js" />
-    <Content Include="wwwroot\js\work.ui.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\js\work.js" />
-    <Content Include="wwwroot\js\workload - Copy.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="wwwroot\**\*;Views\**\*;Areas\**\Views;docker-compose.yml;Dockerfile;.dockerignore;arda.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>

@@ -233,7 +233,7 @@ function taskdone(id) {
 
 function gettasklist(callback, type, user) {
 
-    var filter_user = user ? '?user=' + user : '';
+    var filter_user = user ? '?tag=' + user : '';
     var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
 
     httpCall('GET', '/Workload' + filter_type + filter_user, null, callback);
@@ -247,6 +247,7 @@ function update(task) {
 
 function RefreshTaskList() {
     var selected_user = $('select[name=filter-assign] option:selected').val();
+
     var selected_type = $('input[name=type]:checked').val();
     var filter_user = selected_user; // (selected_user.length > 0) ? el.target.selectedOptions[0].value : null;
     var filter_type = (selected_type == 2); // is BACKLOG?

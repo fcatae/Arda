@@ -21,7 +21,7 @@
                     </div>
                     <div class="col-xs-12 col-lg-2 col-md-3">
                         <select id="filter-assign" name="filter-assign" class="form-control dashboard-filter-assign">
-                            <option value="">Choose a team member</option>
+                            <option value="@ViewBag.Title" selected>CURRENT WORKSPACE: @ViewBag.Title</option>
                         </select>
                     </div>
                     <div class="col-xs-12 col-lg-2 col-md-2">
@@ -143,5 +143,5 @@
 
     });
 </script>
-<script src="~/js/workload.js"></script>
+<script src="~/js/work_api.js"></script>
 <script src="~/js/simplebar.min.js"></script>
