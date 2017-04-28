@@ -42,11 +42,11 @@ namespace Arda.Main.Controllers
             Decimal.TryParse(Request.Form["_AppointmentTE"], NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, new CultureInfo("pt-BR"), out TE);
             appointment._AppointmentTE = TE;
 
-            DateTime date;
-            if(DateTime.TryParse(Request.Form["_AppointmentDate"], new CultureInfo("pt-BR"), DateTimeStyles.AllowWhiteSpaces, out date))
-            {
-                appointment._AppointmentDate = date;
-            }
+            //DateTime date;
+            //if(DateTime.TryParse(Request.Form["_AppointmentDate"], new CultureInfo("pt-BR"), DateTimeStyles.AllowWhiteSpaces, out date))
+            //{
+            //    appointment._AppointmentDate = date;
+            //}
 
             if (appointment._AppointmentDate == DateTime.MinValue)
             {
