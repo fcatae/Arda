@@ -511,8 +511,9 @@ $(function ($) {
             }).done(function (data) {
                 if (data.IsSuccessStatusCode) {
                     $("#message").html("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Success!</strong> The appointment has been added into Arda.</div>");
-                    $("#btnAddAppointment").html("<i class='fa fa-floppy-o' aria-hidden='true'></i> Save");
-                    RedirectIn(3000, "/Appointment/My");
+                    // $("#btnAddAppointment").html("<i class='fa fa-floppy-o' aria-hidden='true'></i> Save");
+                    // RedirectIn(3000, "/Appointment/My");
+                    window.close();
                 }
                 else {
                     $("#message").html("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Error!</strong> Something wrong happened with your request. Try again in few minutes.</div>");

@@ -42,6 +42,18 @@ namespace Arda.Main.Controllers
             Decimal.TryParse(Request.Form["_AppointmentTE"], NumberStyles.AllowThousands | NumberStyles.AllowDecimalPoint, new CultureInfo("pt-BR"), out TE);
             appointment._AppointmentTE = TE;
 
+            DateTime date;
+            if(DateTime.TryParse(Request.Form["_AppointmentDate"], new CultureInfo("pt-BR"), DateTimeStyles.AllowWhiteSpaces, out date))
+            {
+                appointment._AppointmentDate = date;
+            }
+
+            if (appointment._AppointmentDate == DateTime.MinValue)
+            {
+                // there can be some problems due to date formatting
+                throw new Exception("invalid date range");
+            }
+
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
             var responseAboutAdd = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/appointment/add", uniqueName, "", appointment);
