@@ -171,6 +171,21 @@
                             <div class="data-sorting-buttons">
                                 <button type="submit" class="btn btn-success" id="btnWorkloadSend"></button>
                             </div>
+
+                            <div class="data-sorting-buttons">
+                                <button type="button" class="btn btn-success" id="btnWorkloadAddAppointment"><i class="fa fa-retweet" aria-hidden="true"></i>New Appointment</button>
+                            </div>
+
+                            <script>
+                                $('#btnWorkloadAddAppointment').click(function (ev) {
+                                    var wbid = $('#WBID').val();
+
+                                    if (wbid != '') {
+                                        window.open('/appointment/addsimple?wbid=' + wbid, '_blank', 'height=700, width=600, status=no, toolbar=no, menubar=no, location=no');
+                                    }
+                                });
+
+                            </script>
                             
                         </div>
                     </div>
