@@ -464,6 +464,69 @@ $(function ($) {
         }
     });
 
+
+    $("#form-simpleadd-appointment").validate({
+        rules: {
+            _AppointmentID: "required",
+            _AppointmentUserName: "required",
+            _WorkloadTitle: "required",
+            _AppointmentDate: "required",
+            _AppointmentHoursDispensed: "required"
+        },
+        messages: {
+            _AppointmentID: "Sorry but, we need appointment code.",
+            _AppointmentUserName: "Ops! Who is doind this appointment? Mandatory info.",
+            _WorkloadTitle: "Ops! You must type the workload. The system will find the occurrency in database.",
+            _AppointmentDate: "Ops! Date is mandatory.",
+            _AppointmentHoursDispensed: "Ops! Hours dispensed is mandatory."
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+        unhighlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-error');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function (error, element) {
+            if (element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        },
+        submitHandler: function (form) {
+            UpdateCKEditor();
+            DisableAppointmentFields();
+            $("#btnAddAppointment").text("Saving appointment...");
+
+            var data = $(form).serialize();
+            console.log(data);
+            //data.set('', 123);
+
+            $.ajax({
+                url: "/Appointment/AddAppointment",
+                type: "POST",
+                data: data,
+            }).done(function (data) {
+                if (data.IsSuccessStatusCode) {
+                    $("#message").html("<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Success!</strong> The appointment has been added into Arda.</div>");
+                    $("#btnAddAppointment").html("<i class='fa fa-floppy-o' aria-hidden='true'></i> Save");
+                    RedirectIn(3000, "/Appointment/My");
+                }
+                else {
+                    $("#message").html("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Error!</strong> Something wrong happened with your request. Try again in few minutes.</div>");
+                    $("#btnAddAppointment").html("<i class='fa fa-floppy-o' aria-hidden='true'></i> Save");
+                    EnableAppointmentFields();
+                }
+            }).fail(function (e, f) {
+                $("#message").html("<div class='alert alert-danger'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><strong>Error!</strong> Something wrong happened with your request. Try again in few minutes.</div>");
+                $("#btnAddAppointment").html("<i class='fa fa-floppy-o' aria-hidden='true'></i> Save");
+                EnableAppointmentFields();
+            });
+        }
+    });
+
     $("#form-edit-appointment").validate({
         rules: {
             _AppointmentID: "required",
