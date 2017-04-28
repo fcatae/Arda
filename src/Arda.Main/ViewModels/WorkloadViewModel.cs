@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace Arda.Main.ViewModels
 {
+    public class WorkloadViewModel2 : WorkloadViewModel
+    {
+        public string Tag { get; set; }
+    }
+
     public class WorkloadViewModel
     {
         public Guid WBID { get; set; }
