@@ -31,7 +31,6 @@ namespace Arda.Kanban.Repositories
         public IEnumerable<WorkloadsByUserViewModel> GetWorkloads(string uniqueName)
         {
             var workloads = (from wb in _context.WorkloadBacklogs
-                             join wbu in _context.WorkloadBacklogUsers on wb.WBID equals wbu.WorkloadBacklogWBID
                              join tag in _context.Tags on wb.WBID equals tag.WorkloadBacklogWBID
 
                              // where (int)wb.WBStatus < 3
