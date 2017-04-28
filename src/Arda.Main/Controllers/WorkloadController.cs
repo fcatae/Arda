@@ -50,8 +50,18 @@ namespace Arda.Main.Controllers
             return Json(dados);
         }
 
+
         [HttpGet]
-        public async Task<JsonResult> ListWorkloadsByUser([FromQuery] string User)
+        public async Task<JsonResult> ListWorkloadsByUser([FromQuery] string User, [FromQuery] string Tag)
+        {
+            if( Tag != null && Tag != "" )
+            {
+                return await ListWorkloadsByWorkspace(Tag);
+            }
+            return await ListWorkloads(User);
+        }
+
+        private async Task<JsonResult> ListWorkloads(string User)
         {
             var loggedUser = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
@@ -60,6 +70,30 @@ namespace Arda.Main.Controllers
             string filtered_user = (User == null || User == "") ? loggedUser : User;
 
             var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listworkloadbyuser", filtered_user, "");
+
+            var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == true)
+                         .Select(x => new {
+                             id = x._WorkloadID,
+                             title = x._WorkloadTitle,
+                             start = x._WorkloadStartDate.ToString("dd/MM/yyyy"),
+                             end = x._WorkloadEndDate.ToString("dd/MM/yyyy"),
+                             hours = x._WorkloadHours,
+                             attachments = x._WorkloadAttachments,
+                             tag = x._WorkloadExpertise,
+                             status = x._WorkloadStatus,
+                             users = x._WorkloadUsers,
+                             textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
+                         })
+                         .Distinct()
+                         .ToList();
+
+            return Json(dados);
+        }
+        private async Task<JsonResult> ListWorkloadsByWorkspace(string workspace)
+        {
+            var workloads = new List<string>();
+
+            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload2/listtag?tag=" + workspace,"","");
 
             var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == true)
                          .Select(x => new {
@@ -95,19 +129,35 @@ namespace Arda.Main.Controllers
                 //Adds the file lists to the workload object:
                 workload.WBFilesList = fileList;
             }
+
+            //string api_workload_add;
+            //if (workload.Tag != null && workload.Tag != "")
+            //{
+            //    api_workload_add = $"api/workload2/{workload.Tag}/add";
+            //}
+            //else
+            //{
+            //    api_workload_add = "api/workload/add";
+            //}
+
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
 
             UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
 
-            if (response.IsSuccessStatusCode)
-            {
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            else
+            if (!response.IsSuccessStatusCode)
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
+            string tag = workload.Tag;
+            string wbid = workload.WBID.ToString();
+
+            if (workload.Tag != null && workload.Tag != "")
+            {
+                var strresp = await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.KanbanURL + $"api/workload2/{tag}/assign/{wbid}", uniqueName, "");
+            }
+            
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         [HttpPost]
