@@ -129,19 +129,35 @@ namespace Arda.Main.Controllers
                 //Adds the file lists to the workload object:
                 workload.WBFilesList = fileList;
             }
+
+            //string api_workload_add;
+            //if (workload.Tag != null && workload.Tag != "")
+            //{
+            //    api_workload_add = $"api/workload2/{workload.Tag}/add";
+            //}
+            //else
+            //{
+            //    api_workload_add = "api/workload/add";
+            //}
+
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
 
             UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
 
-            if (response.IsSuccessStatusCode)
-            {
-                return new HttpResponseMessage(HttpStatusCode.OK);
-            }
-            else
+            if (!response.IsSuccessStatusCode)
             {
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
+            string tag = workload.Tag;
+            string wbid = workload.WBID.ToString();
+
+            if (workload.Tag != null && workload.Tag != "")
+            {
+                var strresp = await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.KanbanURL + $"api/workload2/{tag}/assign/{wbid}", uniqueName, "");
+            }
+            
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         [HttpPost]

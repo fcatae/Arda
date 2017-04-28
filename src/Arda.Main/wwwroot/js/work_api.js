@@ -741,9 +741,12 @@ function loadWorkload(workloadID) {
 function addWorkload(e) {
     //Gets bootstrap-switch component value:
     var value = $('#WBIsWorkload').bootstrapSwitch('state');
+    var selected_work = $('select[name=filter-assign] option:selected').val();
+
     //Serializes form and append bootstrap-switch value:
     var data = new FormData(this);
     data.append('WBIsWorkload', value);
+    data.append('Tag', selected_work);
 
     var selectedUsers = $('#WBUsers option:selected');
     var users = [];
@@ -789,9 +792,12 @@ function addWorkload(e) {
 function addWorkloadSimple(e) {
     //Gets bootstrap-switch component value:
     var value = $('#WBIsWorkload').bootstrapSwitch('state');
+    var selected_work = $('select[name=filter-assign] option:selected').val();
+
     //Serializes form and append bootstrap-switch value:
     var data = new FormData(this);
     data.append('WBIsWorkload', value);
+    data.append('Tag', selected_work);
 
     var selectedUsers = $('#WBUsers option:selected');
     var users = [];

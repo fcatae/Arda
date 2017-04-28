@@ -17,6 +17,8 @@ namespace Arda.Main.ViewModels
 
         public string WBTitle { get; set; }
 
+        public string Tag { get; set; }
+
         public string WBDescription { get; set; }
 
         public int WBExpertise { get; set; }
