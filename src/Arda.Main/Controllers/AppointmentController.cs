@@ -22,6 +22,13 @@ namespace Arda.Main.Controllers
             return View();
         }
 
+        public IActionResult AddSimple([FromQuery]string wbid)
+        {
+            ViewBag.Guid = Util.GenerateNewGuid();
+            ViewBag.WBID = wbid;
+            return View();
+        }
+
         [HttpPost]
         public async Task<HttpResponseMessage> AddAppointment(AppointmentViewModel appointment)
         {
