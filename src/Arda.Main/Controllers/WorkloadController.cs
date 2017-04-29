@@ -130,6 +130,12 @@ namespace Arda.Main.Controllers
                 workload.WBFilesList = fileList;
             }            
 
+            // Sometimes /Workload/Guid fails or takes a long time to return
+            if(workload.WBID == Guid.Empty)
+            {
+                workload.WBID = Guid.NewGuid();
+            }
+
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
 
             UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
@@ -169,7 +175,7 @@ namespace Arda.Main.Controllers
             workload.WBActivity = Guid.Empty;
             workload.WBComplexity = 0;
             workload.WBExpertise = 0;
-
+            
             //Complete WB fields:
             workload.WBCreatedBy = uniqueName;
             workload.WBCreatedDate = DateTime.Now;
@@ -182,7 +188,13 @@ namespace Arda.Main.Controllers
 
             // Myself
             workload.WBUsers = new string[] { uniqueName };
-            
+
+            // Sometimes /Workload/Guid fails or takes a long time to return
+            if (workload.WBID == Guid.Empty)
+            {
+                workload.WBID = Guid.NewGuid();
+            }
+
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
 
             await Assign(workload.WBID, workload.Tag, uniqueName);

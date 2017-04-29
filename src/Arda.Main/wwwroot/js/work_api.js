@@ -144,7 +144,7 @@ function moveTask(id, state) {
 
 function createTask(id, title, start, end, hours, attachments, tag, state, users) {
     var task_state = '.state' + state;
-    createTaskInFolder(id, title, start, end, hours, attachments, tag, task_state, users);
+    createTaskInFolder(id, title, start, end, hours, attachments, /*tag,*/ task_state, users);
 }
 
 function getUserImageTask(user, taskId) {
@@ -161,13 +161,13 @@ function getUserImageTask(user, taskId) {
     });
 }
 
-function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
+function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, /*tag,*/ folderSelector, users) {
     var content = document.querySelector('#templateTask').content;
     var clone = document.importNode(content, true);
     var folder = document.querySelector(folderSelector);
 
     clone.querySelector('.task').id = taskId;
-    clone.querySelector('.task').classList.add(tag);
+    // clone.querySelector('.task').classList.add(tag);
 
     clone.querySelector('.task .templateTitle').textContent = taskTitle;
 
@@ -303,6 +303,9 @@ function newWorkloadState() {
     resetWorkloadForm();
     EnableWorkloadFields();
 
+    // force 0 to clean up
+    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+
     //Get GUID:
     getGUID(function (data) {
         $('#WBID').attr('value', data);
@@ -335,6 +338,9 @@ function newWorkloadStateSimple() {
     //Clean values:
     resetWorkloadForm();
     EnableWorkloadFields();
+
+    // force 0 to clean up
+    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
 
     //Get GUID:
     getGUID(function (data) {
@@ -381,6 +387,7 @@ function detailsWorkloadState(ev, openWorkloadGuid) {
     $('#btnWorkloadReset').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
     $('#btnWorkloadSend').addClass('hidden');
+    $('#btnWorkloadAddAppointment').removeClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -517,6 +524,8 @@ function HideAllButtons() {
     $("#btnWorkloadEdit").addClass('hidden');
     $("#btnWorkloadDelete").addClass('hidden');
     $("#btnWorkloadSend").addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
+
 }
 
 //Microsoft Graph API calls:
@@ -764,7 +773,10 @@ function addWorkload(e) {
 
 
     var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
-    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+
+    // this tag is used for CSS
+    // var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+    var tag = 'workload-task';
 
     var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
 
@@ -781,6 +793,10 @@ function addWorkload(e) {
             success: function (response) {
                 if (response.IsSuccessStatusCode) {
                     $('#WorkloadModal').modal('hide');
+
+                    // force 0 to clean up
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+
                     //Get GUID:
                     getGUID(function (data) {
                         $('#WBID').attr('value', data);
@@ -818,7 +834,9 @@ function addWorkloadSimple(e) {
 
 
     var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
-    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+    // this tag is used for CSS
+    // var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+    var tag = 'workload-task';
 
     var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
 
@@ -836,6 +854,10 @@ function addWorkloadSimple(e) {
 
                 if (response) {
                     $('#WorkloadModal').modal('hide');
+
+                    // force 0 to clean up
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+
                     //Get GUID:
                     getGUID(function (data) {
                         $('#WBID').attr('value', data);

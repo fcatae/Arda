@@ -217,7 +217,8 @@ namespace Arda.Common.Utils
             }
             else
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                throw new InvalidOperationException("HTTP Error from " + url);
+                //return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 
