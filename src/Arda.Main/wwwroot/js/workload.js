@@ -319,6 +319,7 @@ function newWorkloadState() {
 
     $('#btnWorkloadEdit').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -351,6 +352,7 @@ function newWorkloadStateSimple() {
 
     $('#btnWorkloadEdit').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -381,6 +383,8 @@ function detailsWorkloadState(ev, openWorkloadGuid) {
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
+    $('#btnWorkloadAddAppointment').removeClass('hidden');
+    $('#btnWorkloadEdit').removeClass('hidden');
     $('#btnWorkloadEdit').removeClass('hidden');
     $('#btnWorkloadEdit').removeAttr("disabled");
 
@@ -403,6 +407,7 @@ function editWorkloadState() {
 
     $('#btnWorkloadReset').addClass('hidden');
     $('#btnWorkloadEdit').addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
 
     $('#btnWorkloadSend').removeClass('hidden');
     $('#btnWorkloadSend').removeAttr("disabled");

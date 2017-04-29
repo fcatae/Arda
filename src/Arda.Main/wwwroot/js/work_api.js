@@ -320,6 +320,7 @@ function newWorkloadState() {
 
     $('#btnWorkloadEdit').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -352,6 +353,7 @@ function newWorkloadStateSimple() {
 
     $('#btnWorkloadEdit').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -404,6 +406,7 @@ function editWorkloadState() {
 
     $('#btnWorkloadReset').addClass('hidden');
     $('#btnWorkloadEdit').addClass('hidden');
+    $('#btnWorkloadAddAppointment').removeClass('hidden');
 
     $('#btnWorkloadSend').removeClass('hidden');
     $('#btnWorkloadSend').removeAttr("disabled");
@@ -741,7 +744,10 @@ function loadWorkload(workloadID) {
 function addWorkload(e) {
     //Gets bootstrap-switch component value:
     var value = $('#WBIsWorkload').bootstrapSwitch('state');
-    var selected_work = $('select[name=filter-assign] option:selected').val();
+    var selected_work1 = $('#filter-assign-upskill').val();
+    var selected_work2 = $('select[name=filter-assign] option:selected').val();
+
+    var selected_work = (selected_work1 != null) ? selected_work1 : selected_work2;
 
     //Serializes form and append bootstrap-switch value:
     var data = new FormData(this);
@@ -792,7 +798,10 @@ function addWorkload(e) {
 function addWorkloadSimple(e) {
     //Gets bootstrap-switch component value:
     var value = $('#WBIsWorkload').bootstrapSwitch('state');
-    var selected_work = $('select[name=filter-assign] option:selected').val();
+    var selected_work1 = $('#filter-assign-upskill').val();
+    var selected_work2 = $('select[name=filter-assign] option:selected').val();
+
+    var selected_work = (selected_work1 != null) ? selected_work1 : selected_work2;
 
     //Serializes form and append bootstrap-switch value:
     var data = new FormData(this);

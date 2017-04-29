@@ -15,6 +15,12 @@
 
     <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
+
+            <!-- vNext: Dashboard -->
+            <li class="nav-item">
+                <a class="btn btn-primary" href="/upskill">Start Upskill</a>
+            </li>
+
             @{
                 var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
                 var menuItems = Util.ConnectToRemoteService<List<MenuItemViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getusermenu", user, string.Empty).Result;

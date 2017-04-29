@@ -128,17 +128,7 @@ namespace Arda.Main.Controllers
                 List<Tuple<Guid, string, string>> fileList = await UploadNewFiles(WBFiles);
                 //Adds the file lists to the workload object:
                 workload.WBFilesList = fileList;
-            }
-
-            //string api_workload_add;
-            //if (workload.Tag != null && workload.Tag != "")
-            //{
-            //    api_workload_add = $"api/workload2/{workload.Tag}/add";
-            //}
-            //else
-            //{
-            //    api_workload_add = "api/workload/add";
-            //}
+            }            
 
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
 
@@ -149,19 +139,29 @@ namespace Arda.Main.Controllers
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            string tag = workload.Tag;
-            string wbid = workload.WBID.ToString();
-
-            if (workload.Tag != null && workload.Tag != "")
-            {
-                var strresp = await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.KanbanURL + $"api/workload2/{tag}/assign/{wbid}", uniqueName, "");
-            }
+            await Assign(workload.WBID, workload.Tag, uniqueName);
             
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        async Task Assign(Guid WBID, string tags, string uniqueName)
+        {
+            string wbid = WBID.ToString();
+
+            //if (tags.Contains(";"))
+            //    throw new InvalidOperationException("Tag contains character ';' and it is not allowed");
+
+            foreach(string tag in tags.Split(';'))
+            {
+                if (tag != null && tag != "")
+                {
+                    var strresp = await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.KanbanURL + $"api/workload2/{tag}/assign/{wbid}", uniqueName, "");
+                }
+            }
+        }
+
         [HttpPost]
-        public async Task<WorkloadViewModel> AddSimple(ICollection<IFormFile> WBFiles, WorkloadViewModel workload)
+        public async Task<WorkloadViewModel> AddSimple(ICollection<IFormFile> WBFiles, WorkloadViewModel2 workload)
         {
             //Owner:
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
@@ -184,6 +184,8 @@ namespace Arda.Main.Controllers
             workload.WBUsers = new string[] { uniqueName };
             
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
+
+            await Assign(workload.WBID, workload.Tag, uniqueName);
 
             UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
 
