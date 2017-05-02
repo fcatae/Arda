@@ -53,8 +53,17 @@ namespace Arda.Main.Controllers
         //Edit User:
         public async Task<IActionResult> Edit(string userID)
         {
-            var photo = Util.GetUserPhoto(userID);
-            ViewBag.Photo = photo;
+            ViewBag.Photo = null;
+
+            try
+            {
+                // it MAY fail when user has no picture
+                var photo = Util.GetUserPhoto(userID);
+                ViewBag.Photo = photo;
+            }
+            catch
+            {                
+            }
 
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
