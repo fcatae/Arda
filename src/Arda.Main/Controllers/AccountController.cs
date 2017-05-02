@@ -50,7 +50,7 @@ namespace Arda.Main.Controllers
         {
             await AuthSimple(username, email); 
 
-            return Redirect("/AuthCompleted");
+            return Redirect("/Account/AuthCompleted");
         }
 
         public async Task<IActionResult> LoginAD()
@@ -114,8 +114,14 @@ namespace Arda.Main.Controllers
             }
         }
 
-        public IActionResult AuthCompleted()
+        public async Task<IActionResult> AuthCompleted()
         {
+            var name = User.FindFirst("name").Value;
+            var uniqueName = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            // TODO: remove this code. we should NOT call permissions API from inside Auth process!
+            await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.PermissionsURL + "api/permission/setuserpermissionsandcode?name=" + name, uniqueName, "");
+
             return View();
         }
 
@@ -127,7 +133,7 @@ namespace Arda.Main.Controllers
             }
 
             return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Return" });
+                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Account/AuthCompleted" });
         }
 
         public async Task<IActionResult> SignOut()
