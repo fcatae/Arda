@@ -14,26 +14,18 @@ namespace Arda.Main.Controllers
 {
     public class AccountController : Controller
     {
-        private IDistributedCache _cache;
-
-        public AccountController(IDistributedCache cache)
-        {
-            _cache = cache;
-        }
-        
-        public async Task<bool> AuthSimple()
+        public async Task<bool> AuthSimple(string name, string email)
         {
             var claims = new List<Claim>
                     {
                         new Claim("sub", "1"),
-                        new Claim("name", "User 1"),
-                        new Claim("email", "user@ardademo.onmicrosoft.com"),
+                        new Claim("name", name),
+                        new Claim("email", email),
                         new Claim("status", "Online"),
                         new Claim("department", "Evangelism"),
                         new Claim("region", "Brazil"),
-                        //new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "user@ardademo.onmicrosoft.com"),
-                        new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "user@ardademo.onmicrosoft.com"),
-                        new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", "ardademo")
+                        new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", name),
+                        new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", email)
                     };
 
             var id = new ClaimsIdentity(claims, "local", "name", "role");
@@ -43,13 +35,25 @@ namespace Arda.Main.Controllers
             return true;
         }
 
-        public async Task<IActionResult> SignIn()
+        [HttpGet]
+        public IActionResult Page()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Page(string username, string email)
+        {
+            await AuthSimple(username, email); 
+
+            return Redirect("/Dashboard");
+        }
+
+        public IActionResult SignIn()
         {
             if(Startup.IsSimpleAuthForDemo)
             {
-                await AuthSimple();
-
-                return Redirect("/Dashboard");
+                return Redirect("/Account/page");
             }
 
             return new ChallengeResult(
