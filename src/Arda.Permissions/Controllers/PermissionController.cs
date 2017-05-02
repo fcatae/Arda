@@ -6,6 +6,8 @@ using Arda.Permissions.Models;
 using Arda.Permissions.Models.Repositories;
 using Arda.Permissions.ViewModels;
 using Newtonsoft.Json;
+using Arda.Common.Utils;
+using System;
 
 namespace Arda.Permissions.Controllers
 {
@@ -37,6 +39,23 @@ namespace Arda.Permissions.Controllers
                 {
                     responseUser = _permission.CreateNewUserAndSetInitialPermissions(uniqueName, name);
                     responseEmail = _permission.SendNotificationOfNewUserByEmail(uniqueName);
+
+                    //Save on Kanban -- Why do we call Kanban API from permission API???
+                    var user = responseUser;
+                    var kanbanUser = new UserKanbanViewModel()
+                    {
+                        UniqueName = user.UniqueName,
+                        Name = user.Name
+                    };
+
+                    var res = Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/user/add", "kanban", "kanban", kanbanUser).Result;
+
+                    if (!res.IsSuccessStatusCode)
+                    {
+                        throw new InvalidOperationException("Could not create user in KanbanURL");
+                    }
+
+
                     if (responseUser == null || responseEmail == false)
                     {
                         return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
