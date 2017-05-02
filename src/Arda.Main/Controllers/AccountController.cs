@@ -50,7 +50,7 @@ namespace Arda.Main.Controllers
         {
             await AuthSimple(username, email); 
 
-            return Redirect("/Dashboard");
+            return Redirect("/AuthCompleted");
         }
 
         public async Task<IActionResult> LoginAD()
@@ -114,6 +114,11 @@ namespace Arda.Main.Controllers
             }
         }
 
+        public IActionResult AuthCompleted()
+        {
+            return View();
+        }
+
         public IActionResult SignIn()
         {
             if(Startup.IsSimpleAuthForDemo)
@@ -122,7 +127,7 @@ namespace Arda.Main.Controllers
             }
 
             return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Dashboard" });
+                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Return" });
         }
 
         public async Task<IActionResult> SignOut()

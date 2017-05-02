@@ -88,6 +88,7 @@ namespace Arda.Main
 
         public async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         {
+            // temporarily remove this code
             //await CacheUserAndCodeOnRedis(context);
             await AcquireTokenForMicrosoftGraph(context);
         }
@@ -99,12 +100,13 @@ namespace Arda.Main
 
             // Getting informations about AD
             var code = context.JwtSecurityToken.Id;
-            var validFrom = context.JwtSecurityToken.ValidFrom;
-            var validTo = context.JwtSecurityToken.ValidTo;
-            var givenName = claims.FirstOrDefault(claim => claim.Type == "given_name").Value;
+            //var validFrom = context.JwtSecurityToken.ValidFrom;
+            //var validTo = context.JwtSecurityToken.ValidTo;
+            //var givenName = claims.FirstOrDefault(claim => claim.Type == "given_name").Value;
             var name = claims.FirstOrDefault(claim => claim.Type == "name").Value;
             var uniqueName = claims.FirstOrDefault(claim => claim.Type == "unique_name").Value;
 
+            // TODO: remove this code. we should NOT call permissions API from inside Auth process!
             await Util.ConnectToRemoteService(HttpMethod.Post, Util.PermissionsURL + "api/permission/setuserpermissionsandcode?name=" + name, uniqueName, code);
         }
 

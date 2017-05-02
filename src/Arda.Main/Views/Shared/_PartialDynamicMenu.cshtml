@@ -16,14 +16,18 @@
     <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav navbar-left">
 
-            <!-- vNext: Dashboard -->
-            <li class="nav-item">
-                <a class="btn btn-primary" href="/upskill">Start Upskill</a>
-            </li>
-
             @{
                 var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
                 var menuItems = Util.ConnectToRemoteService<List<MenuItemViewModel>>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getusermenu", user, string.Empty).Result;
+
+                if (menuItems.Count > 0)
+                {
+                    <!-- vNext: Dashboard -->
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="/upskill">Start Upskill</a>
+                    </li>
+                }
+
                 if (menuItems != null)
                 {
                     foreach (var item in menuItems)
@@ -43,31 +47,35 @@
                             </ul>
                         </li>
                     }
+
+                    if (menuItems.Count > 0)
+                    {
+                        <!-- vNext: Dashboard -->
+                                <li class="nav-item">
+                                    <a class="btn btn-primary" href="/dashboard/v2">Try Dashboard V2</a>
+                                </li>
+
+                        <!-- vNext: History -->
+                                <li class="nav-item">
+                                    <a class="btn" href="/archive">Archive</a>
+                                </li>
+
+                        <!-- vNext: Workspace -->
+                                <li class="nav-item dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Workspaces <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="/work/arda">Arda</a>
+                                            <a class="nav-link" href="/work/linx">Linx</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                    }
+
                 }
+
             }
-
-            <!-- vNext: Dashboard -->
-            <li class="nav-item">
-                <a class="btn btn-primary" href="/dashboard/v2">Try Dashboard V2</a>
-            </li>
-
-            <!-- vNext: History -->
-            <li class="nav-item">
-                <a class="btn" href="/archive">Archive</a>
-            </li>
-
-            <!-- vNext: Workspace -->
-            <li class="nav-item dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Workspaces <span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/work/arda">Arda</a>
-                        <a class="nav-link" href="/work/linx">Linx</a>
-                    </li>
-                </ul>
-            </li>
-
-
 
         </ul>
 
@@ -110,7 +118,17 @@
             <li>
                 <div>
                     @{ 
-                        var photo = Util.GetUserPhoto(user);
+                        string photo = null;
+
+                        try
+                        {
+                            photo = Util.GetUserPhoto(user);
+                        }
+                        catch
+                        {
+                            // for some reason the user does not exist?
+                        }
+
                     }
                     <img class="user" id="userImg" src="@photo" />
                 </div>
