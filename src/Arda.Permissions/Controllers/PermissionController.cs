@@ -23,6 +23,38 @@ namespace Arda.Permissions.Controllers
 
 
         [HttpPost]
+        [Route("setnewuser")]
+        public bool SetNewUser([FromQuery]string name)
+        {
+            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            var code = HttpContext.Request.Headers["code"].ToString();
+
+            if (uniqueName == null || name == null || code == null)
+            {
+                throw new InvalidOperationException("uniqueName == null || name == null || code == null");
+            }
+
+            User responseUser = null;
+            bool responseEmail = false;
+
+            bool UserExists = _permission.VerifyIfUserIsInUserPermissionsDatabase(uniqueName);
+            if (UserExists)
+            {
+                return false;
+            }
+
+            responseUser = _permission.CreateNewUserAndSetInitialPermissions(uniqueName, name);
+            responseEmail = _permission.SendNotificationOfNewUserByEmail(uniqueName);
+
+            if (responseUser == null || responseEmail == false)
+            {
+                throw new InvalidOperationException("responseUser == null || responseEmail == false");
+            }
+
+            return true;
+        }
+
+        [HttpPost]
         [Route("setuserpermissionsandcode")]
         public IActionResult SetUserPermissionsAndCode([FromQuery]string name)
         {
@@ -31,59 +63,14 @@ namespace Arda.Permissions.Controllers
 
             if (uniqueName != null && name != null && code != null)
             {
-                User responseUser = null;
-                bool responseEmail = false;
-
-                bool UserExists = _permission.VerifyIfUserIsInUserPermissionsDatabase(uniqueName);
-                if (!UserExists)
+                bool response = _permission.SetUserPermissionsAndCode(uniqueName, code);
+                if (response)
                 {
-                    responseUser = _permission.CreateNewUserAndSetInitialPermissions(uniqueName, name);
-                    responseEmail = _permission.SendNotificationOfNewUserByEmail(uniqueName);
-
-                    //Save on Kanban -- Why do we call Kanban API from permission API???
-                    var user = responseUser;
-                    var kanbanUser = new UserKanbanViewModel()
-                    {
-                        UniqueName = user.UniqueName,
-                        Name = user.Name
-                    };
-
-                    var res = Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/user/add", "kanban", "kanban", kanbanUser).Result;
-
-                    if (!res.IsSuccessStatusCode)
-                    {
-                        throw new InvalidOperationException("Could not create user in KanbanURL");
-                    }
-
-
-                    if (responseUser == null || responseEmail == false)
-                    {
-                        return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
-                    }
-                    else
-                    {
-                        bool response = _permission.SetUserPermissionsAndCode(uniqueName, code);
-                        if (response)
-                        {
-                            return new StatusCodeResult((int)HttpStatusCode.OK);
-                        }
-                        else
-                        {
-                            return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
-                        }
-                    }
+                    return new StatusCodeResult((int)HttpStatusCode.OK);
                 }
                 else
                 {
-                    bool response = _permission.SetUserPermissionsAndCode(uniqueName, code);
-                    if (response)
-                    {
-                        return new StatusCodeResult((int)HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
-                    }
+                    return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
                 }
             }
             else
