@@ -804,6 +804,11 @@ function addWorkload(e) {
                     createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users, workload.description);
                 } else {
                     $('#msg').text('Error!');
+
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+                    getGUID(function (data) {
+                        $('#WBID').attr('value', data);
+                    });
                 }
             }
         });
@@ -870,6 +875,10 @@ function addWorkloadSimple(e) {
                     createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
                 } else {
                     $('#msg').text('Error!');
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+                    getGUID(function (data) {
+                        $('#WBID').attr('value', data);
+                    });
                 }
             }
         });
