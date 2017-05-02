@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Arda.Main.Utils
 {
+    [System.Obsolete("Dont use", false)]
     public static class TokenManager
     {
         public static async Task<AuthenticationResult> GetAccessToken(HttpContext context)

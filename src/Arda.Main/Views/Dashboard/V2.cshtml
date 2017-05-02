@@ -192,32 +192,23 @@
 <script>
     //Global Variables:
     var folders = $('.folder');
-    var token = '@ViewBag.Token';
 
     //Initialization:
     $(function () {
         @{
-            if (ViewBag.UserStatus < 1)
-            {
+            // ASSUME user status == 2 always
+            // if (ViewBag.UserStatus == 2)
                 <text>
-                    //Get the user info using Microsoft Graph:
-                    GetImage('@User',token);
+                //Initialize:
+                Initialize();
+
+                InitializeFields();
+
+                InitializeKanban();
+
+                RefreshTaskList();
+
                 </text>
-            }
-            else if (ViewBag.UserStatus == 2)
-            {
-                <text>
-        //Initialize:
-        Initialize();
-
-        InitializeFields();
-
-        InitializeKanban();
-
-        RefreshTaskList();
-
-        </text>
-            }
         }
 
     });

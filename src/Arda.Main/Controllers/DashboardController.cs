@@ -37,11 +37,11 @@ namespace Arda.Main.Controllers
                 Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await TokenManager.GetAccessToken(HttpContext);
                 token = result.AccessToken;
                 ViewBag.Token = token;
-            }
 
-            if (userStatus == 0)
-            {
-                StoreUserInfo(user, token);
+                if (userStatus == 0)
+                {
+                    StoreUserInfo(user, token);
+                }
             }
 
             UsageTelemetry.Track(user, ArdaUsage.Dashboard_Index);
