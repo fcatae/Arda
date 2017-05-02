@@ -13,6 +13,7 @@ using Arda.Main.Utils;
 using Arda.Main.ViewModels;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using System;
 
 namespace Arda.Main.Controllers
 {
@@ -119,7 +120,28 @@ namespace Arda.Main.Controllers
             var name = User.FindFirst("name").Value;
             var uniqueName = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
-            // TODO: remove this code. we should NOT call permissions API from inside Auth process!
+            bool isnewUser = await Util.ConnectToRemoteService<bool>(HttpMethod.Post, Util.PermissionsURL + "api/permission/setnewuser?name=" + name, uniqueName, "");
+
+            // create the user in Kanban
+            if ( isnewUser )
+            {
+                // code moved from PermissionAPI
+                var kanbanUser = new UserKanbanViewModel()
+                {
+                    UniqueName = uniqueName,
+                    Name = name
+                };
+
+                var res = Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/user/add", "kanban", "kanban", kanbanUser).Result;
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    throw new InvalidOperationException("Could not create user in KanbanURL");
+                }
+
+
+            }
+            
             await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.PermissionsURL + "api/permission/setuserpermissionsandcode?name=" + name, uniqueName, "");
 
             return View();
