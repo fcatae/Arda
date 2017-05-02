@@ -65,6 +65,7 @@ namespace Arda.Kanban.Controllers
 
             // Calling add
             var response = _repository.AddNewWorkload(workload);
+            // _repository.EditWorkload(workload); // try to reproduce bug #44
 
             if (response)
             {

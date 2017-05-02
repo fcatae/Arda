@@ -128,6 +128,10 @@ namespace Arda.Kanban.Repositories
 
         public bool EditWorkload(WorkloadViewModel workload)
         {
+            var checkWBTechnologies = (workload.WBTechnologies == null) ? 0 : workload.WBTechnologies.Count();
+            var checkWBUsers = (workload.WBUsers == null) ? 0 : workload.WBUsers.Count();
+            var checkWBMetrics = (workload.WBMetrics == null) ? 0 : workload.WBMetrics.Count();
+
             //Get files:
             var files = _context.Files.Where(f => f.WorkloadBacklog.WBID == workload.WBID);
             //Load Metrics:
@@ -142,6 +146,20 @@ namespace Arda.Kanban.Repositories
             _context.WorkloadBacklogTechnologies.RemoveRange(technologies);
             _context.WorkloadBacklogUsers.RemoveRange(users);
             _context.SaveChanges();
+
+            // CHECK
+            var assertWBTechnologies = (workload.WBTechnologies == null) ? 0 : workload.WBTechnologies.Count();
+            var assertWBUsers = (workload.WBUsers == null) ? 0 : workload.WBUsers.Count();
+            var assertWBMetrics = (workload.WBMetrics == null) ? 0 : workload.WBMetrics.Count();
+
+            if (checkWBTechnologies != assertWBTechnologies)
+                throw new InvalidOperationException("Bug #44: collections changed");
+
+            if (checkWBUsers != assertWBUsers)
+                throw new InvalidOperationException("Bug #44: collections changed");
+
+            if (checkWBMetrics != assertWBMetrics)
+                throw new InvalidOperationException("Bug #44: collections changed");
 
             //Load workload from DB:
             var workloadToBeUpdated = _context.WorkloadBacklogs.First(w => w.WBID == workload.WBID);
@@ -161,11 +179,11 @@ namespace Arda.Kanban.Repositories
                     });
                 }
             }
-
+            
             //Load related Technologies:
             var technologyList = new List<WorkloadBacklogTechnology>();
 
-            if( workload.WBTechnologies != null )
+            if ( workload.WBTechnologies != null )
             {
                 foreach (var tId in workload.WBTechnologies)
                 {
