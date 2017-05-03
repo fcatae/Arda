@@ -154,8 +154,8 @@ namespace Arda.Main.Controllers
         {
             string wbid = WBID.ToString();
 
-            //if (tags.Contains(";"))
-            //    throw new InvalidOperationException("Tag contains character ';' and it is not allowed");
+            if (tags == null)
+                return;
 
             foreach(string tag in tags.Split(';'))
             {
