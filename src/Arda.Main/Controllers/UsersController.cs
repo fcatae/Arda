@@ -70,11 +70,7 @@ namespace Arda.Main.Controllers
             var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
 
             ViewBag.User = userID;
-
-            Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
-            string token = result.AccessToken;
-            ViewBag.Token = token;
-
+            
             return View(user);            
         }
 

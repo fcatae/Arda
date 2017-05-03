@@ -54,33 +54,6 @@ namespace Arda.Main.Controllers
             return Redirect("/Account/AuthCompleted");
         }
 
-        public async Task<IActionResult> LoginAD()
-        {
-            var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-            var userStatus = Util.ConnectToRemoteService<int>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuserstatus", user, string.Empty).Result;
-            string token = null;
-
-            ViewBag.User = user;
-            ViewBag.UserStatus = userStatus;
-
-            if (!Startup.IsSimpleAuthForDemo)
-            {
-                Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await TokenManager.GetAccessToken(HttpContext);
-                token = result.AccessToken;
-                ViewBag.Token = token;
-            }
-
-            if (userStatus == 0)
-            {
-                StoreUserInfo(user, token);
-            }
-
-            UsageTelemetry.Track(user, ArdaUsage.Dashboard_Index);
-
-            return View();
-        }
-
-
         private async void StoreUserInfo(string user, string token)
         {
             HttpClient client = new HttpClient();
