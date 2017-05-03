@@ -44,6 +44,7 @@
                             <input type="hidden" class="form-control" id="UserEmail" value="@Model.Email" disabled>
                             <p class="text-center"><strong id="displayName">@Model.Name</strong></p>
                             <p class="text-center"><i class="fa fa-envelope"></i> <span id="mail">@Model.Email</span></p>
+                            <p class="text-center"><i class="fa fa-envelope"></i> <a href="#" onclick="refreshphoto(); return false;">Refresh Picture</a></p>
                         </form>
                     </div>
                 </div>
@@ -90,7 +91,41 @@
                 callbackGetUserPermissions(data);
             }
         });
+
     });
+
+    function refreshphoto() {
+        alert(1);
+
+        GetImage('@ViewBag.User','@ViewBag.Token');
+        // GetImage()
+    }
+
+    function GetImage(user, token) {
+        var url = "https://graph.microsoft.com/v1.0/me/photo/$value";
+        var elem = "UserPhoto";
+        var auth = 'bearer ' + token;
+        GetImageBase64FromGraph(url, elem, auth);
+    }
+
+    function GetImageBase64FromGraph(url, element, token) {
+        var request = new XMLHttpRequest;
+        request.open("GET", url);
+        request.setRequestHeader("Authorization", token);
+        request.responseType = "blob";
+        request.onload = function () {
+            if (request.readyState === 4 && request.status === 200) {
+                var image = document.getElementById(element);
+                var reader = new FileReader();
+                reader.onload = function () {
+                    image.src = reader.result;
+                    updateImgOnDatabase();
+                };
+                reader.readAsDataURL(request.response);
+            }
+        };
+        request.send(null);
+    }
 
     function Initialize() {
         $('#btnUpdate').click(updatePermissions);
@@ -182,7 +217,7 @@
                 type: "PUT",
                 contentType: "application/json",
                 data: permissions,
-                success: function (data, textStatus, jqXHR) { 
+                success: function (data, textStatus, jqXHR) {
                     $('html,body').scrollTop(0);
                     if (data.IsSuccessStatusCode) {
                         $('#msgSuccess').fadeIn();

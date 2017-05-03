@@ -20,6 +20,17 @@ namespace Arda.Main.Utils
             return await authContext.AcquireTokenAsync(Startup.GraphResourceId, credential);
         }
 
+        public static async Task<AuthenticationResult> GetAccessToken2(HttpContext context)
+        {
+            ClientCredential credential = new ClientCredential(Startup.ClientId, Startup.ClientSecret);
+            AuthenticationContext authContext = new AuthenticationContext(Startup.Authority);
+
+            var user = context.User.Identity;
+            
+            return await authContext.AcquireTokenAsync(Startup.GraphResourceId, credential);
+
+            // result = await authContext.AcquireTokenSilentAsync(Startup.GraphResourceId, credential, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+        }
         //private static async Task<IActionResult> CallMicrosoftGraph(HttpContext context)
         //{
         //    AuthenticationResult result = null;

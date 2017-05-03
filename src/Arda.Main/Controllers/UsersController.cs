@@ -67,6 +67,13 @@ namespace Arda.Main.Controllers
 
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
+
+            ViewBag.User = uniqueName;
+
+            Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
+            string token = result.AccessToken;
+            ViewBag.Token = token;
+
             return View(user);            
         }
 
@@ -188,6 +195,42 @@ namespace Arda.Main.Controllers
                 }
             }
             return new HttpResponseMessage(HttpStatusCode.BadRequest);
+        }
+
+        [HttpGet]
+        public async Task<string> RefreshPhoto()
+        {
+            /*
+             * 
+
+                request.open("GET", url);
+                
+
+                request.setRequestHeader("Authorization", token);
+                var auth = 'bearer ' + token;
+
+                request.responseType = "blob";
+
+            
+             * */
+            var uniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            string url = $"https://graph.microsoft.com/v1.0/me";
+            string token;
+
+            Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
+            token = result.AccessToken;
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("Authorization", "bearer " + token);
+
+            var response = await client.SendAsync(request);
+
+            string content = await response.Content.ReadAsStringAsync();
+
+            await PhotoUpdate(content);
+            return "ok";
         }
 
         [HttpPut]

@@ -35,7 +35,7 @@ namespace Arda.Main
             ClientId = Configuration["Authentication:AzureAd:ClientId"];
             ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"];
             GraphResourceId = Configuration["Authentication:AzureAd:GraphResourceId"];
-            PostLogoutRedirectUri = Configuration["Authentication:AzureAd:PostLogoutRedirectUri"];
+            PostLogoutRedirectUri = Configuration["Authentication:AzureAd:PostLogoutRedirectUri"];            
 
             IsSimpleAuthForDemo = (ClientId == null || ClientId == "");
 
@@ -66,12 +66,14 @@ namespace Arda.Main
                 ClientId = ClientId,
                 Authority = Authority,
                 PostLogoutRedirectUri = PostLogoutRedirectUri,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,                
 
                 Events = new OpenIdConnectEvents()
                 {
                     OnAuthenticationFailed = OnAuthenticationFailed,
-                    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived
+                    OnAuthorizationCodeReceived = OnAuthorizationCodeReceived,
+                    OnMessageReceived = (MessageReceivedContext m) => {
+                        return Task.FromResult(0);  }
                 }
             });
         }
