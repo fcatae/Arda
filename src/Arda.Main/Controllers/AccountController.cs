@@ -144,7 +144,7 @@ namespace Arda.Main.Controllers
             
             await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.PermissionsURL + "api/permission/setuserpermissionsandcode?name=" + name, uniqueName, "");
 
-            return View();
+            return Redirect("/Dashboard");
         }
 
         public IActionResult SignIn()

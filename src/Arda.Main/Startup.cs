@@ -58,11 +58,11 @@ namespace Arda.Main
                 });
 
             // Registering distributed cache approach to the application.
-            //services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
-            //{
-            //    Configuration = Configuration["Storage:Redis:Configuration"],
-            //    InstanceName = Configuration["Storage:Redis:InstanceName"]
-            //}));
+            services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
+            {
+                Configuration = Configuration["Storage:Redis:Configuration"],
+                InstanceName = Configuration["Storage:Redis:InstanceName"]
+            }));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

@@ -69,7 +69,7 @@ namespace Arda.Main.Controllers
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
 
-            ViewBag.User = uniqueName;
+            ViewBag.User = userID;
 
             Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
             string token = result.AccessToken;
@@ -198,7 +198,7 @@ namespace Arda.Main.Controllers
             return new HttpResponseMessage(HttpStatusCode.BadRequest);
         }
 
-        [HttpGet]
+        [HttpPut]
         public async Task<string> RefreshPhoto(string uniqueName)
         {
             var currentUniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
