@@ -14,6 +14,7 @@ using Arda.Main.Utils;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace Arda.Main
 {
@@ -66,7 +67,8 @@ namespace Arda.Main
                 ClientId = ClientId,
                 Authority = Authority,
                 PostLogoutRedirectUri = PostLogoutRedirectUri,
-                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,                
+                SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
+                ResponseType = OpenIdConnectResponseType.CodeIdToken,
 
                 Events = new OpenIdConnectEvents()
                 {
@@ -75,13 +77,12 @@ namespace Arda.Main
                     OnMessageReceived = (MessageReceivedContext m) => {
                         return Task.FromResult(0);  }
                 }
-            });
+            });            
         }
 
 
         public Task OnAuthenticationFailed(AuthenticationFailedContext context)
         {
-            Debugger.Break();
             context.HandleResponse();
             context.Response.Redirect("/Home/Error?message=" + context.Exception.Message);
 
@@ -114,12 +115,19 @@ namespace Arda.Main
 
         private async Task AcquireTokenForMicrosoftGraph(AuthorizationCodeReceivedContext context)
         {
+            //Uri callback = Util.MainURL + CallbackPath;
+            
             // Acquire a Token for the Graph API and cache it in Session.
             string userObjectId = context.Ticket.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             ClientCredential clientCred = new ClientCredential(ClientId, ClientSecret);
             AuthenticationContext authContext = new AuthenticationContext(Authority, new SessionCache(userObjectId, context.HttpContext));
+
+            // Per sample: https://github.com/Azure-Samples/active-directory-dotnet-webapp-webapi-openidconnect-aspnetcore/blob/master/WebApp-WebAPI-OpenIdConnect-DotNet/Startup.cs
             AuthenticationResult authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
-                context.JwtSecurityToken.Id, new Uri(context.ProtocolMessage.RedirectUri), clientCred, GraphResourceId);
+                 context.ProtocolMessage.Code, new Uri(context.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]), clientCred, GraphResourceId);
+            
+            // -- See https://github.com/aspnet/Security/issues/1068
+            context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
         }
     }
 }

@@ -10,6 +10,7 @@ using Arda.Common.JSON;
 using Arda.Main.ViewModels;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.ApplicationInsights;
+using System;
 
 //TODO: Refactor name Users to User
 namespace Arda.Main.Controllers
@@ -198,24 +199,12 @@ namespace Arda.Main.Controllers
         }
 
         [HttpGet]
-        public async Task<string> RefreshPhoto()
+        public async Task<string> RefreshPhoto(string uniqueName)
         {
-            /*
-             * 
+            var currentUniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            string name = uniqueName ?? currentUniqueName;
 
-                request.open("GET", url);
-                
-
-                request.setRequestHeader("Authorization", token);
-                var auth = 'bearer ' + token;
-
-                request.responseType = "blob";
-
-            
-             * */
-            var uniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-
-            string url = $"https://graph.microsoft.com/v1.0/me";
+            string url = $"https://graph.microsoft.com/v1.0/users/{name}/photo/$value";
             string token;
 
             Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
@@ -227,10 +216,23 @@ namespace Arda.Main.Controllers
 
             var response = await client.SendAsync(request);
 
-            string content = await response.Content.ReadAsStringAsync();
+            byte[] content = await response.Content.ReadAsByteArrayAsync();
 
-            await PhotoUpdate(content);
-            return "ok";
+            return await PhotoUpdateInternal(name, content);                        
+        }
+
+        private async Task<string> PhotoUpdateInternal(string uniqueName, byte[] content)
+        {
+            string img = "data:image/jpeg;base64," + Convert.ToBase64String(content);
+
+            var response = await Util.ConnectToRemoteService(HttpMethod.Put, Util.PermissionsURL + "api/permission/updateuserphoto?uniqueName=" + uniqueName, uniqueName, string.Empty, img);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException("api/permission/updateuserphoto failed");
+            }
+
+            return img;
         }
 
         [HttpPut]

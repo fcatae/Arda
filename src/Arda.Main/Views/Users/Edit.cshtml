@@ -97,35 +97,27 @@
     function refreshphoto() {
         alert(1);
 
-        GetImage('@ViewBag.User','@ViewBag.Token');
+        //GetImage('','@ViewBag.Token');
         // GetImage()
+        RefreshPhoto('UserPhoto');
     }
 
-    function GetImage(user, token) {
-        var url = "https://graph.microsoft.com/v1.0/me/photo/$value";
-        var elem = "UserPhoto";
-        var auth = 'bearer ' + token;
-        GetImageBase64FromGraph(url, elem, auth);
-    }
-
-    function GetImageBase64FromGraph(url, element, token) {
+    function RefreshPhoto(element) {
         var request = new XMLHttpRequest;
-        request.open("GET", url);
-        request.setRequestHeader("Authorization", token);
-        request.responseType = "blob";
+        request.open("PUT", '/Users/RefreshPhoto?uniqueName=@ViewBag.User');
         request.onload = function () {
             if (request.readyState === 4 && request.status === 200) {
                 var image = document.getElementById(element);
                 var reader = new FileReader();
                 reader.onload = function () {
                     image.src = reader.result;
-                    updateImgOnDatabase();
                 };
                 reader.readAsDataURL(request.response);
             }
         };
         request.send(null);
     }
+    
 
     function Initialize() {
         $('#btnUpdate').click(updatePermissions);
