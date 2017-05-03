@@ -55,9 +55,6 @@ namespace Arda.Main.Controllers
                 }
                 catch(Microsoft.IdentityModel.Clients.ActiveDirectory.AdalSilentTokenAcquisitionException)
                 {
-                    await HttpContext.Authentication.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                    await HttpContext.Authentication.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
-
                     return Redirect("/Account/SignIn");
                 }
             }
