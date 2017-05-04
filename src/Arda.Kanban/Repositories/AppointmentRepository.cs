@@ -85,6 +85,24 @@ namespace Arda.Kanban.Repositories
             return response;
         }
 
+        public List<AppointmentViewModel> GetAllAppointmentsWorkload(Guid wbid)
+        {
+            var response = (from a in _context.Appointments
+                            where a.AppointmentWorkloadWBID == wbid
+                            orderby a.AppointmentDate descending
+                            select new AppointmentViewModel
+                            {
+                                // _AppointmentWorkloadWBID and _WorkloadTitle: does not return the workload title -- it is obvious from wbid
+                                _AppointmentID = a.AppointmentID,
+                                _AppointmentDate = a.AppointmentDate,
+                                _AppointmentUserUniqueName = a.AppointmentUserUniqueName,
+                                _AppointmentHoursDispensed = a.AppointmentHoursDispensed,
+                                _AppointmentComment = a.AppointmentComment
+                            }).ToList();
+
+            return response;
+        }
+
         public AppointmentViewModel GetAppointmentByID(Guid id)
         {
             var appointment = (from a in _context.Appointments

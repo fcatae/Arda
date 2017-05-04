@@ -12,6 +12,8 @@ namespace Arda.Kanban.Models.Repositories
 
         List<AppointmentViewModel> GetAllAppointments(string user);
 
+        List<AppointmentViewModel> GetAllAppointmentsWorkload(Guid workload);
+
         AppointmentViewModel GetAppointmentByID(Guid id);
 
         bool DeleteAppointmentByID(Guid id);

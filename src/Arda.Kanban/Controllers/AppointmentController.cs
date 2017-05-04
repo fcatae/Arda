@@ -59,6 +59,17 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
+        [Route("listfromworkspace")]
+        public IEnumerable<AppointmentViewModel> ListFromWorkspace([FromQuery]string workspace)
+        {
+            Guid wbid = Guid.Parse(workspace);
+
+            var appointments = _repository.GetAllAppointmentsWorkload(wbid);
+
+            return appointments;
+        }
+
+        [HttpGet]
         [Route("getappointmentbyid")]
         public AppointmentViewModel GetAppointmentByID([FromQuery]Guid id)
         {
