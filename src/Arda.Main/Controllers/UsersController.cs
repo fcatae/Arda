@@ -229,6 +229,10 @@ namespace Arda.Main.Controllers
         public async Task<string> RefreshUserInfo(string uniqueName)
         {
             var currentUniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            if (uniqueName != currentUniqueName)
+                throw new InvalidOperationException("StoreUserInfo currently does not impersonate the user. It uses /me");
+
             string name = uniqueName ?? currentUniqueName;
 
             string token;
