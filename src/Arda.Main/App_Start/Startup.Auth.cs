@@ -27,7 +27,9 @@ namespace Arda.Main
         public static string ClientSecret = string.Empty;
         public static string GraphResourceId = string.Empty;
         public static string PostLogoutRedirectUri = string.Empty;
-        
+        private static string _dbgAccessToken = null;
+        private static string _dbgTokenId = null;
+
         public void ConfigureAuth(IApplicationBuilder app)
         {
             // Populate Azure AD Configuration Values
@@ -128,6 +130,9 @@ namespace Arda.Main
             
             // -- See https://github.com/aspnet/Security/issues/1068
             context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
+
+            _dbgAccessToken = authResult.AccessToken;
+            _dbgTokenId = authResult.IdToken;
         }
     }
 }

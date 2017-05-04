@@ -11,6 +11,8 @@ using Arda.Main.ViewModels;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.ApplicationInsights;
 using System;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
 
 //TODO: Refactor name Users to User
 namespace Arda.Main.Controllers
@@ -200,11 +202,17 @@ namespace Arda.Main.Controllers
             var currentUniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             string name = uniqueName ?? currentUniqueName;
 
-            string url = $"https://graph.microsoft.com/v1.0/users/{name}/photo/$value";
             string token;
 
             Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
             token = result.AccessToken;
+
+            return await StoreUserPhoto(name, token);
+        }
+        
+        private async Task<string> StoreUserPhoto(string name, string token)
+        {
+            string url = $"https://graph.microsoft.com/v1.0/users/{name}/photo/$value";
 
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -215,6 +223,60 @@ namespace Arda.Main.Controllers
             byte[] content = await response.Content.ReadAsByteArrayAsync();
 
             return await PhotoUpdateInternal(name, content);                        
+        }
+
+        [HttpPut]
+        public async Task<string> RefreshUserInfo(string uniqueName)
+        {
+            var currentUniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            string name = uniqueName ?? currentUniqueName;
+
+            string token;
+
+            Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
+            token = result.AccessToken;
+
+            return await StoreUserInfo(name, token);
+        }
+
+        [HttpGet]
+        public async Task<string> StoreUserInfo(string user, string token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseProfile = await client.SendAsync(request);
+            string result = null;
+
+            HttpRequestMessage requestManager = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me/manager");
+            requestManager.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var responseManager = await client.SendAsync(requestManager);
+
+            Task.WaitAll();
+
+            if (responseProfile.IsSuccessStatusCode && responseManager.IsSuccessStatusCode)
+            {
+                var profileSerialized = await responseProfile.Content.ReadAsStringAsync();
+                var profile = JsonConvert.DeserializeObject<GraphProfileViewModel>(profileSerialized);
+                var managerSerialized = await responseManager.Content.ReadAsStringAsync();
+                var manager = JsonConvert.DeserializeObject<GraphProfileViewModel>(managerSerialized);
+
+                var userToBeUpdated = new UserMainViewModel()
+                {
+                    Name = profile.displayName,
+                    Email = profile.userPrincipalName,
+                    GivenName = profile.givenName,
+                    Surname = profile.surname,
+                    JobTitle = profile.jobTitle,
+                    ManagerUniqueName = manager.userPrincipalName
+                };
+
+                var userStatus = Util.ConnectToRemoteService(HttpMethod.Put, Util.PermissionsURL + "api/permission/updateuser?=" + user, user, string.Empty, userToBeUpdated).Result;
+
+                result = profileSerialized;
+            }
+
+            return result;
         }
 
         private async Task<string> PhotoUpdateInternal(string uniqueName, byte[] content)
