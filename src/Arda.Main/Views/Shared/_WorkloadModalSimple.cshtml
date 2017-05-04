@@ -183,6 +183,21 @@
 
                             </script>
 
+                            <div class="data-sorting-buttons">
+                                <button type="button" class="btn btn-success" id="btnWorkloadShowAppointment"><i class="fa fa-retweet" aria-hidden="true"></i>Log History</button>
+                            </div>
+
+                            <script>
+                                $('#btnWorkloadShowAppointment').click(function (ev) {
+                                    var wbid = $('#WBID').val();
+
+                                    if (wbid != '') {
+                                        window.open('/appointment/work?wbid=' + wbid, '_blank', 'height=700, width=600, status=no, toolbar=no, menubar=no, location=no');
+                                    }
+                                });
+
+                            </script>
+
                         </div>
                     </div>
                 </form>

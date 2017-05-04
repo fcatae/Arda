@@ -1,0 +1,35 @@
+﻿@using Arda.Main.ViewModels
+
+@{
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+<section class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1 class="heading-title">History</h1>
+            @{
+                var appointments = (IEnumerable<AppointmentViewModel>)ViewBag.Appointments;
+
+                if (appointments != null)
+                {
+                    foreach (var ap in appointments)
+                    {
+                    <div>
+                        <div>
+                            <span>@ap._AppointmentDate</span>
+                            -
+                            <span>@ap._AppointmentUserUniqueName</span>
+                        </div>
+                        <div>@*Very Dangerous!!!*@
+                            @Html.Raw(ap._AppointmentComment)
+                        </div>
+                    </div>
+                    <hr>
+                        }
+                    }
+                }
+        </div>
+        
+    </div>
+</section>
