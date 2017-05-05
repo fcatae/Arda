@@ -14,7 +14,7 @@ namespace IntegrationTests
         {
             AppointmentRepository appointment = new AppointmentRepository(context);
 
-            return appointment.GetAllAppointments().ToArray();
+            return appointment.GetAllAppointmentsSimple().ToArray();
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace IntegrationTests
                 (list, ctx) => {
                     AppointmentRepository appointment = new AppointmentRepository(ctx);
 
-                    var row = from r in appointment.GetAllAppointments(USER_UNIQUE_NAME)
+                    var row = from r in appointment.GetAllAppointmentsSimple(USER_UNIQUE_NAME)
                               select new { r._AppointmentUserUniqueName, r._AppointmentUserName };
 
                     return row;
@@ -78,7 +78,7 @@ namespace IntegrationTests
                 (list, ctx) => {
                     AppointmentRepository appointment = new AppointmentRepository(ctx);
 
-                    var row = from r in appointment.GetAllAppointments(USER_UNIQUE_NAME)
+                    var row = from r in appointment.GetAllAppointmentsSimple(USER_UNIQUE_NAME)
                               select new { r._AppointmentComment };
 
                     return row;
@@ -109,7 +109,7 @@ namespace IntegrationTests
                 (list, ctx) => {
                     AppointmentRepository appointment = new AppointmentRepository(ctx);
 
-                    var row = appointment.GetAllAppointments(USER_UNIQUE_NAME);
+                    var row = appointment.GetAllAppointmentsSimple(USER_UNIQUE_NAME);
 
                     return row;
                 });
@@ -141,7 +141,7 @@ namespace IntegrationTests
 
                     var row = appointment.DeleteAppointmentByID(Guid.Parse(GUID));
 
-                    return appointment.GetAllAppointments();
+                    return appointment.GetAllAppointmentsSimple();
                 });
         }
 
@@ -168,7 +168,7 @@ namespace IntegrationTests
 
                     appointment.AddNewAppointment(row);
 
-                    return appointment.GetAllAppointments();
+                    return appointment.GetAllAppointmentsSimple();
                 });
         }
 

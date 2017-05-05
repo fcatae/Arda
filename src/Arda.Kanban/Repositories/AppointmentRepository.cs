@@ -48,7 +48,7 @@ namespace Arda.Kanban.Repositories
             }
         }
 
-        public List<AppointmentViewModel> GetAllAppointments()
+        public List<AppointmentViewModel> GetAllAppointmentsSimple()
         {
             var response = (from a in _context.Appointments
                             join w in _context.WorkloadBacklogs on a.AppointmentWorkload.WBID equals w.WBID
@@ -60,13 +60,17 @@ namespace Arda.Kanban.Repositories
                                 _WorkloadTitle = w.WBTitle,
                                 _AppointmentDate = a.AppointmentDate,
                                 _AppointmentHoursDispensed = a.AppointmentHoursDispensed,
-                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName
+                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName,
+                                // By design : it does not return data
+                                _AppointmentComment = null,
+                                _AppointmentTE = 0,
+                                _AppointmentUserName = ""
                             }).ToList();
 
             return response;
         }
 
-        public List<AppointmentViewModel> GetAllAppointments(string user)
+        public List<AppointmentViewModel> GetAllAppointmentsSimple(string user)
         {
             var response = (from a in _context.Appointments
                             join w in _context.WorkloadBacklogs on a.AppointmentWorkload.WBID equals w.WBID
@@ -79,7 +83,11 @@ namespace Arda.Kanban.Repositories
                                 _WorkloadTitle = w.WBTitle,
                                 _AppointmentDate = a.AppointmentDate,
                                 _AppointmentHoursDispensed = a.AppointmentHoursDispensed,
-                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName
+                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName,
+                                // By design : it does not return data
+                                _AppointmentComment = null,
+                                _AppointmentTE = 0,
+                                _AppointmentUserName = ""
                             }).ToList();
 
             return response;

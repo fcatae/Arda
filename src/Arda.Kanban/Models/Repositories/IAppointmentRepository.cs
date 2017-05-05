@@ -8,9 +8,9 @@ namespace Arda.Kanban.Models.Repositories
     {
         bool AddNewAppointment(AppointmentViewModel appointment);
 
-        List<AppointmentViewModel> GetAllAppointments();
+        List<AppointmentViewModel> GetAllAppointmentsSimple();
 
-        List<AppointmentViewModel> GetAllAppointments(string user);
+        List<AppointmentViewModel> GetAllAppointmentsSimple(string user);
 
         List<AppointmentViewModel> GetAllAppointmentsWorkload(Guid workload);
 
