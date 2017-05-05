@@ -53,8 +53,7 @@ namespace Arda.Common.Utils
             }
         }
 
-
-        public static string GetUserPhoto(string user)
+        public static string GetUserPhotoString(string user)
         {
             if (user == "undefined") throw new Exception("GetUserPhoto: user is undefined");
 

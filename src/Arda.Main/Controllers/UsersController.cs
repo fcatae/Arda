@@ -13,6 +13,7 @@ using Microsoft.ApplicationInsights;
 using System;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
+using System.IO;
 
 //TODO: Refactor name Users to User
 namespace Arda.Main.Controllers
@@ -45,9 +46,9 @@ namespace Arda.Main.Controllers
         //User Details:
         public async Task<IActionResult> Details(string userID)
         {
-            var photo = Util.GetUserPhoto(userID);
-            ViewBag.Photo = photo;
-
+            var photo = Util.GetUserPhotoString(userID);
+            ViewBag.Photo = photo; // embedded picture
+            
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
             return View(user);
@@ -61,8 +62,8 @@ namespace Arda.Main.Controllers
             try
             {
                 // it MAY fail when user has no picture
-                var photo = Util.GetUserPhoto(userID);
-                ViewBag.Photo = photo;
+                var photo = Util.GetUserPhotoString(userID);
+                ViewBag.Photo = photo; // Embedded picture
             }
             catch
             {                
@@ -334,30 +335,48 @@ namespace Arda.Main.Controllers
             return Json(permissions);            
         }
 
+        // Should not be called
+        [Obsolete]
         public string GetUserPhoto(string user)
         {
-            var photo = Util.GetUserPhoto(user);
-            return photo;
+            throw new InvalidOperationException("GetUserPhoto is obsolete");
+
+            //var photo = Util.GetUserPhotoString(user);
+            //return photo;
         }
-        
+
         [ResponseCache(Duration=600)]
         [HttpGet("users/photo/{user}")]
-        public string GetUserPhotoFromCache(string user)
+        public IActionResult GetUserPhotoFromCache(string user)
         {
             try
             {
-                var photo = Util.GetUserPhoto(user);
-                return photo;
+                string data = Util.GetUserPhotoString(user);
+
+                string[] components = data.Split(',');
+
+                int typePhotoStart = components[0].IndexOf(":") + 1;
+                int typePhotoEnd = components[0].IndexOf(";");
+                string encodedPhoto = components[1];
+
+                string typePhoto = components[0].Substring(typePhotoStart, typePhotoEnd - typePhotoStart);
+                byte[] binaryPhoto = Convert.FromBase64String(encodedPhoto);
+                var streamPhoto = new MemoryStream(binaryPhoto);
+
+                return new FileStreamResult(streamPhoto, typePhoto);
             }
             catch(TaskCanceledException ex)
             {
-                var client = new TelemetryClient();
-                client.TrackException(new System.Exception("GetUserPhotoFromCache: thrown taskCanceledException - cache is not populated?", ex));
+                // This exception is very common - keep this line until we figure out what is going on 
+                var cacheTimeoutException = new System.InvalidOperationException("GetUserPhotoFromCache: thrown taskCanceledException - cache is not populated?", ex);
 
-                return "";
+                var client = new TelemetryClient();
+                client.TrackException(cacheTimeoutException);
+
+                throw cacheTimeoutException;
             }
         }
-
+        
         #endregion
 
         #region Utils

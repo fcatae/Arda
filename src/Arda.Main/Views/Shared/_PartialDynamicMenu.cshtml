@@ -118,19 +118,19 @@
             <li>
                 <div>
                     @{ 
-                        string photo = null;
+//string photo = null;
 
-                        try
-                        {
-                            photo = Util.GetUserPhoto(user);
-                        }
-                        catch
-                        {
-                            // for some reason the user does not exist?
-                        }
+//try
+//{
+//    photo = Util.GetUserPhoto(user);
+//}
+//catch
+//{
+//    // for some reason the user does not exist?
+//}
 
                     }
-                    <img class="user" id="userImg" src="@photo" />
+                    <img class="user" id="userImg" src="/users/photo/@User.Claims.First(claim => claim.Type == "email").Value" />
                 </div>
             </li>
             <li class="nav-item--signout nav-item">
