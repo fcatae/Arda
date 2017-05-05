@@ -130,7 +130,7 @@
 //}
 
                     }
-                    <img class="user" id="userImg" src="/users/photo/@User.Claims.First(claim => claim.Type == "email").Value" />
+                    <img class="user" id="userImg" src="/users/photo/@User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value" />
                 </div>
             </li>
             <li class="nav-item--signout nav-item">
