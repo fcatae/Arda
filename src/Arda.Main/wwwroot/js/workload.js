@@ -149,16 +149,22 @@ function createTask(id, title, start, end, hours, attachments, tag, state, users
 
 function getUserImageTask(user, taskId) {
     //var url = '/users/GetUserPhoto?=' + user;
+    //var url = '/users/photo/' + user;
+
+    //$.ajax({
+    //    url: url,
+    //    type: "GET",
+    //    cache: true,
+    //    success: function (data) {
+    //        img = $('<img class="user">').attr('src', data);
+    //        $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
+    //    }
+    //});
+
     var url = '/users/photo/' + user;
-    $.ajax({
-        url: url,
-        type: "GET",
-        cache: true,
-        success: function (data) {
-            img = $('<img class="user">').attr('src', data);
-            $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
-        }
-    });
+    img = $('<img class="user">').attr('src', url);
+    $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
+
 }
 
 function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
@@ -176,10 +182,6 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
         clone.querySelector('.task .templateEnd').textContent = end;
         clone.querySelector('.task .templateHours').textContent = hours;
         clone.querySelector('.task .templateAttachments').textContent = attachments;
-
-        $.each(users, function (index, value) {
-            getUserImageTask(value.Item1, taskId);
-        });
     } 
     else {
         // will not work
@@ -190,6 +192,12 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
     folder.appendChild(clone, true);
+
+    if (clone.querySelector('.hack-force-hide-template-layout') == null) {
+        $.each(users, function (index, value) {
+            getUserImageTask(value.Item1, taskId);
+        });
+    } 
 }
 
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
