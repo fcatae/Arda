@@ -64,7 +64,7 @@ namespace Arda.Kanban.Controllers
         [Route("{tag}/add")]
         public HttpResponseMessage Add([FromRoute]string tag)
         {
-            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             string requestFromPost = reader.ReadToEnd();

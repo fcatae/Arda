@@ -57,7 +57,7 @@ namespace Arda.Kanban.Controllers
         [Route("add")]
         public HttpResponseMessage Add()
         {
-            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             string requestFromPost = reader.ReadToEnd();
@@ -69,7 +69,7 @@ namespace Arda.Kanban.Controllers
 
             if (response)
             {
-                _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 0);
+                //_repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 0);
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
             else
@@ -102,7 +102,7 @@ namespace Arda.Kanban.Controllers
         [Route("edit")]
         public HttpResponseMessage Edit()
         {
-            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             string requestFromPost = reader.ReadToEnd();
@@ -113,7 +113,7 @@ namespace Arda.Kanban.Controllers
 
             if (response)
             {
-                _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 1);
+                // _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 1);
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
             else
