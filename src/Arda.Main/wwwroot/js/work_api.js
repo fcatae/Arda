@@ -180,7 +180,7 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, /
         clone.querySelector('.task .templateEnd').textContent = end;
         clone.querySelector('.task .templateHours').textContent = hours;
         clone.querySelector('.task .templateAttachments').textContent = attachments;
-        clone.querySelector('.task .templateDescription').textContent = description;
+        clone.querySelector('.task .templateDescription').innerHTML = description;
     } 
     else {
         // will not work

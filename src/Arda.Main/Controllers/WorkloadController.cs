@@ -107,13 +107,30 @@ namespace Arda.Main.Controllers
                              tag = x._WorkloadExpertise,
                              status = x._WorkloadStatus,
                              users = x._WorkloadUsers,
-                             textual = x.StatusText
+                             textual = GetFirstLine(InsertLineBreak(x.StatusText))
                              //x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
                          })
                          //.Distinct()
                          .ToList();
 
             return Json(dados);
+        }
+
+        string InsertLineBreak(string text)
+        {
+            if (text == null)
+                return null;
+
+            return text.Replace("</p>", "</p>\n");
+        }
+        string GetFirstLine(string text)
+        {
+            if (text == null)
+                return null;
+
+            int endline = text.IndexOfAny( new char[] { '\n', '\r'});
+
+            return (endline == -1) ? text : text.Substring(0, endline - 1);
         }
 
         [HttpPost]
