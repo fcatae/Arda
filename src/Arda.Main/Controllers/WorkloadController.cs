@@ -93,9 +93,10 @@ namespace Arda.Main.Controllers
         {
             var workloads = new List<string>();
 
-            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload2/listtag?tag=" + workspace,"","");
-
-            var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == true)
+            // var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload2/listtag?tag=" + workspace,"","");
+            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadStatusCompatViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload2/liststatus/" + workspace, "", "");
+            
+            var dados = existentWorkloads //.Where(x => x._WorkloadIsWorkload == true)
                          .Select(x => new {
                              id = x._WorkloadID,
                              title = x._WorkloadTitle,
@@ -106,9 +107,10 @@ namespace Arda.Main.Controllers
                              tag = x._WorkloadExpertise,
                              status = x._WorkloadStatus,
                              users = x._WorkloadUsers,
-                             textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
+                             textual = x.StatusText
+                             //x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
                          })
-                         .Distinct()
+                         //.Distinct()
                          .ToList();
 
             return Json(dados);

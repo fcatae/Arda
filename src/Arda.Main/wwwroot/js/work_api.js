@@ -142,9 +142,9 @@ function moveTask(id, state) {
     update(task);
 }
 
-function createTask(id, title, start, end, hours, attachments, tag, state, users) {
+function createTask(id, title, start, end, hours, attachments, tag, state, users, description) {
     var task_state = '.state' + state;
-    createTaskInFolder(id, title, start, end, hours, attachments, /*tag,*/ task_state, users);
+    createTaskInFolder(id, title, start, end, hours, attachments, /*tag,*/ task_state, users, description);
 }
 
 function getUserImageTask(user, taskId) {
@@ -165,7 +165,7 @@ function getUserImageTask(user, taskId) {
     $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
 }
 
-function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, /*tag,*/ folderSelector, users) {
+function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, /*tag,*/ folderSelector, users, description) {
     var content = document.querySelector('#templateTask').content;
     var clone = document.importNode(content, true);
     var folder = document.querySelector(folderSelector);
@@ -180,6 +180,7 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, /
         clone.querySelector('.task .templateEnd').textContent = end;
         clone.querySelector('.task .templateHours').textContent = hours;
         clone.querySelector('.task .templateAttachments').textContent = attachments;
+        clone.querySelector('.task .templateDescription').textContent = description;
     } 
     else {
         // will not work
@@ -291,7 +292,7 @@ function loadTaskList(filter_type, filter_user) {
 
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
-            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users, task.description);
+            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users, task.textual);
         });
     },
         filter_type,
