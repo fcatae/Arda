@@ -59,7 +59,9 @@ namespace Arda.Kanban.Controllers
                               _WorkloadStatus = w.State,
                               _WorkloadUsers = (from user in w.Users
                                                 select new Tuple<string, string>(user, user)).ToArray(),
-                              StatusText = w.StatusText
+                              StatusText = w.StatusText,
+
+                              _WorkloadIsWorkload = true
                           }
                           ).ToArray();
 

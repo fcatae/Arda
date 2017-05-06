@@ -62,7 +62,7 @@ namespace Arda.Kanban.Repositories
         {
             var workloads = (from wb in _context.WorkloadBacklogs
                              join tag in _context.Tags on wb.WBID equals tag.WorkloadBacklogWBID
-
+                             
                              // where (int)wb.WBStatus < 3
                              where tag.TagId == tagging
                              orderby wb.WBTitle
@@ -73,7 +73,9 @@ namespace Arda.Kanban.Repositories
                                  State = (int)wb.WBStatus,
                                  Users = (from u in wb.WBUsers
                                           select u.UserUniqueName).ToArray(),
-                                 StatusText = "status..."
+                                 StatusText = (wb.LastAppointmentId != null) ? (from ap in _context.Appointments
+                                               where ap.AppointmentID == wb.LastAppointmentId 
+                                               select ap.AppointmentComment).First() : ""
 
                              }).ToList();
 
