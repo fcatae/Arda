@@ -36,7 +36,11 @@ namespace Arda.Kanban.Repositories
             };
 
             _context.Appointments.Add(appointmentToBeSaved);
+
             var response = _context.SaveChanges();
+
+            // setting the last appointment inside the repository
+            SetLastAppointment(appointment._AppointmentWorkloadWBID, appointment._AppointmentID);
 
             if (response > 0)
             {
@@ -46,6 +50,15 @@ namespace Arda.Kanban.Repositories
             {
                 return false;
             }
+        }
+
+        void SetLastAppointment(Guid workloadId, Guid appointmentId)
+        {
+            // Load Workload object to save.
+            var workload = _context.WorkloadBacklogs.First(wb => wb.WBID == workloadId);
+            workload.LastAppointmentId = appointmentId;
+
+            _context.SaveChanges();            
         }
 
         public List<AppointmentViewModel> GetAllAppointmentsSimple()
