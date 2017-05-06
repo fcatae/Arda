@@ -57,6 +57,28 @@ namespace Arda.Kanban.Repositories
 
             return workloads;
         }
-        
+
+        public IEnumerable<WorkloadStatusViewModel> GetWorkloadStatus(string tagging)
+        {
+            var workloads = (from wb in _context.WorkloadBacklogs
+                             join tag in _context.Tags on wb.WBID equals tag.WorkloadBacklogWBID
+
+                             // where (int)wb.WBStatus < 3
+                             where tag.TagId == tagging
+                             orderby wb.WBTitle
+                             select new WorkloadStatusViewModel
+                             {
+                                 WorkloadID = wb.WBID,
+                                 Title = wb.WBTitle,
+                                 State = (int)wb.WBStatus,
+                                 Users = (from u in wb.WBUsers
+                                          select u.UserUniqueName).ToArray(),
+                                 StatusText = "status..."
+
+                             }).ToList();
+
+
+            return workloads;
+        }
     }
 }

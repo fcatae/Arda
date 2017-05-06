@@ -44,6 +44,13 @@ namespace Arda.Kanban.Controllers
             return _extraRepo.GetWorkloads(tag);
         }
 
+        [HttpGet]
+        [Route("status/{tag}")]
+        public IEnumerable<WorkloadStatusViewModel> GetStatus(string tag)
+        {
+            return _extraRepo.GetWorkloadStatus(tag);
+        }
+
         [HttpPost]
         [Route("{tag}/assign/{wbid}")]
         public bool Assign([FromRoute]string tag, [FromRoute]string wbid)

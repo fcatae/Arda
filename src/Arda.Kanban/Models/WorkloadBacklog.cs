@@ -42,9 +42,13 @@ namespace Arda.Kanban.Models
         [Required]
         public DateTime WBCreatedDate { get; set; }
 
-
         //Foreign Keys:
         public Guid WBActivityActivityID { get; set; }
+
+        public Guid LastAppointmentId { get; set; }
+
+        //[ForeignKey("LastAppointmentId")]
+        //public virtual Appointment LastAppointment { get; set; }
 
         [ForeignKey("WBActivityActivityID")]
         public Activity WBActivity { get; set; }
