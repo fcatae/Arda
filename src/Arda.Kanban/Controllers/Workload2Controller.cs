@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Net;
 using Arda.Kanban.Models.Repositories;
 using Arda.Kanban.ViewModels;
+using System.Linq;
 
 namespace Arda.Kanban.Controllers
 {
@@ -45,10 +46,24 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
-        [Route("status/{tag}")]
-        public IEnumerable<WorkloadStatusViewModel> GetStatus(string tag)
+        [Route("liststatus/{tag}")]
+        public IEnumerable<WorkloadStatusCompatViewModel> GetStatus(string tag)
         {
-            return _extraRepo.GetWorkloadStatus(tag);
+            var workloadList = _extraRepo.GetWorkloadStatus(tag);
+
+            var result = (from w in workloadList
+                          select new WorkloadStatusCompatViewModel()
+                          {
+                              _WorkloadID = w.WorkloadID,
+                              _WorkloadTitle = w.Title,
+                              _WorkloadStatus = w.State,
+                              _WorkloadUsers = (from user in w.Users
+                                                select new Tuple<string, string>(user, user)).ToArray(),
+                              StatusText = w.StatusText
+                          }
+                          ).ToArray();
+
+            return result;
         }
 
         [HttpPost]
