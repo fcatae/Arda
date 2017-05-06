@@ -45,7 +45,7 @@ namespace Arda.Kanban.Models
         //Foreign Keys:
         public Guid WBActivityActivityID { get; set; }
 
-        public Guid LastAppointmentId { get; set; }
+        public Guid? LastAppointmentId { get; set; }
 
         //[ForeignKey("LastAppointmentId")]
         //public virtual Appointment LastAppointment { get; set; }
