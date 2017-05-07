@@ -61,8 +61,8 @@ namespace Arda.Kanban.Controllers
 
         [HttpPost]
         [Route("add")]
-        // replace with POST /folders/user@domain.com 
-        // replace with POST /workspace/default/folders/dashboard (Auth)
+        // replace with POST /folders/user@domain.com/add 
+        // replace with POST /workspace/default/folders/<dashboard>/add (Auth)
         public HttpResponseMessage Add()
         {
             // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
@@ -87,7 +87,8 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPut]
-        [Route("updatestatus")] // replace with PUT /workspace/default/items/<guid>/status
+        [Route("updatestatus")] 
+        // replace with PUT /workspace/default/items/<guid>/status
         public HttpResponseMessage UpdateStatus([FromQuery]string id, [FromQuery]int status)
         {
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);

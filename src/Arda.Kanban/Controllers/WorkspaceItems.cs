@@ -28,7 +28,12 @@ namespace Arda.Kanban.Controllers
             object ret = _repository.GetWorkloadByID(itemId);
 
             return ret;
-        }        
+        }  
 
+        [HttpPut("{itemId}/status/{newStatus}")]
+        public IActionResult UpdateStatus(Guid itemId, int newStatus)
+        {
+            return Accepted();
+        }
     }
 }
