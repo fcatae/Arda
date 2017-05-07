@@ -30,7 +30,7 @@ namespace Arda.Kanban.Controllers
             return ret;
         }
 
-        [HttpPost("{folderId}")]
+        [HttpPost("{folderId}/add")]
         public IActionResult Create(string folderId, [FromBody]string input)
         {
             //object ret = _repository.GetWorkloadsByUser(folderId);
