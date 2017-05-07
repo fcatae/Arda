@@ -50,14 +50,20 @@
 
                     if (menuItems.Count > 0)
                     {
-                        <!-- vNext: Dashboard -->
-                                <li class="nav-item">
-                                    <a class="btn btn-primary" href="/dashboard/v2">Try Dashboard V2</a>
-                                </li>
-
                         <!-- vNext: History -->
                                 <li class="nav-item">
                                     <a class="btn" href="/archive">Archive</a>
+                                </li>
+
+                        <!-- vNext: Form -->
+                                <li class="nav-item dropdown" style="display: none">
+                                    <a href="#" class="dropdown-toggle btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Forms <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Community</a>
+                                            <a class="nav-link" href="#">ISV</a>
+                                        </li>
+                                    </ul>
                                 </li>
 
                         <!-- vNext: Workspace -->

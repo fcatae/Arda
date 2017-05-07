@@ -19,7 +19,7 @@ namespace Arda.Main.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
-        public async Task<IActionResult> V2()
+        public async Task<IActionResult> Index()
         {
             var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
@@ -31,7 +31,7 @@ namespace Arda.Main.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Old()
         {
             var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var userStatus = Util.ConnectToRemoteService<int>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuserstatus", user, string.Empty).Result;
