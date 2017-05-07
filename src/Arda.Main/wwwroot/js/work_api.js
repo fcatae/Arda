@@ -785,7 +785,7 @@ function addWorkload(e) {
     // var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
     var tag = 'workload-task';
 
-    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
+    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users, description: '' };
 
     validateForm(e, data, function (e, data) {
         DisableWorkloadFields();
@@ -850,7 +850,7 @@ function addWorkloadSimple(e) {
     // var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
     var tag = 'workload-task';
 
-    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
+    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users, description: '' };
 
     validateFormSimple(e, data, function (e, data) {
         DisableWorkloadFields();
@@ -877,7 +877,7 @@ function addWorkloadSimple(e) {
 
                     // hack
                     var user = { Item1: response.WBUsers[0], Item2: 'not-filled' };
-                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: [user] };
+                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: [user], description: '' };
                     
                     createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
                 } else {
