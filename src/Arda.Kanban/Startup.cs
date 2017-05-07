@@ -80,6 +80,22 @@ namespace Arda.Kanban
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "Arda.Kanban", Version = "v1" });
+                c.SwaggerDoc("v2", new Info { Title = "Arda.Kanban v2 (Workspaces)", Version = "v2" });
+
+                c.DocInclusionPredicate((docName, apiDesc) =>
+                {
+                    switch (docName)
+                    {
+                        case "v1":
+                            return apiDesc.RelativePath.StartsWith("api/");
+                        case "v2":
+                            return apiDesc.RelativePath.StartsWith("v2/");
+                    }
+
+                    // unknown version?
+                    return true;
+                });
+
             });            
         }
 
@@ -103,6 +119,7 @@ namespace Arda.Kanban
             app.UseSwaggerUi(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Arda.Kanban v1");
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "Arda.Kanban v2 (Workspaces)");
             });
             
             app.UseMvc();
