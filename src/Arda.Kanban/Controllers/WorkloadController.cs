@@ -87,8 +87,9 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPut]
-        [Route("updatestatus")] 
-        // replace with PUT /workspace/default/items/<guid>/status
+        [Route("updatestatus")]
+        // replace with PUT /items/<guid>/status/<status>
+        // replace with PUT /workspace/default/items/<guid>/status/<status>
         public HttpResponseMessage UpdateStatus([FromQuery]string id, [FromQuery]int status)
         {
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
@@ -108,7 +109,9 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPut]
-        [Route("edit")] // replace with PUT /workspace/default/items/<guid>/status
+        [Route("edit")]
+        // replace with PUT /items/<guid>
+        // replace with PUT /workspace/default/items/<guid>
         public HttpResponseMessage Edit()
         {
             // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
@@ -132,7 +135,9 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpDelete]
-        [Route("delete")] // replace with DELETE /workspace/default/items/<guid>
+        [Route("delete")]
+        // replace with DELETE /items/<guid>
+        // replace with DELETE /workspace/default/items/<guid>
         public HttpResponseMessage Delete([FromQuery]Guid workloadID)
         {
             var response = _repository.DeleteWorkloadByID(workloadID);
@@ -146,14 +151,17 @@ namespace Arda.Kanban.Controllers
             }
         }
 
-        [HttpGet] // replace with /workspace/default/folders/archive
+        [HttpGet]
+        // replace with /folders/<user@domain.com>?archived=true
+        // replace with /workspace/default/folders/archived
         [Route("listarchivewithfilter")]
         public IEnumerable<WorkloadsByUserViewModel> ListArchiveWithFilter([FromQuery]string uniqueName)
         {
             return _repository.GetArchivedWorkloadsByUser(uniqueName);
         }
 
-        [HttpGet] // replace with /workspace/default/folders/default/search
+        [HttpGet] 
+        // not implemented yet
         [Route("search")]
         public IEnumerable<WorkloadsByUserViewModel> SimpleSearchWithFilter([FromQuery]string uniqueName, [FromQuery]string searchText)
         {

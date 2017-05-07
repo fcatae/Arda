@@ -23,7 +23,7 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet("{folderId}")]
-        public object GetItems(string folderId)
+        public object GetItems(string folderId, [FromQuery]bool? archived)
         {
             object ret = _repository.GetWorkloadsByUser(folderId);
 

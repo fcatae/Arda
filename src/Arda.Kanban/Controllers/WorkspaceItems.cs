@@ -28,7 +28,21 @@ namespace Arda.Kanban.Controllers
             object ret = _repository.GetWorkloadByID(itemId);
 
             return ret;
-        }  
+        }
+
+        [HttpPut("{itemId}")]
+        public IActionResult Edit(Guid itemId, [FromBody]object newItem)
+        {
+            // should replace the entire object
+            return Accepted();
+        }
+
+        [HttpDelete("{itemId}")]
+        public IActionResult Delete(Guid itemId, [FromBody]object newItem)
+        {
+            // delete the resource            
+            return NoContent(); //Accepted();
+        }
 
         [HttpPut("{itemId}/status/{newStatus}")]
         public IActionResult UpdateStatus(Guid itemId, int newStatus)
