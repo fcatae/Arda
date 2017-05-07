@@ -50,8 +50,9 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
-        [Route("details")] 
-        // replace with /workspace/default/items/<guid>
+        [Route("details")]
+        // replace with /items/<guid>
+        // replace with /workspace/<workload>/items/<guid>
         public WorkloadViewModel Details([FromQuery]Guid workloadID)
         {
             var workload = _repository.GetWorkloadByID(workloadID);
@@ -59,7 +60,9 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPost]
-        [Route("add")] // replace with POST /workspace/default/folders/default
+        [Route("add")]
+        // replace with POST /folders/user@domain.com 
+        // replace with POST /workspace/default/folders/dashboard (Auth)
         public HttpResponseMessage Add()
         {
             // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();

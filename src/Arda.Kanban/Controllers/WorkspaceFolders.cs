@@ -21,14 +21,22 @@ namespace Arda.Kanban.Controllers
         {
             _repository = repository;
         }
-        
+
         [HttpGet("{folderId}")]
-        public object Root(string folderId)
+        public object GetItems(string folderId)
         {
             object ret = _repository.GetWorkloadsByUser(folderId);
 
             return ret;
-        }        
+        }
+
+        [HttpPost("{folderId}")]
+        public IActionResult Create(string folderId, [FromBody]string input)
+        {
+            //object ret = _repository.GetWorkloadsByUser(folderId);
+
+            return CreatedAtRoute("GetItem", new { itemId = 1 }, input);
+        }
 
     }
 }
