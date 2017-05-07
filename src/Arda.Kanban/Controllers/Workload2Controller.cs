@@ -32,21 +32,21 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
-        [Route("listtag")]
+        [Route("listtag")] // replace with /workspace/default/search/<tag>
         public IEnumerable<WorkloadsByUserViewModel> ListTag([FromQuery]string tag)
         {
             return _extraRepo.GetWorkloads(tag);
         }
 
         [HttpGet]
-        [Route("{tag}")]
+        [Route("{tag}")] // replace with /workspace/default/items/search/<tag>
         public IEnumerable<WorkloadsByUserViewModel> GetTag(string tag)
         {
             return _extraRepo.GetWorkloads(tag);
         }
 
         [HttpGet]
-        [Route("liststatus/{tag}")]
+        [Route("liststatus/{tag}")] // replace with /workspace/default/search/<tag>?$status
         public IEnumerable<WorkloadStatusCompatViewModel> GetStatus(string tag)
         {
             var workloadList = _extraRepo.GetWorkloadStatus(tag);
@@ -69,7 +69,7 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPost]
-        [Route("{tag}/assign/{wbid}")]
+        [Route("{tag}/assign/{wbid}")] // replace with PUT /workspace/<workspaceId>/items/<guid>/tags
         public bool Assign([FromRoute]string tag, [FromRoute]string wbid)
         {
             _extraRepo.AssignTag(Guid.Parse(wbid), tag);
