@@ -22,7 +22,7 @@ namespace Arda.Main.Controllers
         {
             var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
-            UsageTelemetry.Track(user, ArdaUsage.Dashboard_Archive);
+            UsageTelemetry.Track(user, ArdaUsage.Archive_Index);
 
             return View();
         }
