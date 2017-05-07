@@ -10,7 +10,9 @@ using System.Linq;
 
 namespace Arda.Kanban.Controllers
 {
-    [Route("v2/workspaces/{workspaceId}/folders/{folderId}")]
+    // default = authenticated user
+
+    [Route("v2/folders")]
     public class WorkspaceFoldersController : Controller
     {
         IWorkloadRepository _repository;
@@ -20,10 +22,13 @@ namespace Arda.Kanban.Controllers
             _repository = repository;
         }
         
-        [HttpGet("")]
-        public string Root(string workspaceId, string folderId)
+        [HttpGet("{folderId}")]
+        public object Root(string folderId)
         {
-            return workspaceId + "/" + folderId;
-        }
+            object ret = _repository.GetWorkloadsByUser(folderId);
+
+            return ret;
+        }        
+
     }
 }

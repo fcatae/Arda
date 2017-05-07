@@ -20,14 +20,17 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
-        [Route("listworkloadwithfilter")] // replace with /workspace/uniquename/folders/default
+        [Route("listworkloadwithfilter")]
+        // replace with /folders/username@domain.com
+        // replace with /workspace/default/folders/dashboard (Auth)
         public IEnumerable<WorkloadsByUserViewModel> ListWorkloadWithFilter([FromQuery]string uniqueName)
         {
             return _repository.GetWorkloadsByUser(uniqueName);
         }
 
         [HttpGet]
-        [Route("listworkloadbyuser")] // replace with /workspace/default/folders/default
+        [Route("listworkloadbyuser")] 
+        // DEPRECATED: Using headers for determining the user
         public IEnumerable<WorkloadsByUserViewModel> ListWorkloadByUser()
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
@@ -37,7 +40,8 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
-        [Route("list")] // replace with /workspace/default/items/all
+        [Route("list")] 
+        // DEPRECATED: No list all items
         public IEnumerable<WorkloadViewModel> List()
         {
             var workloads = _repository.GetAllWorkloads();
@@ -46,7 +50,8 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
-        [Route("details")] // replace with /workspace/default/items/<guid>
+        [Route("details")] 
+        // replace with /workspace/default/items/<guid>
         public WorkloadViewModel Details([FromQuery]Guid workloadID)
         {
             var workload = _repository.GetWorkloadByID(workloadID);
