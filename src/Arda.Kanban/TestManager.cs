@@ -19,7 +19,9 @@ namespace Arda.Kanban
 
         public void Run()
         {
+            WorkspaceRepository workspace = new WorkspaceRepository(_context);
 
+            workspace.ListByUser("fcatae@microsoft.com");
         }
 
         public void CreateWorkspaceItem()
