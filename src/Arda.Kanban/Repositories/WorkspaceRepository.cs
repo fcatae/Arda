@@ -18,7 +18,11 @@ namespace Arda.Kanban.Repositories
 
         public void Create(WorkspaceItem item)
         {
+            if (item.Id == Guid.Empty)
+                throw new ArgumentNullException(nameof(item.Id));
+
             // default values
+            // Guid defaultId = (item.Id != Guid.Empty) ? item.Id : Guid.NewGuid();
             DateTime startDate = item.StartDate ?? DateTime.Today;
             DateTime endDate = item.EndDate ?? DateTime.Today;
             WorkloadBacklogUser wbUser = new WorkloadBacklogUser() { UserUniqueName = item.CreatedBy };
@@ -111,6 +115,9 @@ namespace Arda.Kanban.Repositories
 
         public WorkspaceItem TryGet(Guid itemId)
         {
+            if (itemId == Guid.Empty)
+                throw new ArgumentNullException(nameof(itemId));
+
             var workload = (from w in _context.WorkloadBacklogs
                              where w.WBID == itemId
                              select new WorkspaceItem()
@@ -175,6 +182,9 @@ namespace Arda.Kanban.Repositories
         public void Upsert(WorkspaceItem workload)
         {
             Guid itemId = workload.Id;
+
+            if (itemId == Guid.Empty)
+                throw new ArgumentNullException(nameof(itemId));
 
             var workloadToBeUpdated = _context.WorkloadBacklogs.FirstOrDefault(w => w.WBID == itemId);
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Arda.Kanban.Models.Repositories
 {
-    interface IWorkspaceRepository
+    public interface IWorkspaceRepository
     {
     }
 }
