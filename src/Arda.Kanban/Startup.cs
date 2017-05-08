@@ -77,6 +77,8 @@ namespace Arda.Kanban
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
 
+            services.AddSingleton<TestManager, TestManager>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "Arda.Kanban", Version = "v1" });
@@ -97,12 +99,11 @@ namespace Arda.Kanban
                 });
 
                 c.OperationFilter<MultipleOperationsWithSameVerbFilter>();
-
             });            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, TestManager testmgr)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -125,6 +126,11 @@ namespace Arda.Kanban
             });
             
             app.UseMvc();
+
+            if(env.IsDevelopment())
+            {
+                testmgr.Run();
+            }
         }
 
         // Entry point for the application.

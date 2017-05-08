@@ -16,7 +16,7 @@ namespace Arda.Kanban.Repositories
             _context = context;
         }
 
-        public bool Create(WorkspaceItem item)
+        public void Create(WorkspaceItem item)
         {
             // default values
             DateTime startDate = item.StartDate ?? DateTime.Today;
@@ -52,8 +52,6 @@ namespace Arda.Kanban.Repositories
 
             _context.WorkloadBacklogs.Add(workloadToBeSaved);
             _context.SaveChanges();
-
-            return true;
         }
 
 
