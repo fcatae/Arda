@@ -1,0 +1,167 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "v2",
+        "title": "Arda.Kanban v2 (Workspaces)"
+    },
+    "basePath": "/",
+    "paths": {
+        "/v2/folders/{folderId}": {
+            "get": {
+                "tags": [ "WorkspaceFolders" ],
+                "operationId": "List",
+                "consumes": [],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "folderId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "archived",
+                        "in": "query",
+                        "required": false,
+                        "type": "boolean"
+                    }
+                ],
+                "responses": { "200": { "description": "Success" } }
+            }
+        },
+        "/v2/folders/{folderId}/add": {
+            "post": {
+                "tags": [ "WorkspaceFolders" ],
+                "operationId": "WorkspaceFolders_Create",
+                "consumes": [ "application/json", "text/json", "application/json-patch+json" ],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "folderId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "input",
+                        "in": "body",
+                        "required": false,
+                        "schema": { "type": "string" }
+                    }
+                ],
+                "responses": { "200": { "description": "Success" } }
+            }
+        },
+        "/v2/items/{itemId}": {
+            "get": {
+                "tags": [ "WorkspaceItems" ],
+                "operationId": "WorkspaceItems_GetItem",
+                "consumes": [],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                ],
+                "responses": { "200": { "description": "Success" } }
+            },
+            "put": {
+                "tags": [ "WorkspaceItems" ],
+                "operationId": "WorkspaceItems_Edit",
+                "consumes": [ "application/json", "text/json", "application/json-patch+json" ],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    {
+                        "name": "newItem",
+                        "in": "body",
+                        "required": false,
+                        "schema": { "type": "object" }
+                    }
+                ],
+                "responses": { "200": { "description": "Success" } }
+            },
+            "delete": {
+                "tags": [ "WorkspaceItems" ],
+                "operationId": "WorkspaceItems_Delete",
+                "consumes": [ "application/json", "text/json", "application/json-patch+json" ],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    {
+                        "name": "newItem",
+                        "in": "body",
+                        "required": false,
+                        "schema": { "type": "object" }
+                    }
+                ],
+                "responses": { "200": { "description": "Success" } }
+            }
+        },
+        "/v2/items/{itemId}/status/{newStatus}": {
+            "put": {
+                "tags": [ "WorkspaceItems" ],
+                "operationId": "WorkspaceItems_UpdateStatus",
+                "consumes": [],
+                "produces": [],
+                "parameters": [
+                    {
+                        "name": "itemId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    {
+                        "name": "newStatus",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": { "200": { "description": "Success" } }
+            }
+        },
+        "/v2/Workspaces/{workspaceId}": {
+            "get": {
+                "tags": [ "Workspaces" ],
+                "operationId": "Workspaces_Root",
+                "consumes": [],
+                "produces": [ "text/plain", "application/json", "text/json" ],
+                "parameters": [
+                    {
+                        "name": "workspaceId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": { "type": "string" }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {},
+    "securityDefinitions": {}
+}

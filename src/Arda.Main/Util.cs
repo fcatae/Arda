@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.ApplicationInsights;
 using System.Linq;
+using ArdaSDK.Kanban;
 
 namespace Arda.Common.Utils
 {
@@ -20,6 +21,8 @@ namespace Arda.Common.Utils
         public static string MainURL;
         public static string ReportsURL;
         public static string PermissionsURL;
+
+        public static KanbanClient KanbanClient;
 
         private static IDistributedCache _cacheDontUse;
 
@@ -291,7 +294,9 @@ namespace Arda.Common.Utils
             MainURL = config["Endpoints:ardaapp"];
             PermissionsURL = config["Endpoints:permissions-service"];
             KanbanURL = config["Endpoints:kanban-service"];
-            ReportsURL = config["Endpoints:reports-service"];            
+            ReportsURL = config["Endpoints:reports-service"];
+
+            KanbanClient = new KanbanClient(new Uri(KanbanURL));
         }
     }
 }

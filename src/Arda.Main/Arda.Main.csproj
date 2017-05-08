@@ -13,6 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ArdaSDK\src\**" />
+    <Content Remove="ArdaSDK\src\**" />
+    <EmbeddedResource Remove="ArdaSDK\src\**" />
+    <None Remove="ArdaSDK\src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="wwwroot\**\*;Views\**\*;Areas\**\Views;docker-compose.yml;Dockerfile;.dockerignore;arda.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
@@ -43,6 +50,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.13.5" />
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.7" />
     <PackageReference Include="System.Net.Http" Version="4.3.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="7.2.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="1.0.2" />
