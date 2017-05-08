@@ -80,6 +80,13 @@ namespace Arda.Main.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Work([FromQuery]Guid wbid)
+        {            
+            ViewBag.Appointments = (wbid != Guid.Empty) ? await Workload(wbid) : null;
+
+            return View();
+        }
+
         [HttpGet]
         public async Task<JsonResult> ListMyAppointments()
         {
@@ -100,6 +107,15 @@ namespace Arda.Main.Controllers
             }
 
             return Json(dataTablesSource);
+        }
+
+        [HttpGet("/appointment/workload")]
+        public async Task<IEnumerable<AppointmentViewModel>> Workload([FromQuery]Guid wbid)
+        {
+            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var appointments = await Util.ConnectToRemoteService<List<AppointmentViewModel>>(HttpMethod.Get, Util.KanbanURL + $"api/appointment/listfromworkspace?workspace={wbid}", uniqueName, "");
+
+            return appointments;
         }
 
         [HttpGet]

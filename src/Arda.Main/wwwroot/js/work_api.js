@@ -142,32 +142,36 @@ function moveTask(id, state) {
     update(task);
 }
 
-function createTask(id, title, start, end, hours, attachments, tag, state, users) {
+function createTask(id, title, start, end, hours, attachments, tag, state, users, description) {
     var task_state = '.state' + state;
-    createTaskInFolder(id, title, start, end, hours, attachments, tag, task_state, users);
+    createTaskInFolder(id, title, start, end, hours, attachments, /*tag,*/ task_state, users, description);
 }
 
 function getUserImageTask(user, taskId) {
     //var url = '/users/GetUserPhoto?=' + user;
+    //var url = '/users/photo/' + user;
+    //$.ajax({
+    //    url: url,
+    //    type: "GET",
+    //    cache: true,
+    //    success: function (data) {
+    //        img = $('<img class="user">').attr('src', data);
+    //        $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
+    //    }
+    //});
+
     var url = '/users/photo/' + user;
-    $.ajax({
-        url: url,
-        type: "GET",
-        cache: true,
-        success: function (data) {
-            img = $('<img class="user">').attr('src', data);
-            $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
-        }
-    });
+    img = $('<img class="user">').attr('src', url);
+    $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
 }
 
-function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
+function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, /*tag,*/ folderSelector, users, description) {
     var content = document.querySelector('#templateTask').content;
     var clone = document.importNode(content, true);
     var folder = document.querySelector(folderSelector);
 
     clone.querySelector('.task').id = taskId;
-    clone.querySelector('.task').classList.add(tag);
+    // clone.querySelector('.task').classList.add(tag);
 
     clone.querySelector('.task .templateTitle').textContent = taskTitle;
 
@@ -176,10 +180,7 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
         clone.querySelector('.task .templateEnd').textContent = end;
         clone.querySelector('.task .templateHours').textContent = hours;
         clone.querySelector('.task .templateAttachments').textContent = attachments;
-
-        $.each(users, function (index, value) {
-            getUserImageTask(value.Item1, taskId);
-        });
+        clone.querySelector('.task .templateDescription').innerHTML = description;
     } 
     else {
         // will not work
@@ -190,6 +191,12 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
     folder.appendChild(clone, true);
+
+    if (clone.querySelector('.hack-force-hide-template-layout') == null) {
+        $.each(users, function (index, value) {
+            getUserImageTask(value.Item1, taskId);
+        });
+    } 
 }
 
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
@@ -285,7 +292,7 @@ function loadTaskList(filter_type, filter_user) {
 
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
-            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users, task.description);
+            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users, task.textual);
         });
     },
         filter_type,
@@ -302,6 +309,9 @@ function newWorkloadState() {
     //Clean values:
     resetWorkloadForm();
     EnableWorkloadFields();
+
+    // force 0 to clean up
+    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
 
     //Get GUID:
     getGUID(function (data) {
@@ -320,6 +330,7 @@ function newWorkloadState() {
 
     $('#btnWorkloadEdit').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -334,6 +345,9 @@ function newWorkloadStateSimple() {
     //Clean values:
     resetWorkloadForm();
     EnableWorkloadFields();
+
+    // force 0 to clean up
+    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
 
     //Get GUID:
     getGUID(function (data) {
@@ -352,6 +366,7 @@ function newWorkloadStateSimple() {
 
     $('#btnWorkloadEdit').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -379,6 +394,7 @@ function detailsWorkloadState(ev, openWorkloadGuid) {
     $('#btnWorkloadReset').addClass('hidden');
     $('#btnWorkloadDelete').addClass('hidden');
     $('#btnWorkloadSend').addClass('hidden');
+    $('#btnWorkloadAddAppointment').removeClass('hidden');
 
     $("#btnWorkloadCancel").removeAttr("disabled");
 
@@ -404,6 +420,7 @@ function editWorkloadState() {
 
     $('#btnWorkloadReset').addClass('hidden');
     $('#btnWorkloadEdit').addClass('hidden');
+    $('#btnWorkloadAddAppointment').removeClass('hidden');
 
     $('#btnWorkloadSend').removeClass('hidden');
     $('#btnWorkloadSend').removeAttr("disabled");
@@ -514,6 +531,8 @@ function HideAllButtons() {
     $("#btnWorkloadEdit").addClass('hidden');
     $("#btnWorkloadDelete").addClass('hidden');
     $("#btnWorkloadSend").addClass('hidden');
+    $('#btnWorkloadAddAppointment').addClass('hidden');
+
 }
 
 //Microsoft Graph API calls:
@@ -741,7 +760,10 @@ function loadWorkload(workloadID) {
 function addWorkload(e) {
     //Gets bootstrap-switch component value:
     var value = $('#WBIsWorkload').bootstrapSwitch('state');
-    var selected_work = $('select[name=filter-assign] option:selected').val();
+    var selected_work1 = $('#filter-assign-upskill').val();
+    var selected_work2 = $('select[name=filter-assign] option:selected').val();
+
+    var selected_work = (selected_work1 != null) ? selected_work1 : selected_work2;
 
     //Serializes form and append bootstrap-switch value:
     var data = new FormData(this);
@@ -758,9 +780,12 @@ function addWorkload(e) {
 
 
     var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
-    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
 
-    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
+    // this tag is used for CSS
+    // var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+    var tag = 'workload-task';
+
+    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users, description: '' };
 
     validateForm(e, data, function (e, data) {
         DisableWorkloadFields();
@@ -775,6 +800,10 @@ function addWorkload(e) {
             success: function (response) {
                 if (response.IsSuccessStatusCode) {
                     $('#WorkloadModal').modal('hide');
+
+                    // force 0 to clean up
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+
                     //Get GUID:
                     getGUID(function (data) {
                         $('#WBID').attr('value', data);
@@ -782,6 +811,11 @@ function addWorkload(e) {
                     createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users, workload.description);
                 } else {
                     $('#msg').text('Error!');
+
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+                    getGUID(function (data) {
+                        $('#WBID').attr('value', data);
+                    });
                 }
             }
         });
@@ -792,7 +826,10 @@ function addWorkload(e) {
 function addWorkloadSimple(e) {
     //Gets bootstrap-switch component value:
     var value = $('#WBIsWorkload').bootstrapSwitch('state');
-    var selected_work = $('select[name=filter-assign] option:selected').val();
+    var selected_work1 = $('#filter-assign-upskill').val();
+    var selected_work2 = $('select[name=filter-assign] option:selected').val();
+
+    var selected_work = (selected_work1 != null) ? selected_work1 : selected_work2;
 
     //Serializes form and append bootstrap-switch value:
     var data = new FormData(this);
@@ -809,9 +846,11 @@ function addWorkloadSimple(e) {
 
 
     var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
-    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+    // this tag is used for CSS
+    // var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
+    var tag = 'workload-task';
 
-    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
+    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users, description: '' };
 
     validateFormSimple(e, data, function (e, data) {
         DisableWorkloadFields();
@@ -827,6 +866,10 @@ function addWorkloadSimple(e) {
 
                 if (response) {
                     $('#WorkloadModal').modal('hide');
+
+                    // force 0 to clean up
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+
                     //Get GUID:
                     getGUID(function (data) {
                         $('#WBID').attr('value', data);
@@ -834,11 +877,15 @@ function addWorkloadSimple(e) {
 
                     // hack
                     var user = { Item1: response.WBUsers[0], Item2: 'not-filled' };
-                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: [user] };
+                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: [user], description: '' };
                     
                     createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
                 } else {
                     $('#msg').text('Error!');
+                    $('#WBID').attr('value', '00000000-0000-0000-0000-000000000000');
+                    getGUID(function (data) {
+                        $('#WBID').attr('value', data);
+                    });
                 }
             }
         });

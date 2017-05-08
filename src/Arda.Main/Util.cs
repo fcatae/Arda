@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.ApplicationInsights;
+using System.Linq;
 
 namespace Arda.Common.Utils
 {
@@ -25,6 +26,11 @@ namespace Arda.Common.Utils
         static Util()
         {
 
+        }
+
+        public static string GetCurrentUserName(this Microsoft.AspNetCore.Mvc.ControllerBase controller)
+        {
+            return controller.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
         }
 
         public static string GetUserPhotoFromRemote(string user)
@@ -53,8 +59,7 @@ namespace Arda.Common.Utils
             }
         }
 
-
-        public static string GetUserPhoto(string user)
+        public static string GetUserPhotoString(string user)
         {
             if (user == "undefined") throw new Exception("GetUserPhoto: user is undefined");
 
@@ -217,7 +222,8 @@ namespace Arda.Common.Utils
             }
             else
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                throw new InvalidOperationException("HTTP Error from " + url);
+                //return new HttpResponseMessage(HttpStatusCode.BadRequest);
             }
         }
 

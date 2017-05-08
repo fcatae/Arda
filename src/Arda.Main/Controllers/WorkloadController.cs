@@ -93,9 +93,10 @@ namespace Arda.Main.Controllers
         {
             var workloads = new List<string>();
 
-            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload2/listtag?tag=" + workspace,"","");
-
-            var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == true)
+            // var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload2/listtag?tag=" + workspace,"","");
+            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadStatusCompatViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload2/liststatus/" + workspace, "", "");
+            
+            var dados = existentWorkloads //.Where(x => x._WorkloadIsWorkload == true)
                          .Select(x => new {
                              id = x._WorkloadID,
                              title = x._WorkloadTitle,
@@ -106,12 +107,30 @@ namespace Arda.Main.Controllers
                              tag = x._WorkloadExpertise,
                              status = x._WorkloadStatus,
                              users = x._WorkloadUsers,
-                             textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
+                             textual = GetFirstLine(InsertLineBreak(x.StatusText))
+                             //x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
                          })
-                         .Distinct()
+                         //.Distinct()
                          .ToList();
 
             return Json(dados);
+        }
+
+        string InsertLineBreak(string text)
+        {
+            if (text == null)
+                return null;
+
+            return text.Replace("</p>", "</p>\n");
+        }
+        string GetFirstLine(string text)
+        {
+            if (text == null)
+                return null;
+
+            int endline = text.IndexOfAny( new char[] { '\n', '\r'});
+
+            return (endline == -1) ? text : text.Substring(0, endline - 1);
         }
 
         [HttpPost]
@@ -128,17 +147,13 @@ namespace Arda.Main.Controllers
                 List<Tuple<Guid, string, string>> fileList = await UploadNewFiles(WBFiles);
                 //Adds the file lists to the workload object:
                 workload.WBFilesList = fileList;
-            }
+            }            
 
-            //string api_workload_add;
-            //if (workload.Tag != null && workload.Tag != "")
-            //{
-            //    api_workload_add = $"api/workload2/{workload.Tag}/add";
-            //}
-            //else
-            //{
-            //    api_workload_add = "api/workload/add";
-            //}
+            // Sometimes /Workload/Guid fails or takes a long time to return
+            if(workload.WBID == Guid.Empty)
+            {
+                workload.WBID = Guid.NewGuid();
+            }
 
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
 
@@ -149,19 +164,29 @@ namespace Arda.Main.Controllers
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError);
             }
 
-            string tag = workload.Tag;
-            string wbid = workload.WBID.ToString();
-
-            if (workload.Tag != null && workload.Tag != "")
-            {
-                var strresp = await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.KanbanURL + $"api/workload2/{tag}/assign/{wbid}", uniqueName, "");
-            }
+            await Assign(workload.WBID, workload.Tag, uniqueName);
             
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        async Task Assign(Guid WBID, string tags, string uniqueName)
+        {
+            string wbid = WBID.ToString();
+
+            if (tags == null)
+                return;
+
+            foreach(string tag in tags.Split(';'))
+            {
+                if (tag != null && tag != "")
+                {
+                    var strresp = await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.KanbanURL + $"api/workload2/{tag}/assign/{wbid}", uniqueName, "");
+                }
+            }
+        }
+
         [HttpPost]
-        public async Task<WorkloadViewModel> AddSimple(ICollection<IFormFile> WBFiles, WorkloadViewModel workload)
+        public async Task<WorkloadViewModel> AddSimple(ICollection<IFormFile> WBFiles, WorkloadViewModel2 workload)
         {
             //Owner:
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
@@ -169,7 +194,7 @@ namespace Arda.Main.Controllers
             workload.WBActivity = Guid.Empty;
             workload.WBComplexity = 0;
             workload.WBExpertise = 0;
-
+            
             //Complete WB fields:
             workload.WBCreatedBy = uniqueName;
             workload.WBCreatedDate = DateTime.Now;
@@ -182,8 +207,16 @@ namespace Arda.Main.Controllers
 
             // Myself
             workload.WBUsers = new string[] { uniqueName };
-            
+
+            // Sometimes /Workload/Guid fails or takes a long time to return
+            if (workload.WBID == Guid.Empty)
+            {
+                workload.WBID = Guid.NewGuid();
+            }
+
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
+
+            await Assign(workload.WBID, workload.Tag, uniqueName);
 
             UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
 
