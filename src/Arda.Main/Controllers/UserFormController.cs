@@ -43,19 +43,42 @@ namespace Arda.Main.Controllers
         }        
 
         [HttpPost]
-        public IActionResult Submit([FromForm] object objForm)
+        public async Task<IActionResult> Submit([FromForm] string workloadTitle, [FromForm] string workloadDate, [FromForm] string workloadDescription)
         {
             var user = this.GetCurrentUserName();
 
-            dynamic userForm = objForm;
-
-            string title = userForm.workloadTitle;
-            string date = userForm.workloadDate;
-            string text = userForm.workloadDescription;
-
             UsageTelemetry.Track(user, ArdaUsage.Userform_Submit);
 
+            await CreateWorkload(workloadTitle, DateTime.Parse(workloadDate), workloadDescription);
+
             return RedirectToAction("Index", "Dashboard");
+        }
+
+        async Task CreateWorkload(string title, DateTime date, string description)
+        {
+            var uniqueName = this.GetCurrentUserName();
+
+            var workload = new WorkloadViewModel2()
+            {
+                WBTitle = title,
+                WBDescription = description,
+                WBStartDate = date,
+                WBEndDate = date,
+
+                WBID = Guid.NewGuid(),
+                WBCreatedDate = DateTime.Now,
+                WBCreatedBy = uniqueName,
+                WBUsers = new string[] { uniqueName },
+
+                WBIsWorkload = true, // dont forget to set to true
+                WBStatus = 2,
+
+                WBActivity = Guid.Empty,
+                WBComplexity = 0,
+                WBExpertise = 0
+            };            
+                        
+            var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
         }
     }
 }

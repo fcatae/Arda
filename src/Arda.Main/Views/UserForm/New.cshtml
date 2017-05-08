@@ -71,9 +71,10 @@
                         }
                     },
                     submitHandler: function (form) {
-                        UpdateCKEditor();
+                        //UpdateCKEditor();
+                        //var data = $(form).serialize();
 
-                        var data = $(form).serialize();
+                        window.onbeforeunload = null; 
 
                         form.submit();
                     }
@@ -113,9 +114,20 @@
                     autoclose: true,
                     todayHighlight: true
                 });
-
-                
             }
+
+            function preventLeavePage(e) {
+                e.cancelBubble = true;
+                e.returnValue = 'Do you want to leave?';
+
+                //e.stopPropagation works in Firefox.
+                if (e.stopPropagation) {
+                    //e.stopPropagation();
+                    e.preventDefault();
+                }
+            }
+            window.onbeforeunload = preventLeavePage;
+
         </script>
 
     </div>
