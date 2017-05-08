@@ -9,31 +9,28 @@ using Arda.Common.Utils;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Collections.Generic;
+using Arda.Main.Utils;
+using Arda.Main.ViewModels;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using System;
 
 namespace Arda.Main.Controllers
 {
     public class AccountController : Controller
     {
-        private IDistributedCache _cache;
-
-        public AccountController(IDistributedCache cache)
-        {
-            _cache = cache;
-        }
-        
-        public async Task<bool> AuthSimple()
+        public async Task<bool> AuthSimple(string name, string email)
         {
             var claims = new List<Claim>
                     {
                         new Claim("sub", "1"),
-                        new Claim("name", "User 1"),
-                        new Claim("email", "user@ardademo.onmicrosoft.com"),
+                        new Claim("name", name),
+                        new Claim("email", email),
                         new Claim("status", "Online"),
                         new Claim("department", "Evangelism"),
                         new Claim("region", "Brazil"),
-                        //new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "user@ardademo.onmicrosoft.com"),
-                        new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", "user@ardademo.onmicrosoft.com"),
-                        new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", "ardademo")
+                        new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", name),
+                        new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", email)
                     };
 
             var id = new ClaimsIdentity(claims, "local", "name", "role");
@@ -43,17 +40,95 @@ namespace Arda.Main.Controllers
             return true;
         }
 
-        public async Task<IActionResult> SignIn()
+        [HttpGet]
+        public IActionResult Page()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Page(string username, string email)
+        {
+            await AuthSimple(username, email); 
+
+            return Redirect("/Account/AuthCompleted");
+        }
+
+        private async void StoreUserInfo(string user, string token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseProfile = await client.SendAsync(request);
+
+            HttpRequestMessage requestManager = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me/manager");
+            requestManager.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var responseManager = await client.SendAsync(requestManager);
+
+            Task.WaitAll();
+
+            if (responseProfile.IsSuccessStatusCode && responseManager.IsSuccessStatusCode)
+            {
+                var profileSerialized = await responseProfile.Content.ReadAsStringAsync();
+                var profile = JsonConvert.DeserializeObject<GraphProfileViewModel>(profileSerialized);
+                var managerSerialized = await responseManager.Content.ReadAsStringAsync();
+                var manager = JsonConvert.DeserializeObject<GraphProfileViewModel>(managerSerialized);
+
+                var userToBeUpdated = new UserMainViewModel()
+                {
+                    Name = profile.displayName,
+                    Email = profile.userPrincipalName,
+                    GivenName = profile.givenName,
+                    Surname = profile.surname,
+                    JobTitle = profile.jobTitle,
+                    ManagerUniqueName = manager.userPrincipalName
+                };
+
+                var userStatus = Util.ConnectToRemoteService(HttpMethod.Put, Util.PermissionsURL + "api/permission/updateuser?=" + user, user, string.Empty, userToBeUpdated).Result;
+            }
+        }
+
+        public async Task<IActionResult> AuthCompleted()
+        {
+            var name = User.FindFirst("name").Value;
+            var uniqueName = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            bool isnewUser = await Util.ConnectToRemoteService<bool>(HttpMethod.Post, Util.PermissionsURL + "api/permission/setnewuser?name=" + name, uniqueName, "");
+
+            // create the user in Kanban
+            if ( isnewUser )
+            {
+                // code moved from PermissionAPI
+                var kanbanUser = new UserKanbanViewModel()
+                {
+                    UniqueName = uniqueName,
+                    Name = name
+                };
+
+                var res = Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/user/add", "kanban", "kanban", kanbanUser).Result;
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    throw new InvalidOperationException("Could not create user in KanbanURL");
+                }
+
+
+            }
+            
+            await Util.ConnectToRemoteServiceString(HttpMethod.Post, Util.PermissionsURL + "api/permission/setuserpermissionsandcode?name=" + name, uniqueName, "");
+
+            return Redirect("/Dashboard/V2");
+        }
+
+        public IActionResult SignIn()
         {
             if(Startup.IsSimpleAuthForDemo)
             {
-                await AuthSimple();
-
-                return Redirect("/Dashboard");
+                return Redirect("/Account/page");
             }
 
             return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Dashboard" });
+                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Account/AuthCompleted" });
         }
 
         public async Task<IActionResult> SignOut()

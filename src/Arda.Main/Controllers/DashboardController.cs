@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.Net.Http.Headers;
 using Arda.Main.ViewModels;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,12 +19,19 @@ namespace Arda.Main.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
-        public Task<IActionResult> V2()
+        public async Task<IActionResult> Index()
         {
-            return Index();
+            var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            ViewBag.User = user;
+            ViewBag.UserStatus = 2;
+            
+            UsageTelemetry.Track(user, ArdaUsage.Dashboard_Index);
+
+            return View();
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Old()
         {
             var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var userStatus = Util.ConnectToRemoteService<int>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuserstatus", user, string.Empty).Result;
@@ -34,14 +42,21 @@ namespace Arda.Main.Controllers
 
             if (!Startup.IsSimpleAuthForDemo)
             {
-                Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await TokenManager.GetAccessToken(HttpContext);
-                token = result.AccessToken;
-                ViewBag.Token = token;
-            }
+                try
+                {
+                    Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await TokenManager.GetAccessToken(HttpContext);
+                    token = result.AccessToken;
+                    ViewBag.Token = token;
 
-            if (userStatus == 0)
-            {
-                StoreUserInfo(user, token);
+                    if (userStatus == 0)
+                    {
+                        StoreUserInfo(user, token);
+                    }
+                }
+                catch(Microsoft.IdentityModel.Clients.ActiveDirectory.AdalSilentTokenAcquisitionException)
+                {
+                    return Redirect("/Account/SignIn");
+                }
             }
 
             UsageTelemetry.Track(user, ArdaUsage.Dashboard_Index);

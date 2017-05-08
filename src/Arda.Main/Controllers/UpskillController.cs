@@ -16,16 +16,30 @@ using Newtonsoft.Json;
 namespace Arda.Main.Controllers
 {
     [Authorize]
-    public class ArchiveController : Controller
+    public class UpskillController : Controller
     {
         public IActionResult Index()
         {
             var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
 
-            UsageTelemetry.Track(user, ArdaUsage.Archive_Index);
+            string workspace = user;
+
+            return Upskill(workspace);
+        }
+
+        [HttpGet("[controller]/{workspace}")]
+        public IActionResult Upskill(string workspace)
+        {
+            var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            ViewBag.User = user;
+            ViewBag.Title = workspace.ToUpper();
+            ViewBag.Work = workspace.ToLower();
+            ViewBag.Upskill = "upskill;" + workspace.ToLower();
+
+            UsageTelemetry.Track(user, ArdaUsage.Work_Index);
 
             return View();
         }
-        
     }
 }

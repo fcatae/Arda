@@ -10,6 +10,10 @@ using Arda.Common.JSON;
 using Arda.Main.ViewModels;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.ApplicationInsights;
+using System;
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+using System.IO;
 
 //TODO: Refactor name Users to User
 namespace Arda.Main.Controllers
@@ -42,9 +46,9 @@ namespace Arda.Main.Controllers
         //User Details:
         public async Task<IActionResult> Details(string userID)
         {
-            var photo = Util.GetUserPhoto(userID);
-            ViewBag.Photo = photo;
-
+            var photo = Util.GetUserPhotoString(userID);
+            ViewBag.Photo = photo; // embedded picture
+            
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
             return View(user);
@@ -53,11 +57,23 @@ namespace Arda.Main.Controllers
         //Edit User:
         public async Task<IActionResult> Edit(string userID)
         {
-            var photo = Util.GetUserPhoto(userID);
-            ViewBag.Photo = photo;
+            ViewBag.Photo = null;
+
+            try
+            {
+                // it MAY fail when user has no picture
+                var photo = Util.GetUserPhotoString(userID);
+                ViewBag.Photo = photo; // Embedded picture
+            }
+            catch
+            {                
+            }
 
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             var user = await Util.ConnectToRemoteService<UserMainViewModel>(HttpMethod.Get, Util.PermissionsURL + "api/useroperations/getuser?uniqueName=" + userID, uniqueName, "");
+
+            ViewBag.User = userID;
+            
             return View(user);            
         }
 
@@ -182,6 +198,107 @@ namespace Arda.Main.Controllers
         }
 
         [HttpPut]
+        public async Task<string> RefreshPhoto(string uniqueName)
+        {
+            var currentUniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            string name = uniqueName ?? currentUniqueName;
+
+            string token;
+
+            Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
+            token = result.AccessToken;
+
+            return await StoreUserPhoto(name, token);
+        }
+        
+        private async Task<string> StoreUserPhoto(string name, string token)
+        {
+            string url = $"https://graph.microsoft.com/v1.0/users/{name}/photo/$value";
+
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("Authorization", "bearer " + token);
+
+            var response = await client.SendAsync(request);
+
+            byte[] content = await response.Content.ReadAsByteArrayAsync();
+
+            return await PhotoUpdateInternal(name, content);                        
+        }
+
+        [HttpPut]
+        public async Task<string> RefreshUserInfo(string uniqueName)
+        {
+            var currentUniqueName = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            if (uniqueName != currentUniqueName)
+                throw new InvalidOperationException("StoreUserInfo currently does not impersonate the user. It uses /me");
+
+            string name = uniqueName ?? currentUniqueName;
+
+            string token;
+
+            Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationResult result = await Utils.TokenManager.GetAccessToken(HttpContext);
+            token = result.AccessToken;
+
+            return await StoreUserInfo(name, token);
+        }
+
+        [HttpGet]
+        public async Task<string> StoreUserInfo(string user, string token)
+        {
+            HttpClient client = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseProfile = await client.SendAsync(request);
+            string result = null;
+
+            HttpRequestMessage requestManager = new HttpRequestMessage(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me/manager");
+            requestManager.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var responseManager = await client.SendAsync(requestManager);
+
+            Task.WaitAll();
+
+            if (responseProfile.IsSuccessStatusCode && responseManager.IsSuccessStatusCode)
+            {
+                var profileSerialized = await responseProfile.Content.ReadAsStringAsync();
+                var profile = JsonConvert.DeserializeObject<GraphProfileViewModel>(profileSerialized);
+                var managerSerialized = await responseManager.Content.ReadAsStringAsync();
+                var manager = JsonConvert.DeserializeObject<GraphProfileViewModel>(managerSerialized);
+
+                var userToBeUpdated = new UserMainViewModel()
+                {
+                    Name = profile.displayName,
+                    Email = profile.userPrincipalName,
+                    GivenName = profile.givenName,
+                    Surname = profile.surname,
+                    JobTitle = profile.jobTitle,
+                    ManagerUniqueName = manager.userPrincipalName
+                };
+
+                var userStatus = Util.ConnectToRemoteService(HttpMethod.Put, Util.PermissionsURL + "api/permission/updateuser?=" + user, user, string.Empty, userToBeUpdated).Result;
+
+                result = profileSerialized;
+            }
+
+            return result;
+        }
+
+        private async Task<string> PhotoUpdateInternal(string uniqueName, byte[] content)
+        {
+            string img = "data:image/jpeg;base64," + Convert.ToBase64String(content);
+
+            var response = await Util.ConnectToRemoteService(HttpMethod.Put, Util.PermissionsURL + "api/permission/updateuserphoto?uniqueName=" + uniqueName, uniqueName, string.Empty, img);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException("api/permission/updateuserphoto failed");
+            }
+
+            return img;
+        }
+
+        [HttpPut]
         public async Task<HttpResponseMessage> PhotoUpdate(string img)
         {
             if (img != null)
@@ -218,30 +335,48 @@ namespace Arda.Main.Controllers
             return Json(permissions);            
         }
 
+        // Should not be called
+        [Obsolete]
         public string GetUserPhoto(string user)
         {
-            var photo = Util.GetUserPhoto(user);
-            return photo;
+            throw new InvalidOperationException("GetUserPhoto is obsolete");
+
+            //var photo = Util.GetUserPhotoString(user);
+            //return photo;
         }
-        
+
         [ResponseCache(Duration=600)]
         [HttpGet("users/photo/{user}")]
-        public string GetUserPhotoFromCache(string user)
+        public IActionResult GetUserPhotoFromCache(string user)
         {
             try
             {
-                var photo = Util.GetUserPhoto(user);
-                return photo;
+                string data = Util.GetUserPhotoString(user);
+
+                string[] components = data.Split(',');
+
+                int typePhotoStart = components[0].IndexOf(":") + 1;
+                int typePhotoEnd = components[0].IndexOf(";");
+                string encodedPhoto = components[1];
+
+                string typePhoto = components[0].Substring(typePhotoStart, typePhotoEnd - typePhotoStart);
+                byte[] binaryPhoto = Convert.FromBase64String(encodedPhoto);
+                var streamPhoto = new MemoryStream(binaryPhoto);
+
+                return new FileStreamResult(streamPhoto, typePhoto);
             }
             catch(TaskCanceledException ex)
             {
-                var client = new TelemetryClient();
-                client.TrackException(new System.Exception("GetUserPhotoFromCache: thrown taskCanceledException - cache is not populated?", ex));
+                // This exception is very common - keep this line until we figure out what is going on 
+                var cacheTimeoutException = new System.InvalidOperationException("GetUserPhotoFromCache: thrown taskCanceledException - cache is not populated?", ex);
 
-                return "";
+                var client = new TelemetryClient();
+                client.TrackException(cacheTimeoutException);
+
+                throw cacheTimeoutException;
             }
         }
-
+        
         #endregion
 
         #region Utils

@@ -62,7 +62,7 @@
         <section class="concontainer-fluid">
             <div class="col-xs-12">
                 <div class="row">
-                    <header class="ctn-header-dashboard ctn-header-dashboard--board" style="display: none">
+                    <header class="ctn-header-dashboard ctn-header-dashboard--board">
                         <div class="col-xs-12 col-lg-2 col-md-6">
                             <h2>Board</h2>
                         </div>
@@ -89,22 +89,19 @@
                         </div>
                         <div class="col-xs-12 col-lg-2 col-md-4">
                             <div class="data-sorting-buttons">
-                                <button id="btnNew" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> New Workload</button>                                
+                                <button id="btnNew" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> New Workload</button>
+                                <button style="display: none" id="btnNewSimple" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> Quick Create</button>
                             </div>
                         </div>
                         <div class="clearfix"></div>
                     </header>
-                    
-                    <template id="templateTask"> 
-                        <!-- hack: take a look at V2 implementation for createTaskInFolder at workload.js -->
-                        <div id="templateId" class="task hack-force-hide-template-layout" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
+                    <template id="templateTask">
+                        <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
                             <div class="folder-tasks">
                                 <div class="folder-header">
                                     <p><span class="templateTitle">templateTitle</span></p>
-                                    
                                 </div>
-                                <!-- hack: hide folder-body for Dashboard V2 implementation -->
-                                <div class="folder-body" hidden>
+                                <div class="folder-body">
                                     <p>
                                         <i class="fa fa-calendar fa-task-def" aria-hidden="true">
                                         </i>
@@ -131,9 +128,8 @@
                                         </span>
                                     </p>
                                 </div>
-                                <div class="folder-body" hidden>                                    
-                                </div>
-                                <div class="folder-footer" hidden>
+                                <div class="folder-footer">
+
                                 </div>
                             </div>
                         </div>
@@ -142,8 +138,7 @@
                         <div class="row">
                             <div class="col-xs-12 col-lg-3 col-md-6">
                                 <div class="row">
-                                    <h3 class="dashboard-panel-title dashboard-panel-title--todo">todo</h3> 
-                                    <button id="btnNewSimple" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> Quick Create</button>
+                                    <h3 class="dashboard-panel-title dashboard-panel-title--todo">todo</h3>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-lg-3 col-md-6">
@@ -187,7 +182,7 @@
     }
 }
 <!-- Workload Modal -->
-@await Html.PartialAsync("_WorkloadModalSimple")
+@await Html.PartialAsync("_WorkloadModal2")
 
 <script>
     //Global Variables:
@@ -219,9 +214,7 @@
         </text>
             }
         }
-
     });
-    
 </script>
 <script src="~/js/workload.js"></script>
 <script src="~/js/simplebar.min.js"></script>

@@ -14,9 +14,11 @@ namespace Arda.Main
         ArdaMain_Start,
         Appointment_Add,
         Report_Show,
-        Dashboard_Archive,
+        Archive_Index,
         Archive_User,
-        Work_Index
+        Work_Index,
+        Userform_Index,
+        Userform_Submit
     }
 
     public static class UsageTelemetry

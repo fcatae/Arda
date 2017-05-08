@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Arda.Main.Utils
 {
+    [System.Obsolete("Dont use", false)]
     public static class TokenManager
     {
         public static async Task<AuthenticationResult> GetAccessToken(HttpContext context)
@@ -16,7 +17,11 @@ namespace Arda.Main.Utils
             ClientCredential credential = new ClientCredential(Startup.ClientId, Startup.ClientSecret);
             AuthenticationContext authContext = new AuthenticationContext(Startup.Authority, tokenCache);
             
-            return await authContext.AcquireTokenAsync(Startup.GraphResourceId, credential);
+            //return await authContext.AcquireTokenAsync(Startup.GraphResourceId, credential);
+
+            var result = await authContext.AcquireTokenSilentAsync(Startup.GraphResourceId, credential, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
+            
+            return result;
         }
 
         //private static async Task<IActionResult> CallMicrosoftGraph(HttpContext context)

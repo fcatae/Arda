@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Arda.Main.Utils
 {
+    [System.Obsolete("Dont use", false)]
     public class SessionCache : TokenCache
     {
         private static readonly object FileLock = new object();

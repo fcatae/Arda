@@ -6,10 +6,20 @@
         <div class="col-xs-12">
             <div class="row">
                 <header class="ctn-header-dashboard ctn-header-dashboard--board">
-                    <div class="col-xs-12 col-lg-2 col-md-6">
-                        <h2>Board</h2>
+
+                    <div class="col-xs-12 col-md-4">
+                        <h2>@ViewBag.Title</h2>
                     </div>
-                    <div class="col-xs-12 col-lg-3 col-md-4">
+
+                    <div class="col-xs-12 col-md-2">
+                        <div class="data-sorting-buttons">
+                            <button id="btnNewSimple" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal">
+                                <i class="fa fa-plus" aria-hidden="true"></i> My Promise
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-lg-3 col-md-4" hidden>
                         <input type="radio" value="1" name="type" class="dashboard-filter-field" id="dashboard-filter-type-1" checked />
                         <label class="dashboard-filter" for="dashboard-filter-type-1">
                             Workload
@@ -19,33 +29,31 @@
                             Backlog
                         </label>
                     </div>
-                    <div class="col-xs-12 col-lg-2 col-md-3">
+                    <!-- custom values for tagging -->
+                    <div class="col-xs-12 col-lg-2 col-md-3" hidden>
                         <select id="filter-assign" name="filter-assign" class="form-control dashboard-filter-assign">
-                            <option value="">Choose a team member</option>
+                            <option value="@ViewBag.Work" selected>CURRENT WORKSPACE: @ViewBag.Work</option>
                         </select>
+                        <input id="filter-assign-upskill" type="hidden" value="@ViewBag.Upskill"/>
                     </div>
-                    <div class="col-xs-12 col-lg-2 col-md-2">
+                    <div class="col-xs-12 col-lg-2 col-md-2" hidden>
                         <input id="search-box" class="form-control form-control--search" placeholder="Search for a workload..." type="search" />
                     </div>
                     <div class="col-xs-12 col-lg-3 col-md-6">
                         <input id="_WBID" type="hidden" />
                     </div>
-                    <div class="col-xs-12 col-lg-2 col-md-4">
-                        <div class="data-sorting-buttons">
-                            <button id="btnNew" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> New Workload</button>
-                            <button style="display: none" id="btnNewSimple" class="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i class="fa fa-plus" aria-hidden="true"></i> Quick Create</button>
-                        </div>
-                    </div>
+
                     <div class="clearfix"></div>
+
                 </header>
                 <template id="templateTask">
-                    <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
+                    <div id="templateId" class="task hack-force-hide-template-layout" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
                         <div class="folder-tasks">
                             <div class="folder-header">
                                 <p><span class="templateTitle">templateTitle</span></p>
                             </div>
-                            <div class="folder-body">
-                                <p>
+                            <div class="folder-body" hidden>
+                                <p hidden>
                                     <i class="fa fa-calendar fa-task-def" aria-hidden="true">
                                     </i>
                                     <span class="templateStart">
@@ -58,18 +66,21 @@
                                     </span>
                                 </p>
 
-                                <p>
-                                    <i class="fa fa-clock-o fa-task-def" aria-hidden="true">
-                                    </i>
-                                    <span class="templateHours">
-                                        templateHours
-                                    </span>
-                                    <i class="fa fa-paperclip fa-task-def" aria-hidden="true">
-                                    </i>
-                                    <span class="templateAttachments">
-                                        templateAttachments
-                                    </span>
-                                </p>
+                                <div hidden>
+                                    <p hidden>
+                                        <i class="fa fa-clock-o fa-task-def" aria-hidden="true">
+                                        </i>
+                                        <span class="templateHours">
+                                            templateHours
+                                        </span>
+                                        <i class="fa fa-paperclip fa-task-def" aria-hidden="true">
+                                        </i>
+                                        <span class="templateAttachments">
+                                            templateAttachments
+                                        </span>
+                                    </p>
+                                </div>
+                                
                             </div>
                             <div class="folder-footer">
 
@@ -81,12 +92,12 @@
                     <div class="row">
                         <div class="col-xs-12 col-lg-3 col-md-6">
                             <div class="row">
-                                <h3 class="dashboard-panel-title dashboard-panel-title--todo">todo</h3>
+                                <h3 class="dashboard-panel-title dashboard-panel-title--todo">goal</h3>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-3 col-md-6">
                             <div class="row">
-                                <h3 class="dashboard-panel-title  dashboard-panel-title--doing">doing</h3>
+                                <h3 class="dashboard-panel-title  dashboard-panel-title--doing">today</h3>
                             </div>
                         </div>
                         <div class="col-xs-12 col-lg-3 col-md-6">
@@ -124,7 +135,7 @@
     </section>
 
 <!-- Workload Modal -->
-@await Html.PartialAsync("_WorkloadModal")
+@await Html.PartialAsync("_WorkloadModalUpskill")
 
 <script>
     //Global Variables:
