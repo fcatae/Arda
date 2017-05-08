@@ -145,30 +145,70 @@ namespace Arda.Kanban.Repositories
 
             _context.SaveChanges();            
         }
-        
-        public bool DeleteWorkloadByID(Guid id)
+
+        public IEnumerable<WorkspaceItem> ListArchivedByUser(string uniqueName)
         {
-            //Get files:
-            var files = _context.Files.Where(f => f.WorkloadBacklog.WBID == id);
-            //Load Metrics:
-            var metrics = _context.WorkloadBacklogMetrics.Where(wbm => wbm.WorkloadBacklog.WBID == id);
-            //Load Technologies:
-            var technologies = _context.WorkloadBacklogTechnologies.Where(wbt => wbt.WorkloadBacklog.WBID == id);
-            //Load Users:
-            var users = _context.WorkloadBacklogUsers.Where(wbu => wbu.WorkloadBacklog.WBID == id);
-            //Get Workload:
-            var workload = _context.WorkloadBacklogs.First(w => w.WBID == id);
-            //Remove Everything:
-            _context.Files.RemoveRange(files);
-            _context.WorkloadBacklogMetrics.RemoveRange(metrics);
-            _context.WorkloadBacklogTechnologies.RemoveRange(technologies);
-            _context.WorkloadBacklogUsers.RemoveRange(users);
-            _context.WorkloadBacklogs.Remove(workload);
+            if (uniqueName == null)
+                throw new ArgumentNullException("uniqueName");
+
+            var workloads = (from wbu in _context.WorkloadBacklogUsers
+                             join w in _context.WorkloadBacklogs on wbu.WorkloadBacklogWBID equals w.WBID
+                             where wbu.UserUniqueName == uniqueName
+                             where (int)w.WBStatus >= 3         // archived items
+                             orderby w.WBCreatedDate descending // ORDER BY descending
+                             select new WorkspaceItem
+                             {
+                                 Description = w.WBDescription,
+                                 EndDate = w.WBEndDate,
+                                 StartDate = w.WBStartDate,
+                                 ItemState = (int)w.WBStatus,
+                                 Id = w.WBID,
+                                 Summary = "",
+                                 Title = w.WBTitle,
+                                 CreatedBy = w.WBCreatedBy,
+                                 CreatedDate = w.WBCreatedDate
+                             }).ToArray();
+
+            return workloads;
+        }                
+
+        public void Upsert(WorkspaceItem workload)
+        {
+            Guid itemId = workload.Id;
+
+            var workloadToBeUpdated = _context.WorkloadBacklogs.FirstOrDefault(w => w.WBID == itemId);
+
+            if (workloadToBeUpdated == null)
+            {
+                // insert
+                this.Create(workload);
+                return;
+            }
+                
+            workloadToBeUpdated.WBTitle = workload.Title;
+            workloadToBeUpdated.WBDescription = workload.Description;
+            workloadToBeUpdated.WBStatus = (Status)workload.ItemState;
+
+            if (workload.StartDate != null)
+            {
+                workloadToBeUpdated.WBStartDate = workload.StartDate.Value;
+            }
+
+            if (workload.EndDate != null)
+            {
+                workloadToBeUpdated.WBEndDate = workload.EndDate.Value;
+            }
+
+            // Do nothing to Summary (yet)
+            // workload.Summary
+
+            // Do not update WBCreatedBy + WBCreatedDate
+
+            // workloadToBeUpdated.WBCreatedBy = workload.WBCreatedBy;
+            // workloadToBeUpdated.WBCreatedDate = workload.WBCreatedDate;
+
             _context.SaveChanges();
-            return true;
         }
-
-
 
         public bool EditWorkload(WorkloadViewModel workload)
         {
@@ -290,132 +330,6 @@ namespace Arda.Kanban.Repositories
 
             _context.SaveChanges();
             return true;
-        }
-
-        public IEnumerable<WorkloadViewModel> GetAllWorkloads()
-        {
-            var workloads = (from w in _context.WorkloadBacklogs
-                             join a in _context.Activities on w.WBActivity.ActivityID equals a.ActivityID
-                             select new WorkloadViewModel()
-                             {
-                                 WBActivity = a.ActivityID,
-                                 WBComplexity = (int)w.WBComplexity,
-                                 WBCreatedBy = w.WBCreatedBy,
-                                 WBCreatedDate = w.WBCreatedDate,
-                                 WBDescription = w.WBDescription,
-                                 WBEndDate = w.WBEndDate,
-                                 WBExpertise = (int)w.WBExpertise,
-                                 WBFilesList = (from f in _context.Files
-                                                where f.WorkloadBacklog.WBID == w.WBID
-                                                orderby f.FileName
-                                                select new Tuple<Guid, string, string>(f.FileID, f.FileLink, f.FileName)
-                                               ),
-                                 WBID = w.WBID,
-                                 WBIsWorkload = w.WBIsWorkload,
-                                 WBMetrics = (from wbm in _context.WorkloadBacklogMetrics
-                                              join m in _context.Metrics on wbm.Metric equals m
-                                              where wbm.WorkloadBacklog.WBID == w.WBID
-                                              orderby wbm.Metric.MetricCategory, wbm.Metric.MetricName
-                                              select new Guid(wbm.Metric.MetricID.ToString())),
-                                 WBStartDate = w.WBStartDate,
-                                 WBStatus = (int)w.WBStatus,
-                                 WBTechnologies = (from wbt in _context.WorkloadBacklogTechnologies
-                                                   join t in _context.Technologies on wbt.Technology equals t
-                                                   where wbt.WorkloadBacklog.WBID == w.WBID
-                                                   orderby t.TechnologyName
-                                                   select new Guid(wbt.Technology.TechnologyID.ToString())),
-                                 WBTitle = w.WBTitle,
-                                 WBUsers = (from wbu in _context.WorkloadBacklogUsers
-                                            join u in _context.Users on wbu.User equals u
-                                            where wbu.WorkloadBacklog.WBID == w.WBID
-                                            orderby u.UniqueName
-                                            select wbu.User.UniqueName)
-                             });
-            return workloads;
-        }
-
-        public WorkloadViewModel GetWorkloadByID(Guid id)
-        {
-            if (id != null)
-            {
-                var workload = (from w in _context.WorkloadBacklogs
-                                join a in _context.Activities on w.WBActivity.ActivityID equals a.ActivityID
-                                where w.WBID == id
-                                select new WorkloadViewModel()
-                                {
-                                    WBActivity = a.ActivityID,
-                                    WBComplexity = (int)w.WBComplexity,
-                                    WBCreatedBy = w.WBCreatedBy,
-                                    WBCreatedDate = w.WBCreatedDate,
-                                    WBDescription = w.WBDescription,
-                                    WBEndDate = w.WBEndDate,
-                                    WBExpertise = (int)w.WBExpertise,
-                                    WBFilesList = (from f in _context.Files
-                                                   where f.WorkloadBacklog.WBID == w.WBID
-                                                   orderby f.FileName
-                                                   select new Tuple<Guid, string, string>(f.FileID, f.FileLink, f.FileName)
-                                                  ),
-                                    WBID = w.WBID,
-                                    WBIsWorkload = w.WBIsWorkload,
-                                    WBMetrics = (from wbm in _context.WorkloadBacklogMetrics
-                                                 join m in _context.Metrics on wbm.Metric equals m
-                                                 where wbm.WorkloadBacklog.WBID == w.WBID
-                                                 orderby wbm.Metric.MetricCategory, wbm.Metric.MetricName
-                                                 select new Guid(wbm.Metric.MetricID.ToString())),
-                                    WBStartDate = w.WBStartDate,
-                                    WBStatus = (int)w.WBStatus,
-                                    WBTechnologies = (from wbt in _context.WorkloadBacklogTechnologies
-                                                      join t in _context.Technologies on wbt.Technology equals t
-                                                      where wbt.WorkloadBacklog.WBID == w.WBID
-                                                      orderby t.TechnologyName
-                                                      select new Guid(wbt.Technology.TechnologyID.ToString())),
-                                    WBTitle = w.WBTitle,
-                                    WBUsers = (from wbu in _context.WorkloadBacklogUsers
-                                               join u in _context.Users on wbu.User equals u
-                                               where wbu.WorkloadBacklog.WBID == w.WBID
-                                               orderby u.UniqueName
-                                               select wbu.User.UniqueName)
-                                }).First();
-
-                return workload;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public IEnumerable<WorkloadsByUserViewModel> GetArchivedWorkloadsByUser(string uniqueName)
-        {
-            var workloads = (from wb in _context.WorkloadBacklogs
-                             join wbu in _context.WorkloadBacklogUsers on wb.WBID equals wbu.WorkloadBacklogWBID
-                             join uk in _context.Users on wbu.User.UniqueName equals uk.UniqueName
-
-                             where (int)wb.WBStatus == 3 // ARCHIVED
-                             where uk.UniqueName.Equals(uniqueName)
-                             orderby wb.WBStartDate descending   // ORDER BY WBStartDate DESC
-                             select new WorkloadsByUserViewModel
-                             {
-                                 _WorkloadID = wb.WBID,
-                                 _WorkloadTitle = wb.WBTitle,
-                                 _WorkloadStartDate = wb.WBStartDate,
-                                 _WorkloadEndDate = wb.WBEndDate,
-                                 _WorkloadStatus = (int)wb.WBStatus,
-                                 _WorkloadIsWorkload = wb.WBIsWorkload,
-                                 _WorkloadAttachments = wb.WBFiles.Count,
-                                 _WorkloadExpertise = wb.WBExpertise.ToString(),
-                                 _WorkloadUsers = (from wbusers in _context.WorkloadBacklogUsers
-                                                   where wbusers.WorkloadBacklog.WBID == wb.WBID
-                                                   select new Tuple<string, string>(wbusers.User.UniqueName, wbusers.User.Name)).ToList(),
-
-                                 _WorkloadHours = 0 // NOT REQUIRED HERE
-                                                    //(from a in _context.Appointments
-                                                    // where a.AppointmentWorkload.WBID == a.AppointmentWorkloadWBID
-                                                    // select a.AppointmentHoursDispensed).Sum()
-                             }).ToList();
-
-
-            return workloads;
         }
         
     }
