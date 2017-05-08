@@ -99,6 +99,53 @@ namespace Arda.Kanban.Repositories
             return workloads;
         }
 
+        public WorkspaceItem Get(Guid itemId)
+        {
+            var workload = TryGet(itemId);
+
+            if (workload == null)
+                throw new InvalidOperationException("WorkspaceItem.Get() returned (null)");
+
+            return workload;
+        }
+
+        public WorkspaceItem TryGet(Guid itemId)
+        {
+            var workload = (from w in _context.WorkloadBacklogs
+                             where w.WBID == itemId
+                             select new WorkspaceItem()
+                             {
+                                 Description = w.WBDescription,
+                                 EndDate = w.WBEndDate,
+                                 StartDate = w.WBStartDate,
+                                 ItemState = (int)w.WBStatus,
+                                 Id = w.WBID,
+                                 Summary = "",
+                                 Title = w.WBTitle,
+                                 CreatedBy = w.WBCreatedBy,
+                                 CreatedDate = w.WBCreatedDate
+                             }).FirstOrDefault();            
+
+            return workload;
+        }
+
+        public void SetStatus(Guid itemId, int status)
+        {
+            if (itemId == Guid.Empty)
+                throw new ArgumentNullException(nameof(itemId));
+
+            var workload = (from w in _context.WorkloadBacklogs
+                            where w.WBID == itemId
+                            select w).FirstOrDefault();
+
+            if (workload == null)
+                throw new InvalidOperationException("WorkspaceItem.Get() returned (null)");
+
+            workload.WBStatus = (Status)status;
+
+            _context.SaveChanges();            
+        }
+        
         public bool DeleteWorkloadByID(Guid id)
         {
             //Get files:
@@ -121,14 +168,7 @@ namespace Arda.Kanban.Repositories
             return true;
         }
 
-        public bool UpdateWorkloadStatus(Guid id, int status)
-        {
-            var workload = _context.WorkloadBacklogs.First(w => w.WBID == id);
-            workload.WBStatus = (Status)status;
-            _context.SaveChanges();
 
-            return true;
-        }
 
         public bool EditWorkload(WorkloadViewModel workload)
         {
