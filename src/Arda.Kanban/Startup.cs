@@ -96,6 +96,8 @@ namespace Arda.Kanban
                     return true;
                 });
 
+                c.OperationFilter<MultipleOperationsWithSameVerbFilter>();
+
             });            
         }
 

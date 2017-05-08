@@ -7,6 +7,7 @@ using System.Net;
 using Arda.Kanban.Models.Repositories;
 using Arda.Kanban.ViewModels;
 using System.Linq;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Arda.Kanban.Controllers
 {
@@ -23,7 +24,7 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet("{folderId}")]
-        public object GetItems(string folderId, [FromQuery]bool? archived)
+        public object ListItems(string folderId, [FromQuery]bool? archived)
         {
             object ret = _repository.GetWorkloadsByUser(folderId);
 
@@ -31,7 +32,7 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPost("{folderId}/add")]
-        public IActionResult Create(string folderId, [FromBody]string input)
+        public IActionResult AddItems(string folderId, [FromBody]string input)
         {
             //object ret = _repository.GetWorkloadsByUser(folderId);
 
