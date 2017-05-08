@@ -36,7 +36,11 @@ namespace Arda.Kanban.Repositories
             };
 
             _context.Appointments.Add(appointmentToBeSaved);
+
             var response = _context.SaveChanges();
+
+            // setting the last appointment inside the repository
+            SetLastAppointment(appointment._AppointmentWorkloadWBID, appointment._AppointmentID);
 
             if (response > 0)
             {
@@ -48,7 +52,16 @@ namespace Arda.Kanban.Repositories
             }
         }
 
-        public List<AppointmentViewModel> GetAllAppointments()
+        void SetLastAppointment(Guid workloadId, Guid appointmentId)
+        {
+            // Load Workload object to save.
+            var workload = _context.WorkloadBacklogs.First(wb => wb.WBID == workloadId);
+            workload.LastAppointmentId = appointmentId;
+
+            _context.SaveChanges();            
+        }
+
+        public List<AppointmentViewModel> GetAllAppointmentsSimple()
         {
             var response = (from a in _context.Appointments
                             join w in _context.WorkloadBacklogs on a.AppointmentWorkload.WBID equals w.WBID
@@ -60,13 +73,17 @@ namespace Arda.Kanban.Repositories
                                 _WorkloadTitle = w.WBTitle,
                                 _AppointmentDate = a.AppointmentDate,
                                 _AppointmentHoursDispensed = a.AppointmentHoursDispensed,
-                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName
+                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName,
+                                // By design : it does not return data
+                                _AppointmentComment = null,
+                                _AppointmentTE = 0,
+                                _AppointmentUserName = ""
                             }).ToList();
 
             return response;
         }
 
-        public List<AppointmentViewModel> GetAllAppointments(string user)
+        public List<AppointmentViewModel> GetAllAppointmentsSimple(string user)
         {
             var response = (from a in _context.Appointments
                             join w in _context.WorkloadBacklogs on a.AppointmentWorkload.WBID equals w.WBID
@@ -79,7 +96,29 @@ namespace Arda.Kanban.Repositories
                                 _WorkloadTitle = w.WBTitle,
                                 _AppointmentDate = a.AppointmentDate,
                                 _AppointmentHoursDispensed = a.AppointmentHoursDispensed,
-                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName
+                                _AppointmentUserUniqueName = a.AppointmentUser.UniqueName,
+                                // By design : it does not return data
+                                _AppointmentComment = null,
+                                _AppointmentTE = 0,
+                                _AppointmentUserName = ""
+                            }).ToList();
+
+            return response;
+        }
+
+        public List<AppointmentViewModel> GetAllAppointmentsWorkload(Guid wbid)
+        {
+            var response = (from a in _context.Appointments
+                            where a.AppointmentWorkloadWBID == wbid
+                            orderby a.AppointmentDate descending
+                            select new AppointmentViewModel
+                            {
+                                // _AppointmentWorkloadWBID and _WorkloadTitle: does not return the workload title -- it is obvious from wbid
+                                _AppointmentID = a.AppointmentID,
+                                _AppointmentDate = a.AppointmentDate,
+                                _AppointmentUserUniqueName = a.AppointmentUserUniqueName,
+                                _AppointmentHoursDispensed = a.AppointmentHoursDispensed,
+                                _AppointmentComment = a.AppointmentComment
                             }).ToList();
 
             return response;

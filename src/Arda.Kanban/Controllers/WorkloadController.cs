@@ -21,13 +21,16 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("listworkloadwithfilter")]
+        // replace with /folders/username@domain.com
+        // replace with /workspace/default/folders/dashboard (Auth)
         public IEnumerable<WorkloadsByUserViewModel> ListWorkloadWithFilter([FromQuery]string uniqueName)
         {
             return _repository.GetWorkloadsByUser(uniqueName);
         }
 
         [HttpGet]
-        [Route("listworkloadbyuser")]
+        [Route("listworkloadbyuser")] 
+        // DEPRECATED: Using headers for determining the user
         public IEnumerable<WorkloadsByUserViewModel> ListWorkloadByUser()
         {
             var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
@@ -37,7 +40,8 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
-        [Route("list")]
+        [Route("list")] 
+        // DEPRECATED: No list all items
         public IEnumerable<WorkloadViewModel> List()
         {
             var workloads = _repository.GetAllWorkloads();
@@ -47,6 +51,8 @@ namespace Arda.Kanban.Controllers
 
         [HttpGet]
         [Route("details")]
+        // replace with /items/<guid>
+        // replace with /workspace/<workload>/items/<guid>
         public WorkloadViewModel Details([FromQuery]Guid workloadID)
         {
             var workload = _repository.GetWorkloadByID(workloadID);
@@ -55,9 +61,11 @@ namespace Arda.Kanban.Controllers
 
         [HttpPost]
         [Route("add")]
+        // replace with POST /folders/user@domain.com/add 
+        // replace with POST /workspace/default/folders/<dashboard>/add (Auth)
         public HttpResponseMessage Add()
         {
-            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             string requestFromPost = reader.ReadToEnd();
@@ -65,10 +73,11 @@ namespace Arda.Kanban.Controllers
 
             // Calling add
             var response = _repository.AddNewWorkload(workload);
+            // _repository.EditWorkload(workload); // try to reproduce bug #44
 
             if (response)
             {
-                _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 0);
+                //_repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 0);
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
             else
@@ -79,6 +88,8 @@ namespace Arda.Kanban.Controllers
 
         [HttpPut]
         [Route("updatestatus")]
+        // replace with PUT /items/<guid>/status/<status>
+        // replace with PUT /workspace/default/items/<guid>/status/<status>
         public HttpResponseMessage UpdateStatus([FromQuery]string id, [FromQuery]int status)
         {
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
@@ -99,9 +110,11 @@ namespace Arda.Kanban.Controllers
 
         [HttpPut]
         [Route("edit")]
+        // replace with PUT /items/<guid>
+        // replace with PUT /workspace/default/items/<guid>
         public HttpResponseMessage Edit()
         {
-            var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
+            // var uniqueName = HttpContext.Request.Headers["unique_name"].ToString();
 
             System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             string requestFromPost = reader.ReadToEnd();
@@ -112,7 +125,7 @@ namespace Arda.Kanban.Controllers
 
             if (response)
             {
-                _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 1);
+                // _repository.SendNotificationAboutNewOrUpdatedWorkload(uniqueName, 1);
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
             else
@@ -123,6 +136,8 @@ namespace Arda.Kanban.Controllers
 
         [HttpDelete]
         [Route("delete")]
+        // replace with DELETE /items/<guid>
+        // replace with DELETE /workspace/default/items/<guid>
         public HttpResponseMessage Delete([FromQuery]Guid workloadID)
         {
             var response = _repository.DeleteWorkloadByID(workloadID);
@@ -137,13 +152,16 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet]
+        // replace with /folders/<user@domain.com>?archived=true
+        // replace with /workspace/default/folders/archived
         [Route("listarchivewithfilter")]
         public IEnumerable<WorkloadsByUserViewModel> ListArchiveWithFilter([FromQuery]string uniqueName)
         {
             return _repository.GetArchivedWorkloadsByUser(uniqueName);
         }
 
-        [HttpGet]
+        [HttpGet] 
+        // not implemented yet
         [Route("search")]
         public IEnumerable<WorkloadsByUserViewModel> SimpleSearchWithFilter([FromQuery]string uniqueName, [FromQuery]string searchText)
         {

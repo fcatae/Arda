@@ -44,7 +44,7 @@ namespace Arda.Kanban.Controllers
         [Route("list")]
         public IEnumerable<AppointmentViewModel> List()
         {
-            var appointments = _repository.GetAllAppointments();
+            var appointments = _repository.GetAllAppointmentsSimple();
 
             return appointments;
         }
@@ -53,7 +53,18 @@ namespace Arda.Kanban.Controllers
         [Route("listfromuser")]
         public IEnumerable<AppointmentViewModel> ListFromUser([FromQuery]string user)
         {
-            var appointments = _repository.GetAllAppointments(user);
+            var appointments = _repository.GetAllAppointmentsSimple(user);
+
+            return appointments;
+        }
+
+        [HttpGet]
+        [Route("listfromworkspace")]
+        public IEnumerable<AppointmentViewModel> ListFromWorkspace([FromQuery]string workspace)
+        {
+            Guid wbid = Guid.Parse(workspace);
+
+            var appointments = _repository.GetAllAppointmentsWorkload(wbid);
 
             return appointments;
         }

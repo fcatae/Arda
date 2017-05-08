@@ -20,6 +20,8 @@ namespace Arda.Kanban.Models
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<WorkloadBacklogTags> Tags { get; set; }
+
         public DbSet<WorkloadBacklog> WorkloadBacklogs { get; set; }
 
         public DbSet<WorkloadBacklogMetric> WorkloadBacklogMetrics { get; set; }
