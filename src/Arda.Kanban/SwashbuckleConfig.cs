@@ -26,7 +26,7 @@ namespace Arda.Kanban
             
             if(controllerDescriptor != null)
             {
-                operation.OperationId = controllerDescriptor.ControllerName + "_" + controllerDescriptor.ActionName;
+                operation.OperationId = controllerDescriptor.ControllerName + "Service_" + controllerDescriptor.ActionName;
             }
         }
     }
