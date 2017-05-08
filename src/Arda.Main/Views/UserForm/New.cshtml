@@ -1,0 +1,124 @@
+﻿<section class="concontainer-fluid">
+    <div class="row">
+
+        <div id="message">
+            <!-- Message dynamically inputed here -->
+        </div>
+
+        <div style="margin-top:20px; border-right:1px solid #efefef;" class="col-xs-12">
+
+            <form id="form-report" role="form" data-toggle="validation" method="POST" action="Submit">
+
+                <div class="form-group col-md-10">
+                    <label for="workloadTitle">@ViewBag.Title:</label>
+                    <input id="workloadTitle" name="workloadTitle" type="text" class="form-control" placeholder="Title" autofocus>
+                </div>
+                
+                <div class="col-md-2" id="sandbox-container">
+                    <div class="form-group">
+                        <label for="workloadDate">Date:</label>
+                        <div class="input-group date">
+                            <!-- HACK: input must be _AppointmentDate. Otherwise, datepicker does not work -->
+                            <input type="text" id="_AppointmentDate" name="workloadDate" class="form-control" value="@DateTime.Now.ToString("MM/dd/yyyy")" autocomplete="off">
+                            <span class="input-group-addon"><i class="fa fa-calendar-check-o" aria-hidden="true"></i></span>
+                        </div>
+                    </div>
+                </div>
+                
+                @{ 
+                    string report = ViewBag.ReportName;                    
+                }
+                <div class="form-group col-md-12">
+                    <textarea id="workloadDescription" name="workloadDescription" class="form-control" rows="30">@(
+                        (report != null) ? await Html.PartialAsync(report) : null 
+                    )</textarea>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <button type="submit" class="btn btn-info" id="addWorkloadButton">
+                        <i class='fa fa-floppy-o' aria-hidden='true'></i> Create
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+        <script>
+
+            function init() {
+                $("#form-report").validate({
+                    rules: {
+                        workloadTitle: "required",
+                        _AppointmentDate: "required"
+                    },
+                    messages: {
+                        workloadTitle: "Please fill up the title",
+                        _AppointmentDate: "Empty date"
+                    },
+                    highlight: function (element) {
+                        $(element).closest('.form-group').addClass('has-error');
+                    },
+                    unhighlight: function (element) {
+                        $(element).closest('.form-group').removeClass('has-error');
+                    },
+                    errorElement: 'span',
+                    errorClass: 'help-block',
+                    errorPlacement: function (error, element) {
+                        if (element.parent('.input-group').length) {
+                            error.insertAfter(element.parent());
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    },
+                    submitHandler: function (form) {
+                        UpdateCKEditor();
+
+                        var data = $(form).serialize();
+
+                        form.submit();
+                    }
+                });
+            }
+
+            $(function () {
+                init();
+
+                // Load DatePicker
+                LoadDatePicker();
+
+                // Load CKEditor
+                //LoadCKEditor();
+            });
+
+            //function LoadCKEditor() {
+            //    CKEDITOR.replace('_AppointmentComment');
+            //}
+
+            //function UpdateCKEditor() {
+            //    for (instance in CKEDITOR.instances) {
+            //        CKEDITOR.instances[instance].updateElement();
+            //    }
+            //}
+
+            // Datepicker
+
+            function LoadDatePicker() {
+                $('#_AppointmentDate').datepicker({
+                    format: "mm/dd/yyyy",
+                    autoclose: true,
+                    todayHighlight: true
+                });
+                $('#workloadDate').datepicker({
+                    format: "mm/dd/yyyy",
+                    autoclose: true,
+                    todayHighlight: true
+                });
+
+                
+            }
+        </script>
+
+    </div>
+</section>
+
+
