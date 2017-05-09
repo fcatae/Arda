@@ -27,10 +27,16 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpGet("{folderId}")]
-        public IEnumerable<WorkspaceItem> ListItems(string folderId, [FromQuery]bool? archived)
+        public IEnumerable<WorkspaceItem> ListItems(string folderId, [FromQuery]string type, [FromQuery]string props)
         {
-            if( archived == true )
+            if( type == "archived" )
                 return _repository.ListArchivedByUser(folderId);
+
+            if (type == "backlog")
+                return _repository.ListBacklogByUser(folderId);
+
+            if (type == "tag")
+                return null;
 
             return _repository.ListByUser(folderId);
         }
