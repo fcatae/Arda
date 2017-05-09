@@ -4,20 +4,21 @@
 
 namespace ArdaSDK.Kanban
 {
+    using Models;
     using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Extension methods for Workspaces.
+    /// Extension methods for WorkspacesService.
     /// </summary>
-    public static partial class WorkspacesExtensions
+    public static partial class WorkspacesServiceExtensions
     {
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
             /// <param name='workspaceId'>
             /// </param>
-            public static string Root(this IWorkspaces operations, string workspaceId)
+            public static string Root(this IWorkspacesService operations, string workspaceId)
             {
                 return operations.RootAsync(workspaceId).GetAwaiter().GetResult();
             }
@@ -30,7 +31,7 @@ namespace ArdaSDK.Kanban
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<string> RootAsync(this IWorkspaces operations, string workspaceId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<string> RootAsync(this IWorkspacesService operations, string workspaceId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.RootWithHttpMessagesAsync(workspaceId, null, cancellationToken).ConfigureAwait(false))
                 {

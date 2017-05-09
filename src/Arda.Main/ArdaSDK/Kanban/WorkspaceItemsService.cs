@@ -5,6 +5,8 @@
 namespace ArdaSDK.Kanban
 {
     using Microsoft.Rest;
+    using Models;
+    using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;
@@ -14,12 +16,12 @@ namespace ArdaSDK.Kanban
     using System.Threading.Tasks;
 
     /// <summary>
-    /// WorkspaceItems operations.
+    /// WorkspaceItemsService operations.
     /// </summary>
-    public partial class WorkspaceItems : IServiceOperations<KanbanClient>, IWorkspaceItems
+    public partial class WorkspaceItemsService : IServiceOperations<KanbanClient>, IWorkspaceItemsService
     {
         /// <summary>
-        /// Initializes a new instance of the WorkspaceItems class.
+        /// Initializes a new instance of the WorkspaceItemsService class.
         /// </summary>
         /// <param name='client'>
         /// Reference to the service client.
@@ -27,7 +29,7 @@ namespace ArdaSDK.Kanban
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
-        public WorkspaceItems(KanbanClient client)
+        public WorkspaceItemsService(KanbanClient client)
         {
             if (client == null)
             {
@@ -52,10 +54,13 @@ namespace ArdaSDK.Kanban
         /// <exception cref="HttpOperationException">
         /// Thrown when the operation returned an invalid status code
         /// </exception>
+        /// <exception cref="SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse> GetItemWithHttpMessagesAsync(System.Guid itemId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse<WorkspaceItem>> GetItemWithHttpMessagesAsync(System.Guid itemId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -131,9 +136,27 @@ namespace ArdaSDK.Kanban
                 throw ex;
             }
             // Create Result
-            var _result = new HttpOperationResponse();
+            var _result = new HttpOperationResponse<WorkspaceItem>();
             _result.Request = _httpRequest;
             _result.Response = _httpResponse;
+            // Deserialize Response
+            if ((int)_statusCode == 200)
+            {
+                _responseContent = await _httpResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+                try
+                {
+                    _result.Body = Microsoft.Rest.Serialization.SafeJsonConvert.DeserializeObject<WorkspaceItem>(_responseContent, Client.DeserializationSettings);
+                }
+                catch (JsonException ex)
+                {
+                    _httpRequest.Dispose();
+                    if (_httpResponse != null)
+                    {
+                        _httpResponse.Dispose();
+                    }
+                    throw new SerializationException("Unable to deserialize the response.", _responseContent, ex);
+                }
+            }
             if (_shouldTrace)
             {
                 ServiceClientTracing.Exit(_invocationId, _result);
@@ -157,7 +180,7 @@ namespace ArdaSDK.Kanban
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse> EditWithHttpMessagesAsync(System.Guid itemId, object newItem = default(object), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse> EditWithHttpMessagesAsync(System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -252,8 +275,6 @@ namespace ArdaSDK.Kanban
 
         /// <param name='itemId'>
         /// </param>
-        /// <param name='newItem'>
-        /// </param>
         /// <param name='customHeaders'>
         /// Headers that will be added to request.
         /// </param>
@@ -266,7 +287,7 @@ namespace ArdaSDK.Kanban
         /// <return>
         /// A response object containing the response body and response headers.
         /// </return>
-        public async Task<HttpOperationResponse> DeleteWithHttpMessagesAsync(System.Guid itemId, object newItem = default(object), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HttpOperationResponse> DeleteWithHttpMessagesAsync(System.Guid itemId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Tracing
             bool _shouldTrace = ServiceClientTracing.IsEnabled;
@@ -276,7 +297,6 @@ namespace ArdaSDK.Kanban
                 _invocationId = ServiceClientTracing.NextInvocationId.ToString();
                 Dictionary<string, object> tracingParameters = new Dictionary<string, object>();
                 tracingParameters.Add("itemId", itemId);
-                tracingParameters.Add("newItem", newItem);
                 tracingParameters.Add("cancellationToken", cancellationToken);
                 ServiceClientTracing.Enter(_invocationId, this, "Delete", tracingParameters);
             }
@@ -306,12 +326,6 @@ namespace ArdaSDK.Kanban
 
             // Serialize Request
             string _requestContent = null;
-            if(newItem != null)
-            {
-                _requestContent = Microsoft.Rest.Serialization.SafeJsonConvert.SerializeObject(newItem, Client.SerializationSettings);
-                _httpRequest.Content = new StringContent(_requestContent, System.Text.Encoding.UTF8);
-                _httpRequest.Content.Headers.ContentType =System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-            }
             // Send Request
             if (_shouldTrace)
             {

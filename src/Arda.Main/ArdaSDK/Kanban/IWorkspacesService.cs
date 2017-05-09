@@ -5,15 +5,16 @@
 namespace ArdaSDK.Kanban
 {
     using Microsoft.Rest;
+    using Models;
     using System.Collections;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Workspaces operations.
+    /// WorkspacesService operations.
     /// </summary>
-    public partial interface IWorkspaces
+    public partial interface IWorkspacesService
     {
         /// <param name='workspaceId'>
         /// </param>

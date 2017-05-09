@@ -5,6 +5,7 @@
 namespace ArdaSDK.Kanban
 {
     using Microsoft.Rest;
+    using Models;
     using Newtonsoft.Json;
     using System.Collections;
     using System.Collections.Generic;
@@ -15,12 +16,12 @@ namespace ArdaSDK.Kanban
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Workspaces operations.
+    /// WorkspacesService operations.
     /// </summary>
-    public partial class Workspaces : IServiceOperations<KanbanClient>, IWorkspaces
+    public partial class WorkspacesService : IServiceOperations<KanbanClient>, IWorkspacesService
     {
         /// <summary>
-        /// Initializes a new instance of the Workspaces class.
+        /// Initializes a new instance of the WorkspacesService class.
         /// </summary>
         /// <param name='client'>
         /// Reference to the service client.
@@ -28,7 +29,7 @@ namespace ArdaSDK.Kanban
         /// <exception cref="System.ArgumentNullException">
         /// Thrown when a required parameter is null
         /// </exception>
-        public Workspaces(KanbanClient client)
+        public WorkspacesService(KanbanClient client)
         {
             if (client == null)
             {

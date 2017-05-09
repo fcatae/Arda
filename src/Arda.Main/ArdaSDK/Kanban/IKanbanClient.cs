@@ -4,12 +4,8 @@
 
 namespace ArdaSDK.Kanban
 {
-    using Microsoft.Rest;
+    using Models;
     using Newtonsoft.Json;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// </summary>
@@ -32,31 +28,19 @@ namespace ArdaSDK.Kanban
 
 
         /// <summary>
-        /// Gets the IWorkspaceFolders.
+        /// Gets the IWorkspaceFoldersService.
         /// </summary>
-        IWorkspaceFolders WorkspaceFolders { get; }
+        IWorkspaceFoldersService WorkspaceFoldersService { get; }
 
         /// <summary>
-        /// Gets the IWorkspaceItems.
+        /// Gets the IWorkspaceItemsService.
         /// </summary>
-        IWorkspaceItems WorkspaceItems { get; }
+        IWorkspaceItemsService WorkspaceItemsService { get; }
 
         /// <summary>
-        /// Gets the IWorkspaces.
+        /// Gets the IWorkspacesService.
         /// </summary>
-        IWorkspaces Workspaces { get; }
-
-        /// <param name='folderId'>
-        /// </param>
-        /// <param name='archived'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        Task<HttpOperationResponse> ListWithHttpMessagesAsync(string folderId, bool? archived = default(bool?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        IWorkspacesService WorkspacesService { get; }
 
     }
 }

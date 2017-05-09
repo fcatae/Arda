@@ -4,22 +4,23 @@
 
 namespace ArdaSDK.Kanban
 {
+    using Models;
     using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Extension methods for WorkspaceItems.
+    /// Extension methods for WorkspaceItemsService.
     /// </summary>
-    public static partial class WorkspaceItemsExtensions
+    public static partial class WorkspaceItemsServiceExtensions
     {
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
             /// <param name='itemId'>
             /// </param>
-            public static void GetItem(this IWorkspaceItems operations, System.Guid itemId)
+            public static WorkspaceItem GetItem(this IWorkspaceItemsService operations, System.Guid itemId)
             {
-                operations.GetItemAsync(itemId).GetAwaiter().GetResult();
+                return operations.GetItemAsync(itemId).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -30,9 +31,12 @@ namespace ArdaSDK.Kanban
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task GetItemAsync(this IWorkspaceItems operations, System.Guid itemId, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<WorkspaceItem> GetItemAsync(this IWorkspaceItemsService operations, System.Guid itemId, CancellationToken cancellationToken = default(CancellationToken))
             {
-                (await operations.GetItemWithHttpMessagesAsync(itemId, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                using (var _result = await operations.GetItemWithHttpMessagesAsync(itemId, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
             }
 
             /// <param name='operations'>
@@ -42,7 +46,7 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='newItem'>
             /// </param>
-            public static void Edit(this IWorkspaceItems operations, System.Guid itemId, object newItem = default(object))
+            public static void Edit(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem))
             {
                 operations.EditAsync(itemId, newItem).GetAwaiter().GetResult();
             }
@@ -57,7 +61,7 @@ namespace ArdaSDK.Kanban
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task EditAsync(this IWorkspaceItems operations, System.Guid itemId, object newItem = default(object), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task EditAsync(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), CancellationToken cancellationToken = default(CancellationToken))
             {
                 (await operations.EditWithHttpMessagesAsync(itemId, newItem, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
@@ -67,11 +71,9 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='itemId'>
             /// </param>
-            /// <param name='newItem'>
-            /// </param>
-            public static void Delete(this IWorkspaceItems operations, System.Guid itemId, object newItem = default(object))
+            public static void Delete(this IWorkspaceItemsService operations, System.Guid itemId)
             {
-                operations.DeleteAsync(itemId, newItem).GetAwaiter().GetResult();
+                operations.DeleteAsync(itemId).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -79,14 +81,12 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='itemId'>
             /// </param>
-            /// <param name='newItem'>
-            /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task DeleteAsync(this IWorkspaceItems operations, System.Guid itemId, object newItem = default(object), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task DeleteAsync(this IWorkspaceItemsService operations, System.Guid itemId, CancellationToken cancellationToken = default(CancellationToken))
             {
-                (await operations.DeleteWithHttpMessagesAsync(itemId, newItem, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                (await operations.DeleteWithHttpMessagesAsync(itemId, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
 
             /// <param name='operations'>
@@ -96,7 +96,7 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='newStatus'>
             /// </param>
-            public static void UpdateStatus(this IWorkspaceItems operations, System.Guid itemId, int newStatus)
+            public static void UpdateStatus(this IWorkspaceItemsService operations, System.Guid itemId, int newStatus)
             {
                 operations.UpdateStatusAsync(itemId, newStatus).GetAwaiter().GetResult();
             }
@@ -111,7 +111,7 @@ namespace ArdaSDK.Kanban
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task UpdateStatusAsync(this IWorkspaceItems operations, System.Guid itemId, int newStatus, CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task UpdateStatusAsync(this IWorkspaceItemsService operations, System.Guid itemId, int newStatus, CancellationToken cancellationToken = default(CancellationToken))
             {
                 (await operations.UpdateStatusWithHttpMessagesAsync(itemId, newStatus, null, cancellationToken).ConfigureAwait(false)).Dispose();
             }
