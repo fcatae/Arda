@@ -7,6 +7,7 @@ using System.Net;
 using Arda.Kanban.Models.Repositories;
 using Arda.Kanban.ViewModels;
 using System.Linq;
+using Arda.Kanban.Models;
 
 namespace Arda.Kanban.Controllers
 {
@@ -15,38 +16,61 @@ namespace Arda.Kanban.Controllers
     [Route("v2/items")]
     public class WorkspaceItemsController : Controller
     {
-        IWorkloadRepository _repository;
+        Repositories.WorkspaceRepository _repository;
         
-        public WorkspaceItemsController(IWorkloadRepository repository)
+        public WorkspaceItemsController(IWorkspaceRepository repository)
         {
-            _repository = repository;
+            _repository = (Repositories.WorkspaceRepository)repository;
         }
         
         [HttpGet("{itemId}", Name="GetItem")]
-        public object GetItem(Guid itemId)
+        public WorkspaceItem GetItem(Guid itemId)
         {
-            object ret = _repository.GetWorkloadByID(itemId);
+            if (itemId == Guid.Empty)
+                throw new ArgumentNullException("itemId is empty");
 
-            return ret;
+            WorkspaceItem workload = _repository.TryGet(itemId);
+
+            if (workload == null)
+                throw new InvalidOperationException("No object found for itemId");
+
+            return workload;
         }
 
         [HttpPut("{itemId}")]
-        public IActionResult Edit(Guid itemId, [FromBody]object newItem)
+        public IActionResult Edit(Guid itemId, [FromBody]WorkspaceItem newItem)
         {
-            // should replace the entire object
+            if (itemId == Guid.Empty)
+                throw new ArgumentNullException("itemId is empty");
+
+            if (!ModelState.IsValid)
+                return BadRequest("newItem is invalid");
+
+            // What if the item does not exist?
+            
+            // WorkspaceItem workload = _repository.TryGet(itemId);
+
+            _repository.Upsert(newItem);
+            
             return Accepted();
         }
 
         [HttpDelete("{itemId}")]
-        public IActionResult Delete(Guid itemId, [FromBody]object newItem)
+        public IActionResult Delete(Guid itemId)
         {
-            // delete the resource            
-            return NoContent(); //Accepted();
+            _repository.Delete(itemId);
+
+            return NoContent();
         }
 
         [HttpPut("{itemId}/status/{newStatus}")]
         public IActionResult UpdateStatus(Guid itemId, int newStatus)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("newItem is invalid");
+
+            _repository.SetStatus(itemId, newStatus);
+
             return Accepted();
         }
     }

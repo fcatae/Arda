@@ -220,6 +220,17 @@ namespace Arda.Kanban.Repositories
             _context.SaveChanges();
         }
 
+        public void Delete(Guid itemId)
+        {
+            if (itemId == Guid.Empty)
+                throw new ArgumentNullException(nameof(itemId));
+
+            var workload = _context.WorkloadBacklogs.FirstOrDefault(w => w.WBID == itemId);
+
+            _context.WorkloadBacklogs.Remove(workload);
+            _context.SaveChanges();            
+        }
+
         public bool EditWorkload(WorkloadViewModel workload)
         {
             var checkWBTechnologies = (workload.WBTechnologies == null) ? 0 : workload.WBTechnologies.Count();
