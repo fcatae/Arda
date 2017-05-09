@@ -13,13 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ArdaSDK\src\**" />
-    <Content Remove="ArdaSDK\src\**" />
-    <EmbeddedResource Remove="ArdaSDK\src\**" />
-    <None Remove="ArdaSDK\src\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="wwwroot\**\*;Views\**\*;Areas\**\Views;docker-compose.yml;Dockerfile;.dockerignore;arda.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
