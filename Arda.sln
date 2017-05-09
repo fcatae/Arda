@@ -20,6 +20,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arda.Reports", "src\Arda.Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests.Arda.Kanban.Repositories", "test\IntegrationTests.Arda.Kanban.Repositories\IntegrationTests.Arda.Kanban.Repositories.csproj", "{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArdaSDK", "src\ArdaSDK\ArdaSDK.csproj", "{1E6FD777-4289-4073-8EB2-DD309ACD628D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests.ArdaSDK", "test\IntegrationTests.ArdaSDK\IntegrationTests.ArdaSDK.csproj", "{4D4864AA-5C22-4D9A-990C-2803F92F3451}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +46,14 @@ Global
 		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E6FD777-4289-4073-8EB2-DD309ACD628D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E6FD777-4289-4073-8EB2-DD309ACD628D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E6FD777-4289-4073-8EB2-DD309ACD628D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E6FD777-4289-4073-8EB2-DD309ACD628D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D4864AA-5C22-4D9A-990C-2803F92F3451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D4864AA-5C22-4D9A-990C-2803F92F3451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D4864AA-5C22-4D9A-990C-2803F92F3451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D4864AA-5C22-4D9A-990C-2803F92F3451}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,5 +63,6 @@ Global
 		{70D0CC95-00A2-42B8-9EB1-7D51D2D8C969} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
 		{5CFF4D3A-0D15-4DD4-A590-B01B7ABDFBC3} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
 		{FD60FEFF-63C9-4E34-9C9E-AE8E2B2B5836} = {D0D55668-DD95-4B7F-9803-19C2757FAA21}
+		{1E6FD777-4289-4073-8EB2-DD309ACD628D} = {69D73E25-A65F-467D-9B99-39A4FF0939F1}
 	EndGlobalSection
 EndGlobal
