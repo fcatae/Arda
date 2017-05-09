@@ -77,15 +77,40 @@ namespace Arda.Kanban.Repositories
 
             return workloads;
         }
-        
+
         public IEnumerable<WorkspaceItem> ListByUser(string uniqueName)
         {
             if (uniqueName == null)
                 throw new ArgumentNullException("uniqueName");
 
             var workloads = (from wbu in _context.WorkloadBacklogUsers
-                             join w in _context.WorkloadBacklogs on wbu.WorkloadBacklogWBID equals w.WBID                             
+                             join w in _context.WorkloadBacklogs on wbu.WorkloadBacklogWBID equals w.WBID
                              where wbu.UserUniqueName == uniqueName
+                             where (int)w.WBStatus < 3
+                             select new WorkspaceItem
+                             {
+                                 Description = w.WBDescription,
+                                 EndDate = w.WBEndDate,
+                                 StartDate = w.WBStartDate,
+                                 ItemState = (int)w.WBStatus,
+                                 Id = w.WBID,
+                                 Summary = "",
+                                 Title = w.WBTitle,
+                                 CreatedBy = w.WBCreatedBy,
+                                 CreatedDate = w.WBCreatedDate
+                             }).ToArray();
+
+            return workloads;
+        }
+        
+        public IEnumerable<WorkspaceItem> ListByTag(string tag)
+        {
+            if (tag == null)
+                throw new ArgumentNullException(nameof(tag));
+
+            var workloads = (from w in _context.WorkloadBacklogs
+                             join t in _context.Tags on w.WBID equals t.WorkloadBacklogWBID
+                             where t.TagId == tag
                              where (int)w.WBStatus < 3
                              select new WorkspaceItem
                              {
@@ -204,7 +229,6 @@ namespace Arda.Kanban.Repositories
 
             return workloads;
         }
-
 
         public void Upsert(WorkspaceItem workload)
         {

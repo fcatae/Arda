@@ -29,16 +29,22 @@ namespace Arda.Kanban.Controllers
         [HttpGet("{folderId}")]
         public IEnumerable<WorkspaceItem> ListItems(string folderId, [FromQuery]string type, [FromQuery]string props)
         {
-            if( type == "archived" )
-                return _repository.ListArchivedByUser(folderId);
+            if( type == null )
+                return _repository.ListByUser(folderId);
 
-            if (type == "backlog")
-                return _repository.ListBacklogByUser(folderId);
+            switch (type.ToLower())
+            {
+                case "archived":
+                    return _repository.ListArchivedByUser(folderId);
 
-            if (type == "tag")
-                return null;
+                case "backlog":
+                    return _repository.ListBacklogByUser(folderId);
 
-            return _repository.ListByUser(folderId);
+                case "tag":
+                    return _repository.ListByTag(folderId);
+            }
+
+            throw new ArgumentOutOfRangeException("type is invalid");
         }
 
         public class AddItemInput
