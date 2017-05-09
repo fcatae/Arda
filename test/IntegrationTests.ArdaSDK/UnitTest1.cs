@@ -3,7 +3,7 @@ using Xunit;
 
 namespace IntegrationTests.ArdaSDK
 {
-    public class UnitTest1
+    public class KanbanFolder
     {
         [Fact]
         public void Test1()
