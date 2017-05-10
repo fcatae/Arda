@@ -33,15 +33,16 @@ namespace Arda.Main
 
             Configuration = builder.Build();
 
+            //Injecting endpoints
+            Arda.Common.Utils.Util.SetEnvironmentVariables(Configuration);
+
+            TestManager.TestStatic();
         }
 
         public IConfigurationRoot Configuration { get; set; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //Injecting endpoints
-            Arda.Common.Utils.Util.SetEnvironmentVariables(Configuration);
-
             services.AddCors(x => x.AddPolicy("AllowAll", c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
             // Add framework services.
@@ -63,9 +64,11 @@ namespace Arda.Main
                 Configuration = Configuration["Storage:Redis:Configuration"],
                 InstanceName = Configuration["Storage:Redis:InstanceName"]
             }));
+
+            services.AddSingleton<TestManager, TestManager>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, TestManager testManager)
         {
             loggerFactory.AddConsole(LogLevel.Trace);
             var logger = loggerFactory.CreateLogger("Default");
@@ -102,6 +105,11 @@ namespace Arda.Main
             });
 
             UsageTelemetry.Track("[system]", ArdaUsage.ArdaMain_Start);
+
+            if(env.IsDevelopment())
+            {
+                testManager.TestMain();
+            }
         }
     }
 }
