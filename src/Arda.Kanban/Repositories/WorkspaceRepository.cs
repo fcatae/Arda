@@ -111,7 +111,7 @@ namespace Arda.Kanban.Repositories
             var workloads = (from w in _context.WorkloadBacklogs
                              join t in _context.Tags on w.WBID equals t.WorkloadBacklogWBID
                              where t.TagId == tag
-                             where (int)w.WBStatus < 3
+                             // where (int)w.WBStatus < 3 // ignore status
                              select new WorkspaceItem
                              {
                                  Description = w.WBDescription,

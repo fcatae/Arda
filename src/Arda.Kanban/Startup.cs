@@ -76,6 +76,7 @@ namespace Arda.Kanban
             services.AddScoped<IWorkloadRepository, WorkloadRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IReportRepository, ReportRepository>();
+            services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
 
             services.AddSingleton<TestManager, TestManager>();
 

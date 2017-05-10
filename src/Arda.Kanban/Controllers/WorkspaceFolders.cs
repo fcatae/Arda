@@ -61,7 +61,10 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPost("{folderId}/add")]
-        public IActionResult AddItem(string folderId, [FromBody]AddItemInput workloadInput)
+        [ProducesResponseType(typeof(WorkspaceItem), 201)]
+        [ProducesResponseType(typeof(string), 400)]
+        //
+        public IActionResult AddItem(string folderId, [FromBody,Required] AddItemInput workloadInput)
         {
             if (folderId == null || folderId == "")
                 return BadRequest("folderId is empty");
