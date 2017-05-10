@@ -400,6 +400,77 @@ namespace Arda.Kanban.Repositories
             _context.SaveChanges();
             return true;
         }
+
+        // advanced scenario
         
+        public IEnumerable<WorkspaceItem> ListWithProperties()
+        {
+            var workloads = (from w in _context.WorkloadBacklogs
+                             where (int)w.WBStatus < 3
+                             select new WorkspaceItem()
+                             {
+                                 Description = w.WBDescription,
+                                 EndDate = w.WBEndDate,
+                                 StartDate = w.WBStartDate,
+                                 ItemState = (int)w.WBStatus,
+                                 Id = w.WBID,
+                                 Summary = "",
+                                 Title = w.WBTitle,
+                                 CreatedBy = w.WBCreatedBy,
+                                 CreatedDate = w.WBCreatedDate,
+                                 Properties = new WorkspaceItemProperties()
+                                 {
+                                     ActivityID = null,
+                                     Description = null,
+                                     Expertise = null,
+                                     Files = null,
+                                     IsWorkload = null,
+                                     LastAppointmentId = null,
+                                     Metrics = null,
+                                     Technologies = null,
+                                     WBComplexity = null, 
+                                     WorkloadUsers = null
+                                 }
+                             }).ToArray();
+
+            return workloads;
+        }
+
+        public WorkspaceItem TryGetWithProperties(Guid itemId)
+        {
+            if (itemId == Guid.Empty)
+                throw new ArgumentNullException(nameof(itemId));
+
+            var workload = (from w in _context.WorkloadBacklogs
+                            where w.WBID == itemId
+                            select new WorkspaceItem()
+                            {
+                                Description = w.WBDescription,
+                                EndDate = w.WBEndDate,
+                                StartDate = w.WBStartDate,
+                                ItemState = (int)w.WBStatus,
+                                Id = w.WBID,
+                                Summary = "",
+                                Title = w.WBTitle,
+                                CreatedBy = w.WBCreatedBy,
+                                CreatedDate = w.WBCreatedDate,
+                                Properties = new WorkspaceItemProperties()
+                                {
+                                    ActivityID = null,
+                                    Description = null,
+                                    Expertise = null,
+                                    Files = null,
+                                    IsWorkload = null,
+                                    LastAppointmentId = null,
+                                    Metrics = null,
+                                    Technologies = null,
+                                    WBComplexity = null,
+                                    WorkloadUsers = null
+                                }
+                            }).FirstOrDefault();
+
+            return workload;
+        }
+
     }
 }
