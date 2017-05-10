@@ -403,73 +403,68 @@ namespace Arda.Kanban.Repositories
 
         // advanced scenario
         
-        public IEnumerable<WorkspaceItem> ListWithProperties()
+        public IEnumerable<WorkspaceItem> List(WorkspaceItemPropertiesFilter props)
         {
             var workloads = (from w in _context.WorkloadBacklogs
                              where (int)w.WBStatus < 3
-                             select new WorkspaceItem()
-                             {
-                                 Description = w.WBDescription,
-                                 EndDate = w.WBEndDate,
-                                 StartDate = w.WBStartDate,
-                                 ItemState = (int)w.WBStatus,
-                                 Id = w.WBID,
-                                 Summary = "",
-                                 Title = w.WBTitle,
-                                 CreatedBy = w.WBCreatedBy,
-                                 CreatedDate = w.WBCreatedDate,
-                                 Properties = new WorkspaceItemProperties()
-                                 {
-                                     ActivityID = null,
-                                     Description = null,
-                                     Expertise = null,
-                                     Files = null,
-                                     IsWorkload = null,
-                                     LastAppointmentId = null,
-                                     Metrics = null,
-                                     Technologies = null,
-                                     WBComplexity = null, 
-                                     WorkloadUsers = null
-                                 }
-                             }).ToArray();
+                             select w);
 
-            return workloads;
+            var work = GetWorkloadItem(workloads, props);
+
+            return work;
         }
 
-        public WorkspaceItem TryGetWithProperties(Guid itemId)
+        public WorkspaceItem TryGet(Guid itemId, WorkspaceItemPropertiesFilter props)
         {
             if (itemId == Guid.Empty)
                 throw new ArgumentNullException(nameof(itemId));
 
             var workload = (from w in _context.WorkloadBacklogs
                             where w.WBID == itemId
-                            select new WorkspaceItem()
-                            {
-                                Description = w.WBDescription,
-                                EndDate = w.WBEndDate,
-                                StartDate = w.WBStartDate,
-                                ItemState = (int)w.WBStatus,
-                                Id = w.WBID,
-                                Summary = "",
-                                Title = w.WBTitle,
-                                CreatedBy = w.WBCreatedBy,
-                                CreatedDate = w.WBCreatedDate,
-                                Properties = new WorkspaceItemProperties()
-                                {
-                                    ActivityID = null,
-                                    Description = null,
-                                    Expertise = null,
-                                    Files = null,
-                                    IsWorkload = null,
-                                    LastAppointmentId = null,
-                                    Metrics = null,
-                                    Technologies = null,
-                                    WBComplexity = null,
-                                    WorkloadUsers = null
-                                }
-                            }).FirstOrDefault();
+                            select w);
+                            
+            var work = GetWorkloadItem(workload, props).FirstOrDefault();
 
-            return workload;
+            return work;
+        }
+
+        IQueryable<WorkspaceItem> GetWorkloadItem(IQueryable<WorkloadBacklog> workloads, WorkspaceItemPropertiesFilter props)
+        {
+            return (from w in workloads
+                    select new WorkspaceItem()
+                    {
+                        Description = w.WBDescription,
+                        EndDate = w.WBEndDate,
+                        StartDate = w.WBStartDate,
+                        ItemState = (int)w.WBStatus,
+                        Id = w.WBID,
+                        Summary = "",
+                        Title = w.WBTitle,
+                        CreatedBy = w.WBCreatedBy,
+                        CreatedDate = w.WBCreatedDate,
+                        Properties = new WorkspaceItemProperties()
+                        {
+                            ActivityID = props.HasActivityID ? (Guid?)w.WBActivityActivityID : null,
+                            Description = props.HasDescription ? w.WBDescription : null,
+                            Complexity = props.HasComplexity ? (int?)w.WBComplexity : null,
+                            Expertise = props.HasExpertise ? (int?)w.WBExpertise : null,
+
+                            IsWorkload = props.HasIsWorkload ? (bool?)w.WBIsWorkload : null,
+                            LastAppointmentId = props.HasLastAppointmentId ? w.LastAppointmentId : null,
+
+                            Files = props.HasFiles ? (from f in w.WBFiles
+                                                      select f.FileLink) : null,
+
+                            Metrics = props.HasMetrics ? (from m in w.WBMetrics
+                                                          select m.MetricMetricID) : null,
+
+                            Technologies = props.HasTechnologies ? (from t in w.WBTechnologies
+                                                                    select t.TechnologyTechnologyId) : null,
+
+                            WorkloadUsers = props.HasWorkloadUsers ? (from u in w.WBUsers
+                                                                      select u.UserUniqueName).ToArray() : null
+                        }
+                    });
         }
 
     }
