@@ -38,6 +38,8 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPut("{itemId}")]
+        [ProducesResponseType(202)]
+        [ProducesResponseType(typeof(string), 400)]
         public IActionResult Edit(Guid itemId, [FromBody]WorkspaceItem newItem)
         {
             if (itemId == Guid.Empty)
@@ -56,6 +58,7 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpDelete("{itemId}")]
+        [ProducesResponseType(204)]
         public IActionResult Delete(Guid itemId)
         {
             _repository.Delete(itemId);
@@ -64,6 +67,7 @@ namespace Arda.Kanban.Controllers
         }
 
         [HttpPut("{itemId}/status/{newStatus}")]
+        [ProducesResponseType(202)]
         public IActionResult UpdateStatus(Guid itemId, int newStatus)
         {
             if (!ModelState.IsValid)

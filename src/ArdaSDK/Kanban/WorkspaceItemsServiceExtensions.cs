@@ -46,9 +46,9 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='newItem'>
             /// </param>
-            public static void Edit(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem))
+            public static string Edit(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem))
             {
-                operations.EditAsync(itemId, newItem).GetAwaiter().GetResult();
+                return operations.EditAsync(itemId, newItem).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -61,9 +61,12 @@ namespace ArdaSDK.Kanban
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task EditAsync(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<string> EditAsync(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), CancellationToken cancellationToken = default(CancellationToken))
             {
-                (await operations.EditWithHttpMessagesAsync(itemId, newItem, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                using (var _result = await operations.EditWithHttpMessagesAsync(itemId, newItem, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
             }
 
             /// <param name='operations'>

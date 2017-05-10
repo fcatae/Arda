@@ -56,9 +56,9 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='workloadInput'>
             /// </param>
-            public static void AddItem(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput))
+            public static object AddItem(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput))
             {
-                operations.AddItemAsync(folderId, workloadInput).GetAwaiter().GetResult();
+                return operations.AddItemAsync(folderId, workloadInput).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -71,9 +71,12 @@ namespace ArdaSDK.Kanban
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task AddItemAsync(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> AddItemAsync(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput), CancellationToken cancellationToken = default(CancellationToken))
             {
-                (await operations.AddItemWithHttpMessagesAsync(folderId, workloadInput, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                using (var _result = await operations.AddItemWithHttpMessagesAsync(folderId, workloadInput, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
             }
 
     }
