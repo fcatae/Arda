@@ -15,6 +15,9 @@ using Microsoft.Net.Http.Headers;
 using System.Net;
 using Arda.Main.ViewModels;
 
+using ArdaSDK.Kanban;
+using ArdaSDK.Kanban.Models;
+
 namespace Arda.Main.Controllers
 {
     [Authorize]
@@ -84,6 +87,22 @@ namespace Arda.Main.Controllers
                          })
                          .Distinct()
                          .ToList();
+
+            Util.KanbanClient.WorkspaceFoldersService.ListItems(filtered_user);
+            var w = new WorkspaceItem();
+            var r = new
+            {
+                id = w.Id,
+                title = w.Title,
+                start = w.StartDate.Value.ToString("dd/MM/yyyy"),
+                end = w.EndDate.Value.ToString("dd/MM/yyyy"),
+                status = w.ItemState.Value,
+                hours = 0,
+                attachments = 0,
+                tag = "",
+                users = "", //x._WorkloadUsers,
+                textual = w.Summary
+            };
 
             return Json(dados);
         }
