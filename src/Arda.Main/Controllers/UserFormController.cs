@@ -21,7 +21,7 @@ namespace Arda.Main.Controllers
         [HttpGet]
         public IActionResult New(string template)
         {
-            var user = this.GetCurrentUserName();
+            var user = this.GetCurrentUser();
 
             ViewBag.Title = "Title";
 
@@ -45,7 +45,7 @@ namespace Arda.Main.Controllers
         [HttpPost]
         public async Task<IActionResult> Submit([FromForm] string workloadTitle, [FromForm] string workloadDate, [FromForm] string workloadDescription)
         {
-            var user = this.GetCurrentUserName();
+            var user = this.GetCurrentUser();
 
             UsageTelemetry.Track(user, ArdaUsage.Userform_Submit);
 
@@ -56,7 +56,7 @@ namespace Arda.Main.Controllers
 
         async Task CreateWorkload(string title, DateTime date, string description)
         {
-            var uniqueName = this.GetCurrentUserName();
+            var uniqueName = this.GetCurrentUser();
 
             var workload = new WorkloadViewModel2()
             {

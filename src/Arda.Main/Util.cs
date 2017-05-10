@@ -31,7 +31,7 @@ namespace Arda.Common.Utils
 
         }
 
-        public static string GetCurrentUserName(this Microsoft.AspNetCore.Mvc.ControllerBase controller)
+        public static string GetCurrentUser(this Microsoft.AspNetCore.Mvc.ControllerBase controller)
         {
             return controller.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
         }
