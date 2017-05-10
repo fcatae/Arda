@@ -230,7 +230,7 @@ namespace Arda.Kanban.Repositories
             return workloads;
         }
 
-        public void Upsert(WorkspaceItem workload)
+        public bool Edit(WorkspaceItem workload)
         {
             Guid itemId = workload.Id;
 
@@ -241,9 +241,7 @@ namespace Arda.Kanban.Repositories
 
             if (workloadToBeUpdated == null)
             {
-                // insert
-                this.Create(workload);
-                return;
+                return false;
             }
                 
             workloadToBeUpdated.WBTitle = workload.Title;
@@ -264,11 +262,10 @@ namespace Arda.Kanban.Repositories
             // workload.Summary
 
             // Do not update WBCreatedBy + WBCreatedDate
-
-            // workloadToBeUpdated.WBCreatedBy = workload.WBCreatedBy;
-            // workloadToBeUpdated.WBCreatedDate = workload.WBCreatedDate;
-
+            
             _context.SaveChanges();
+
+            return true;
         }
 
         public void Delete(Guid itemId)

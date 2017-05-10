@@ -16,6 +16,58 @@ namespace ArdaSDK.Kanban
             /// <param name='operations'>
             /// The operations group for this extension method.
             /// </param>
+            /// <param name='newItem'>
+            /// </param>
+            public static string Upsert(this IWorkspaceItemsService operations, WorkspaceItem newItem = default(WorkspaceItem))
+            {
+                return operations.UpsertAsync(newItem).GetAwaiter().GetResult();
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='newItem'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<string> UpsertAsync(this IWorkspaceItemsService operations, WorkspaceItem newItem = default(WorkspaceItem), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.UpsertWithHttpMessagesAsync(newItem, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='newItem'>
+            /// </param>
+            public static string Edit(this IWorkspaceItemsService operations, WorkspaceItem newItem = default(WorkspaceItem))
+            {
+                return operations.EditAsync(newItem).GetAwaiter().GetResult();
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='newItem'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<string> EditAsync(this IWorkspaceItemsService operations, WorkspaceItem newItem = default(WorkspaceItem), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.EditWithHttpMessagesAsync(newItem, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
             /// <param name='itemId'>
             /// </param>
             public static WorkspaceItem GetItem(this IWorkspaceItemsService operations, System.Guid itemId)
@@ -44,36 +96,6 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='itemId'>
             /// </param>
-            /// <param name='newItem'>
-            /// </param>
-            public static string Edit(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem))
-            {
-                return operations.EditAsync(itemId, newItem).GetAwaiter().GetResult();
-            }
-
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='itemId'>
-            /// </param>
-            /// <param name='newItem'>
-            /// </param>
-            /// <param name='cancellationToken'>
-            /// The cancellation token.
-            /// </param>
-            public static async Task<string> EditAsync(this IWorkspaceItemsService operations, System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), CancellationToken cancellationToken = default(CancellationToken))
-            {
-                using (var _result = await operations.EditWithHttpMessagesAsync(itemId, newItem, null, cancellationToken).ConfigureAwait(false))
-                {
-                    return _result.Body;
-                }
-            }
-
-            /// <param name='operations'>
-            /// The operations group for this extension method.
-            /// </param>
-            /// <param name='itemId'>
-            /// </param>
             public static void Delete(this IWorkspaceItemsService operations, System.Guid itemId)
             {
                 operations.DeleteAsync(itemId).GetAwaiter().GetResult();
@@ -90,6 +112,36 @@ namespace ArdaSDK.Kanban
             public static async Task DeleteAsync(this IWorkspaceItemsService operations, System.Guid itemId, CancellationToken cancellationToken = default(CancellationToken))
             {
                 (await operations.DeleteWithHttpMessagesAsync(itemId, null, cancellationToken).ConfigureAwait(false)).Dispose();
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='itemId'>
+            /// </param>
+            /// <param name='editItem'>
+            /// </param>
+            public static string EditItem(this IWorkspaceItemsService operations, System.Guid itemId, EditItemInput editItem = default(EditItemInput))
+            {
+                return operations.EditItemAsync(itemId, editItem).GetAwaiter().GetResult();
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='itemId'>
+            /// </param>
+            /// <param name='editItem'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<string> EditItemAsync(this IWorkspaceItemsService operations, System.Guid itemId, EditItemInput editItem = default(EditItemInput), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.EditItemWithHttpMessagesAsync(itemId, editItem, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
             }
 
             /// <param name='operations'>

@@ -16,6 +16,36 @@ namespace ArdaSDK.Kanban
     /// </summary>
     public partial interface IWorkspaceItemsService
     {
+        /// <param name='newItem'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="Microsoft.Rest.HttpOperationException">
+        /// Thrown when the operation returned an invalid status code
+        /// </exception>
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
+        Task<HttpOperationResponse<string>> UpsertWithHttpMessagesAsync(WorkspaceItem newItem = default(WorkspaceItem), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        /// <param name='newItem'>
+        /// </param>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="Microsoft.Rest.HttpOperationException">
+        /// Thrown when the operation returned an invalid status code
+        /// </exception>
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
+        Task<HttpOperationResponse<string>> EditWithHttpMessagesAsync(WorkspaceItem newItem = default(WorkspaceItem), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <param name='itemId'>
         /// </param>
         /// <param name='customHeaders'>
@@ -33,7 +63,19 @@ namespace ArdaSDK.Kanban
         Task<HttpOperationResponse<WorkspaceItem>> GetItemWithHttpMessagesAsync(System.Guid itemId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <param name='itemId'>
         /// </param>
-        /// <param name='newItem'>
+        /// <param name='customHeaders'>
+        /// The headers that will be added to request.
+        /// </param>
+        /// <param name='cancellationToken'>
+        /// The cancellation token.
+        /// </param>
+        /// <exception cref="Microsoft.Rest.HttpOperationException">
+        /// Thrown when the operation returned an invalid status code
+        /// </exception>
+        Task<HttpOperationResponse> DeleteWithHttpMessagesAsync(System.Guid itemId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        /// <param name='itemId'>
+        /// </param>
+        /// <param name='editItem'>
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -47,19 +89,7 @@ namespace ArdaSDK.Kanban
         /// <exception cref="Microsoft.Rest.SerializationException">
         /// Thrown when unable to deserialize the response
         /// </exception>
-        Task<HttpOperationResponse<string>> EditWithHttpMessagesAsync(System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
-        /// <param name='itemId'>
-        /// </param>
-        /// <param name='customHeaders'>
-        /// The headers that will be added to request.
-        /// </param>
-        /// <param name='cancellationToken'>
-        /// The cancellation token.
-        /// </param>
-        /// <exception cref="Microsoft.Rest.HttpOperationException">
-        /// Thrown when the operation returned an invalid status code
-        /// </exception>
-        Task<HttpOperationResponse> DeleteWithHttpMessagesAsync(System.Guid itemId, Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<string>> EditItemWithHttpMessagesAsync(System.Guid itemId, EditItemInput editItem = default(EditItemInput), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <param name='itemId'>
         /// </param>
         /// <param name='newStatus'>
