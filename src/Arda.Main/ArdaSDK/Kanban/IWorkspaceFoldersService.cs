@@ -18,7 +18,9 @@ namespace ArdaSDK.Kanban
     {
         /// <param name='folderId'>
         /// </param>
-        /// <param name='archived'>
+        /// <param name='type'>
+        /// </param>
+        /// <param name='props'>
         /// </param>
         /// <param name='customHeaders'>
         /// The headers that will be added to request.
@@ -35,7 +37,7 @@ namespace ArdaSDK.Kanban
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        Task<HttpOperationResponse<IList<WorkspaceItem>>> ListItemsWithHttpMessagesAsync(string folderId, bool? archived = default(bool?), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<IList<WorkspaceItem>>> ListItemsWithHttpMessagesAsync(string folderId, string type = default(string), string props = default(string), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <param name='folderId'>
         /// </param>
         /// <param name='workloadInput'>
@@ -49,9 +51,12 @@ namespace ArdaSDK.Kanban
         /// <exception cref="Microsoft.Rest.HttpOperationException">
         /// Thrown when the operation returned an invalid status code
         /// </exception>
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
         /// <exception cref="Microsoft.Rest.ValidationException">
         /// Thrown when a required parameter is null
         /// </exception>
-        Task<HttpOperationResponse> AddItemWithHttpMessagesAsync(string folderId, AddItemInput workloadInput = default(AddItemInput), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<HttpOperationResponse<object>> AddItemWithHttpMessagesAsync(string folderId, AddItemInput workloadInput = default(AddItemInput), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

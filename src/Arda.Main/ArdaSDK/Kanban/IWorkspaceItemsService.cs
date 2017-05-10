@@ -44,7 +44,10 @@ namespace ArdaSDK.Kanban
         /// <exception cref="Microsoft.Rest.HttpOperationException">
         /// Thrown when the operation returned an invalid status code
         /// </exception>
-        Task<HttpOperationResponse> EditWithHttpMessagesAsync(System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
+        /// <exception cref="Microsoft.Rest.SerializationException">
+        /// Thrown when unable to deserialize the response
+        /// </exception>
+        Task<HttpOperationResponse<string>> EditWithHttpMessagesAsync(System.Guid itemId, WorkspaceItem newItem = default(WorkspaceItem), Dictionary<string, List<string>> customHeaders = null, CancellationToken cancellationToken = default(CancellationToken));
         /// <param name='itemId'>
         /// </param>
         /// <param name='customHeaders'>

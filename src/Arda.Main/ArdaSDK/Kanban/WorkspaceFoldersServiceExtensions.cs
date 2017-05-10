@@ -20,11 +20,13 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='folderId'>
             /// </param>
-            /// <param name='archived'>
+            /// <param name='type'>
             /// </param>
-            public static IList<WorkspaceItem> ListItems(this IWorkspaceFoldersService operations, string folderId, bool? archived = default(bool?))
+            /// <param name='props'>
+            /// </param>
+            public static IList<WorkspaceItem> ListItems(this IWorkspaceFoldersService operations, string folderId, string type = default(string), string props = default(string))
             {
-                return operations.ListItemsAsync(folderId, archived).GetAwaiter().GetResult();
+                return operations.ListItemsAsync(folderId, type, props).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -32,14 +34,16 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='folderId'>
             /// </param>
-            /// <param name='archived'>
+            /// <param name='type'>
+            /// </param>
+            /// <param name='props'>
             /// </param>
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<IList<WorkspaceItem>> ListItemsAsync(this IWorkspaceFoldersService operations, string folderId, bool? archived = default(bool?), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<IList<WorkspaceItem>> ListItemsAsync(this IWorkspaceFoldersService operations, string folderId, string type = default(string), string props = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
-                using (var _result = await operations.ListItemsWithHttpMessagesAsync(folderId, archived, null, cancellationToken).ConfigureAwait(false))
+                using (var _result = await operations.ListItemsWithHttpMessagesAsync(folderId, type, props, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }
@@ -52,9 +56,9 @@ namespace ArdaSDK.Kanban
             /// </param>
             /// <param name='workloadInput'>
             /// </param>
-            public static void AddItem(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput))
+            public static object AddItem(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput))
             {
-                operations.AddItemAsync(folderId, workloadInput).GetAwaiter().GetResult();
+                return operations.AddItemAsync(folderId, workloadInput).GetAwaiter().GetResult();
             }
 
             /// <param name='operations'>
@@ -67,9 +71,12 @@ namespace ArdaSDK.Kanban
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task AddItemAsync(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> AddItemAsync(this IWorkspaceFoldersService operations, string folderId, AddItemInput workloadInput = default(AddItemInput), CancellationToken cancellationToken = default(CancellationToken))
             {
-                (await operations.AddItemWithHttpMessagesAsync(folderId, workloadInput, null, cancellationToken).ConfigureAwait(false)).Dispose();
+                using (var _result = await operations.AddItemWithHttpMessagesAsync(folderId, workloadInput, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
             }
 
     }
