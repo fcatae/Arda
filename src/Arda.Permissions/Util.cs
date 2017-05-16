@@ -8,6 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
+using StackExchange.Redis;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Arda.Common.Utils
 {
@@ -20,6 +23,8 @@ namespace Arda.Common.Utils
         public static string PermissionsURL;
 
         private static IDistributedCache _cache;
+        private static ConnectionMultiplexer _redis;
+        private static IDatabase DB;
 
         static Util()
         {
@@ -34,11 +39,13 @@ namespace Arda.Common.Utils
             try
             {
                 //Try from Cache:
-                arrPicture = _cache.Get(key);
+                //arrPicture = _cache.Get(key);
 
                 if( arrPicture != null )
                 {
-                    var photo = Util.GetString(arrPicture);
+                    var photo = GetValue(key);
+                    //var photo = Util.GetString(arrPicture);
+                    
                     return photo;
                 }
             }
@@ -53,7 +60,7 @@ namespace Arda.Common.Utils
             var response = ConnectToRemoteService(HttpMethod.Put, PermissionsURL + "api/permission/saveuserphotooncache?=" + user, user, "").Result;
             if (response.IsSuccessStatusCode)
             {
-                var photo = Util.GetString(_cache.Get(key));
+                var photo = GetValue(key); // Util.GetString(_cache.Get(key));
                 return photo;
             }
             else
@@ -202,11 +209,71 @@ namespace Arda.Common.Utils
             ReportsURL = config["Endpoints:reports-service"];
 
 
-            _cache = new RedisCache(new RedisCacheOptions
+            var options = new RedisCacheOptions
             {
                 Configuration = config["Storage:Redis:Configuration"],
                 InstanceName = config["Storage:Redis:InstanceName"]
-            });
+            };
+
+            Console.WriteLine("antes de alterar: options: " + options.Configuration + "\r\n");
+            Util.ResolveDns(options);
+            Console.WriteLine("Depois de alterar: options: " + options.Configuration + "\r\n");
+
+            _redis = ConnectionMultiplexer.Connect(options.Configuration);
+
+            _cache = new RedisCache(options);
         }
+
+        public static void ResolveDns(this RedisCacheOptions options)
+        {
+            // Assume that the first part is host and port.
+            var hostWithPort = options.Configuration.Substring(0, options.Configuration.IndexOf(","));
+            var resolved = TryResolveDns(hostWithPort);
+            var replaced = options.Configuration.Replace(hostWithPort, resolved);
+            options.Configuration = replaced;
+        }
+
+        private static string TryResolveDns(string redisUrl)
+        {
+            var config = ConfigurationOptions.Parse(redisUrl);
+
+            foreach (DnsEndPoint addressEndpoint in config.EndPoints)
+            {
+                var port = addressEndpoint.Port;
+                var isIp = IsIpAddress(addressEndpoint.Host);
+                if (!isIp)
+                {
+                    var ip = Dns.GetHostEntryAsync(addressEndpoint.Host).GetAwaiter().GetResult();
+                    return $"{ip.AddressList.First(x => IsIpAddress(x.ToString()))}:{port}";
+                }
+            }
+
+            return redisUrl;
+        }
+
+        private static bool IsIpAddress(string host)
+        {
+            return Regex.IsMatch(host, @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+        }
+
+
+        private static void GetDBInstance()
+        {
+            if (DB == null)
+            {
+                DB = _redis.GetDatabase();
+            }
+        }
+        public static bool SetValue(string key, string value)
+        {
+            GetDBInstance();
+            return DB.StringSet(key, value);
+        }
+        public static string GetValue(string key)
+        {
+            GetDBInstance();
+            return DB.StringGet(key);
+        }
+
     }
 }

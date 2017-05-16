@@ -62,7 +62,7 @@ namespace Arda.Permissions.Repositories
                                    }).ToList();
 
             var propertiesToCache = new CacheViewModel(code, userPermissions);
-            _cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
+            //_cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
 
             return true;
         }
@@ -107,10 +107,10 @@ namespace Arda.Permissions.Repositories
             try
             {
                 // may raise exception
-                arrPropertiesSerializedCached = _cache.Get(uniqueName);
+                //arrPropertiesSerializedCached = _cache.Get(uniqueName);
 
                 // if data is not cached
-                if(arrPropertiesSerializedCached != null)
+                if (arrPropertiesSerializedCached != null)
                 {
                     string propertiesSerializedCached = Util.GetString(arrPropertiesSerializedCached);
                     propertiesToCache = new CacheViewModel(propertiesSerializedCached);
@@ -119,7 +119,7 @@ namespace Arda.Permissions.Repositories
             catch (StackExchange.Redis.RedisConnectionException)
             {
                 // Ignore transient network errors
-            }            
+            }
 
             var userPermissions = (from up in _context.UsersPermissions
                                    join r in _context.Resources on up.ResourceID equals r.ResourceID
@@ -138,7 +138,7 @@ namespace Arda.Permissions.Repositories
             if (userPermissions != null)
             {
                 propertiesToCache.Permissions = userPermissions;
-                _cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
+                //_cache.Set(uniqueName, Util.GetBytes(propertiesToCache.ToString()));
                 return true;
             }
             else
@@ -146,7 +146,7 @@ namespace Arda.Permissions.Repositories
                 return false;
             }
         }
-        
+
         //Updates user photo
         public bool UpdateUserPhoto(string uniqueName, string photo)
         {
@@ -171,7 +171,7 @@ namespace Arda.Permissions.Repositories
         public void CacheUserPhoto(string uniqueName, string PhotoBase64)
         {
             var key = "photo_" + uniqueName;
-            _cache.Set(key, Util.GetBytes(PhotoBase64.ToString()));
+            //_cache.Set(key, Util.GetBytes(PhotoBase64.ToString()));
         }
 
         //Updates user info
@@ -198,13 +198,13 @@ namespace Arda.Permissions.Repositories
 
         public void DeleteUserPermissions(string uniqueName)
         {
-            _cache.Remove(uniqueName);
+            //_cache.Remove(uniqueName);
         }
 
         public void DeleteUser(string uniqueName)
         {
             //From Cache:
-            _cache.Remove(uniqueName);
+            //_cache.Remove(uniqueName);
 
             //From Context:
             var userPermissions = (from up in _context.UsersPermissions
@@ -236,16 +236,16 @@ namespace Arda.Permissions.Repositories
             if (uniqueName == null)
                 throw new ArgumentNullException("GetUserPermissionsCached(uniqueName: null)");
 
-            try
-            {
-                arraySerializedCached = _cache.Get(uniqueName);
-            }
-            catch(StackExchange.Redis.RedisConnectionException)
-            {
-                // Ignore transient network issues
-            }
+            //try
+            //{
+            //    arraySerializedCached = _cache.Get(uniqueName);
+            //}
+            //catch(StackExchange.Redis.RedisConnectionException)
+            //{
+            //    // Ignore transient network issues
+            //}
 
-            if( arraySerializedCached != null )
+            if (arraySerializedCached != null)
             {
                 var propertiesSerializedCached = Util.GetString(arraySerializedCached);
                 cachedView = new CacheViewModel(propertiesSerializedCached);
@@ -386,14 +386,14 @@ namespace Arda.Permissions.Repositories
             string propertiesSerializedCached = null;
             byte[] arraySerializedCached = null;
 
-            try
-            {
-                arraySerializedCached = _cache.Get(uniqueName);
-            }
-            catch (StackExchange.Redis.RedisConnectionException)
-            {
-                // Ignore transient network failures
-            }
+            //try
+            //{
+            //    arraySerializedCached = _cache.Get(uniqueName);
+            //}
+            //catch (StackExchange.Redis.RedisConnectionException)
+            //{
+            //    // Ignore transient network failures
+            //}
 
 
             if (arraySerializedCached != null)
@@ -406,14 +406,14 @@ namespace Arda.Permissions.Repositories
                 propertiesSerializedCached = cachedView.ToString();
             }
 
-            try
-            {
-                _cache.Set(uniqueName, Util.GetBytes(propertiesSerializedCached));
-            }
-            catch (StackExchange.Redis.RedisConnectionException)
-            {
-                // Ignore transient network failures
-            }
+            //try
+            //{
+            //    _cache.Set(uniqueName, Util.GetBytes(propertiesSerializedCached));
+            //}
+            //catch (StackExchange.Redis.RedisConnectionException)
+            //{
+            //    // Ignore transient network failures
+            //}
 
             //try
             //{
@@ -460,23 +460,26 @@ namespace Arda.Permissions.Repositories
 
         public bool VerifyIfUserAdmin(string uniqueName)
         {
-            var cache = _cache.Get(uniqueName);
 
-            if(cache == null)
-                return false;
+            return true;
 
-            var propertiesSerializedCached = Util.GetString(cache);
-            var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
+            //var cache = _cache.Get(uniqueName);
 
-            var permToReview = permissions.FirstOrDefault(p => p.Module == "Users" && p.Resource == "Review");
-            if (permToReview != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            //if(cache == null)
+            //    return false;
+
+            //var propertiesSerializedCached = Util.GetString(cache);
+            //var permissions = new CacheViewModel(propertiesSerializedCached).Permissions;
+
+            //var permToReview = permissions.FirstOrDefault(p => p.Module == "Users" && p.Resource == "Review");
+            //if (permToReview != null)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
 
         public int GetNumberOfUsersToApprove()
@@ -561,28 +564,36 @@ namespace Arda.Permissions.Repositories
 
         public string GetUserPhotoFromCache(string uniqueName)
         {
-            var key = "photo_" + uniqueName;
-            byte[] arr = _cache.Get(key);
 
-            return ( arr != null ) ? Util.GetString(arr) : null;
+            var user = _context.Users.First(u => u.UniqueName == uniqueName);
+
+            if (user != null)
+            {
+                var photo = user.PhotoBase64;
+                var arrr = Util.GetBytes(photo.ToString());
+                return Util.GetString(arrr);
+            }
+
+            return null;
         }
 
         public bool SaveUserPhotoOnCache(string uniqueName)
         {
             var user = _context.Users.First(u => u.UniqueName == uniqueName);
 
-            if (user != null)
-            {
-                //Get photo from database:
-                var photo = user.PhotoBase64;
-                //Cache it:
-                CacheUserPhoto(uniqueName, photo);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return true;
+            //if (user != null)
+            //{
+            //    //Get photo from database:
+            //    var photo = user.PhotoBase64;
+            //    //Cache it:
+            //    CacheUserPhoto(uniqueName, photo);
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         }
     }
 }
