@@ -437,8 +437,8 @@ namespace Arda.Kanban.Repositories
             if (log.CreatedBy == null)
                 throw new ArgumentNullException(nameof(log.CreatedBy));
 
-            int appointmentHours = (log.Properties == null) ? 0 : (log.Properties.LaborHours);
-            decimal appointmentExpense = (log.Properties == null) ? 0 : (log.Properties.Expenses);
+            int appointmentHours = (log.Properties == null) ? 0 : (log.Properties.LaborHours ?? 0);
+            decimal appointmentExpense = (log.Properties == null) ? 0 : (log.Properties.Expenses ?? 0);
 
             var appointmentToBeSaved = new Appointment()
             {

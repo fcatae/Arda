@@ -26,24 +26,47 @@ namespace Arda.Kanban.Controllers
         }
         
         [HttpGet("{itemId}/logs")]
-        public WorkspaceItem GetLogs(Guid itemId)
+        public IEnumerable<WorkspaceItemLog> GetLogs(Guid itemId)
         {
             if (itemId == Guid.Empty)
                 throw new ArgumentNullException("itemId is empty");
 
-            // return a list of appointments
+            var logs = _repository.GetLogs(itemId);
             
-            return null;
+            return logs;
         }
                 
-        [HttpPost("{itemId}/logs")]
-        [ProducesResponseType(202)]
-        public IActionResult AppendLog(Guid itemId, string text, [FromQuery]string user)
+        public class InputAppendLog
         {
-            //if (!ModelState.IsValid)
-            //    return BadRequest("newItem is invalid");
+            public string Text { get; set; }
+            public DateTime? CreatedDate { get; set; }
+            public WorkspaceItemLogProperties Property { get; set; }
+        }
+
+        [HttpPost("{itemId}/logs")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult AppendLog(Guid itemId, [FromBody]InputAppendLog input, [FromQuery]string user)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("newItem is invalid");
+
+            if (input.Text == null)
+                return BadRequest("input.Text == null");
+
+            if (user == null)
+                return BadRequest("user == null");
 
             // add the details
+            var log = new WorkspaceItemLog()
+            {
+                Id = Guid.NewGuid(),
+                CreatedBy = user,
+                CreatedDate = input.CreatedDate ?? DateTime.Now,
+                Text = input.Text
+            };
+
+            _repository.AppendLog(itemId, log);
 
             return NoContent();
         }

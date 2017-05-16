@@ -7,7 +7,7 @@ namespace Arda.Kanban.Models
 {
     public class WorkspaceItemLogProperties
     {
-        public int LaborHours { get; set; }
-        public decimal Expenses { get; set; }
+        public int? LaborHours { get; set; }
+        public decimal? Expenses { get; set; }
     }
 }
