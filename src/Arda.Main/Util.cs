@@ -291,10 +291,10 @@ namespace Arda.Common.Utils
 
         public static void SetEnvironmentVariables(IConfiguration config)
         {
-            MainURL = config["Endpoints:ardaapp"];
-            PermissionsURL = config["Endpoints:permissions-service"];
-            KanbanURL = config["Endpoints:kanban-service"];
-            ReportsURL = config["Endpoints:reports-service"];
+            MainURL = config["Endpoints_ardaapp"];
+            PermissionsURL = config["Endpoints_permissions_service"];
+            KanbanURL = config["Endpoints_kanban_service"];
+            ReportsURL = config["Endpoints_reports_service"];
 
             KanbanClient = new KanbanClient(new Uri(KanbanURL));
         }
