@@ -322,8 +322,8 @@ namespace Arda.Main.Controllers
         {
             var fileList = new List<Tuple<Guid, string, string>>();
             var Configuration = new ConfigurationBuilder().AddJsonFile("secrets.json").Build();
-            var connectionString = Configuration["Storage:AzureBLOB:ConnectionString"];
-            var containerName = Configuration["Storage:AzureBLOB:ContainerName"];
+            var connectionString = Configuration["Storage_AzureBLOB_ConnectionString"];
+            var containerName = Configuration["Storage_AzureBLOB_ContainerName"];
             // Retrieve storage account information from connection string
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
             // Create a blob client for interacting with the blob service.

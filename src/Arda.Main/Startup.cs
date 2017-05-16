@@ -61,8 +61,8 @@ namespace Arda.Main
             // Registering distributed cache approach to the application.
             services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
             {
-                Configuration = Configuration["Storage:Redis:Configuration"],
-                InstanceName = Configuration["Storage:Redis:InstanceName"]
+                Configuration = Configuration["Storage_Redis_Configuration"],
+                InstanceName = Configuration["Storage_Redis_InstanceName"]
             }));
 
             services.AddSingleton<TestManager, TestManager>();
