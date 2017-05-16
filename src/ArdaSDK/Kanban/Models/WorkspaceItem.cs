@@ -21,17 +21,18 @@ namespace ArdaSDK.Kanban.Models
         /// <summary>
         /// Initializes a new instance of the WorkspaceItem class.
         /// </summary>
-        public WorkspaceItem(System.Guid? id = default(System.Guid?), string title = default(string), string summary = default(string), int? itemState = default(int?), string description = default(string), System.DateTime? startDate = default(System.DateTime?), System.DateTime? endDate = default(System.DateTime?), string createdBy = default(string), System.DateTime? createdDate = default(System.DateTime?))
+        public WorkspaceItem(System.Guid? id = default(System.Guid?), string title = default(string), string summary = default(string), int? itemState = default(int?), System.DateTime? startDate = default(System.DateTime?), System.DateTime? endDate = default(System.DateTime?), string createdBy = default(string), System.DateTime? createdDate = default(System.DateTime?), string description = default(string), WorkspaceItemProperties properties = default(WorkspaceItemProperties))
         {
             Id = id;
             Title = title;
             Summary = summary;
             ItemState = itemState;
-            Description = description;
             StartDate = startDate;
             EndDate = endDate;
             CreatedBy = createdBy;
             CreatedDate = createdDate;
+            Description = description;
+            Properties = properties;
             CustomInit();
         }
 
@@ -62,11 +63,6 @@ namespace ArdaSDK.Kanban.Models
 
         /// <summary>
         /// </summary>
-        [JsonProperty(PropertyName = "Description")]
-        public string Description { get; set; }
-
-        /// <summary>
-        /// </summary>
         [JsonProperty(PropertyName = "StartDate")]
         public System.DateTime? StartDate { get; set; }
 
@@ -84,6 +80,16 @@ namespace ArdaSDK.Kanban.Models
         /// </summary>
         [JsonProperty(PropertyName = "CreatedDate")]
         public System.DateTime? CreatedDate { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "Description")]
+        public string Description { get; set; }
+
+        /// <summary>
+        /// </summary>
+        [JsonProperty(PropertyName = "Properties")]
+        public WorkspaceItemProperties Properties { get; set; }
 
     }
 }

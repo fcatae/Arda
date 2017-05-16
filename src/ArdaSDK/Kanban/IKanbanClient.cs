@@ -33,6 +33,11 @@ namespace ArdaSDK.Kanban
         IWorkspaceFoldersService WorkspaceFoldersService { get; }
 
         /// <summary>
+        /// Gets the IWorkspaceItemLogsService.
+        /// </summary>
+        IWorkspaceItemLogsService WorkspaceItemLogsService { get; }
+
+        /// <summary>
         /// Gets the IWorkspaceItemsService.
         /// </summary>
         IWorkspaceItemsService WorkspaceItemsService { get; }
