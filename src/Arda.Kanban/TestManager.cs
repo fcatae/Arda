@@ -21,14 +21,36 @@ namespace Arda.Kanban
         {
             WorkspaceRepository workspace = new WorkspaceRepository(_context);
 
-            var r = workspace.List(
-                //Guid.Parse("fe77fbf1-6176-4c06-93a4-6e32cb28d165"), 
+            var a = workspace.GetWorkloadItemProperties(Guid.Parse("fe77fbf1-6176-4c06-93a4-6e32cb28d165"),
                 new WorkspaceItemPropertiesFilter()
                 {
                     HasDescription = true,
                     HasIsWorkload = true,
                     HasWorkloadUsers = true
-                }).ToArray();
+                }
+                );
+
+            var r = workspace.TryGet(
+                Guid.Parse("fe77fbf1-6176-4c06-93a4-6e32cb28d165"), 
+                new WorkspaceItemPropertiesFilter()
+                {
+                    HasDescription = true,
+                    HasIsWorkload = true,
+                    HasWorkloadUsers = true
+                });
+
+            var r2 = workspace.List(new WorkspaceItemPropertiesFilter()
+            {
+                HasDescription = true,
+                HasIsWorkload = true,
+                HasWorkloadUsers = true
+            });
+
+            foreach(var i in r2)
+            {
+                var u = i.Properties.WorkloadUsers;
+                var user = i.Properties.WorkloadUsers.ToArray();
+            }
         }
 
         public void CreateWorkspaceItem()

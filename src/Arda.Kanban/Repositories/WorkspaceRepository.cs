@@ -407,13 +407,24 @@ namespace Arda.Kanban.Repositories
         {
             var workloads = (from w in _context.WorkloadBacklogs
                              where (int)w.WBStatus < 3
-                             select w);
+                             select new WorkspaceItem
+                             {
+                                 Description = w.WBDescription,
+                                 EndDate = w.WBEndDate,
+                                 StartDate = w.WBStartDate,
+                                 ItemState = (int)w.WBStatus,
+                                 Id = w.WBID,
+                                 Summary = "",
+                                 Title = w.WBTitle,
+                                 CreatedBy = w.WBCreatedBy,
+                                 CreatedDate = w.WBCreatedDate,
 
-            var work = GetWorkloadItem(workloads, props);
+                                 Properties = null
+                             }).ToArray();
 
-            return work;
+            return workloads.Select( w => LoadProperties(w, props) );
         }
-
+        
         public WorkspaceItem TryGet(Guid itemId, WorkspaceItemPropertiesFilter props)
         {
             if (itemId == Guid.Empty)
@@ -421,51 +432,91 @@ namespace Arda.Kanban.Repositories
 
             var workload = (from w in _context.WorkloadBacklogs
                             where w.WBID == itemId
-                            select w);
-                            
-            var work = GetWorkloadItem(workload, props).FirstOrDefault();
+                            select new WorkspaceItem
+                            {
+                                Description = w.WBDescription,
+                                EndDate = w.WBEndDate,
+                                StartDate = w.WBStartDate,
+                                ItemState = (int)w.WBStatus,
+                                Id = w.WBID,
+                                Summary = "",
+                                Title = w.WBTitle,
+                                CreatedBy = w.WBCreatedBy,
+                                CreatedDate = w.WBCreatedDate,
 
-            return work;
+                                Properties = null
+                            }).First();
+
+            return LoadProperties(workload, props);
         }
-
-        IQueryable<WorkspaceItem> GetWorkloadItem(IQueryable<WorkloadBacklog> workloads, WorkspaceItemPropertiesFilter props)
+        
+        WorkspaceItemProperties GetWorkloadItemProperties(Guid wbid, WorkspaceItemPropertiesFilter props)
         {
-            return (from w in workloads
-                    select new WorkspaceItem()
-                    {
-                        Description = w.WBDescription,
-                        EndDate = w.WBEndDate,
-                        StartDate = w.WBStartDate,
-                        ItemState = (int)w.WBStatus,
-                        Id = w.WBID,
-                        Summary = "",
-                        Title = w.WBTitle,
-                        CreatedBy = w.WBCreatedBy,
-                        CreatedDate = w.WBCreatedDate,
-                        Properties = new WorkspaceItemProperties()
-                        {
-                            ActivityID = props.HasActivityID ? (Guid?)w.WBActivityActivityID : null,
-                            Description = props.HasDescription ? w.WBDescription : null,
-                            Complexity = props.HasComplexity ? (int?)w.WBComplexity : null,
-                            Expertise = props.HasExpertise ? (int?)w.WBExpertise : null,
+            var w = _context.WorkloadBacklogs.Find(wbid);
 
-                            IsWorkload = props.HasIsWorkload ? (bool?)w.WBIsWorkload : null,
-                            LastAppointmentId = props.HasLastAppointmentId ? w.LastAppointmentId : null,
+            return new WorkspaceItemProperties()
+            {
+                ActivityID = props.HasActivityID ? (Guid?)w.WBActivityActivityID : null,
+                StartDate = props.HasStartDate ? (DateTime?)w.WBStartDate : null,
+                EndDate = props.HasEndDate ? (DateTime?)w.WBEndDate : null,
+                Description = props.HasDescription ? w.WBDescription : null,
+                Complexity = props.HasComplexity ? (int?)w.WBComplexity : null,
+                Expertise = props.HasExpertise ? (int?)w.WBExpertise : null,
 
-                            Files = props.HasFiles ? (from f in w.WBFiles
-                                                      select f.FileLink) : null,
+                IsWorkload = props.HasIsWorkload ? (bool?)w.WBIsWorkload : null,
+                LastAppointmentId = props.HasLastAppointmentId ? w.LastAppointmentId : null,
 
-                            Metrics = props.HasMetrics ? (from m in w.WBMetrics
-                                                          select m.MetricMetricID) : null,
+                Files = props.HasFiles ? (from f in w.WBFiles
+                                          select f.FileLink) : null,
 
-                            Technologies = props.HasTechnologies ? (from t in w.WBTechnologies
-                                                                    select t.TechnologyTechnologyId) : null,
+                Metrics = props.HasMetrics ? (from m in w.WBMetrics
+                                              select m.MetricMetricID) : null,
 
-                            WorkloadUsers = props.HasWorkloadUsers ? (from u in w.WBUsers
-                                                                      select u.UserUniqueName).ToArray() : null
-                        }
-                    });
+                Technologies = props.HasTechnologies ? (from t in w.WBTechnologies
+                                                        select t.TechnologyTechnologyId) : null,
+
+                WorkloadUsers = props.HasWorkloadUsers ? (from u in w.WBUsers
+                                                          select u.UserUniqueName).ToArray() : null
+            };
         }
 
+        WorkspaceItem LoadProperties(WorkspaceItem workload, WorkspaceItemPropertiesFilter props)
+        {
+            Guid wbid = workload.Id;
+
+            var w = _context.WorkloadBacklogs.Find(wbid);
+
+            workload.Properties = new WorkspaceItemProperties()
+                {
+                    ActivityID = props.HasActivityID ? (Guid?)w.WBActivityActivityID : null,
+                    StartDate = props.HasStartDate ? (DateTime?)w.WBStartDate : null,
+                    EndDate = props.HasEndDate ? (DateTime?)w.WBEndDate : null,
+                    Description = props.HasDescription ? w.WBDescription : null,
+                    Complexity = props.HasComplexity ? (int?)w.WBComplexity : null,
+                    Expertise = props.HasExpertise ? (int?)w.WBExpertise : null,
+
+                    IsWorkload = props.HasIsWorkload ? (bool?)w.WBIsWorkload : null,
+                    LastAppointmentId = props.HasLastAppointmentId ? w.LastAppointmentId : null,
+
+                    Files = props.HasFiles ? (from f in w.WBFiles
+                                              select f.FileLink).ToArray() : null,
+
+                    Metrics = props.HasMetrics ? (from m in w.WBMetrics
+                                                  select m.MetricMetricID).ToArray() : null,
+
+                    Technologies = props.HasTechnologies ? (from t in w.WBTechnologies
+                                                            select t.TechnologyTechnologyId).ToArray() : null,
+
+                    WorkloadUsers = props.HasWorkloadUsers ? (from u in w.WBUsers
+                                                              select u.UserUniqueName).ToArray() : null
+                };
+
+            return workload;
+        }
+
+        IEnumerable<WorkspaceItem> LoadProperties(IEnumerable<WorkspaceItem> workload, WorkspaceItemPropertiesFilter props)
+        {
+            return workload.Select( w => LoadProperties(w, props) );
+        }
     }
 }

@@ -7,6 +7,8 @@ namespace Arda.Kanban.Models
 {
     public class WorkspaceItemProperties
     {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public string Description { get; set; }
         public bool? IsWorkload { get; set; }
         public int? Expertise { get; set; }
@@ -24,6 +26,8 @@ namespace Arda.Kanban.Models
     public class WorkspaceItemPropertiesFilter
     {
         public bool HasActivityID { get; set; }
+        public bool HasStartDate { get; set; }
+        public bool HasEndDate { get; set; }
         public bool HasDescription { get; set; }
         public bool HasExpertise { get; set; }
         public bool HasIsWorkload { get; set; }
