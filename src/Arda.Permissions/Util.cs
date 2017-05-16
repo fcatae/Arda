@@ -203,16 +203,16 @@ namespace Arda.Common.Utils
 
         public static void SetEnvironmentVariables(IConfiguration config)
         {
-            MainURL = config["Endpoints:ardaapp"];
-            PermissionsURL = config["Endpoints:permissions-service"];
-            KanbanURL = config["Endpoints:kanban-service"];
-            ReportsURL = config["Endpoints:reports-service"];
+            MainURL = config["Endpoint_ardaapp"];
+            PermissionsURL = config["Endpoints_permissions_service"];
+            KanbanURL = config["Endpoints_kanban_service"];
+            ReportsURL = config["Endpoints_reports_service"];
 
 
             var options = new RedisCacheOptions
             {
-                Configuration = config["Storage:Redis:Configuration"],
-                InstanceName = config["Storage:Redis:InstanceName"]
+                Configuration = config["Storage_Redis_Configuration"],
+                InstanceName = config["Storage_Redis_InstanceName"]
             };
 
             Console.WriteLine("antes de alterar: options: " + options.Configuration + "\r\n");
