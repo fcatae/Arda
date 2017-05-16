@@ -2,7 +2,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: permissions
+  name: arda.permissions
 spec:
   replicas: 1
   strategy: {}
@@ -44,11 +44,11 @@ spec:
             Timeout=30;
         - name: Endpoints_ardaapp
           value: https://localhost:44304/
-        - name: Endpoints_kanban-service
+        - name: Endpoints_kanban_service
           value: http://kanban/
-        - name: Endpoints_permissions-service
+        - name: Endpoints_permissions_service
           value: http://permissions/
-        - name: Endpoints_reports-service
+        - name: Endpoints_reports_service
           value: http://reports/
         - name: KESTREL_LISTEN_KANBAN
           value: http://0.0.0.0:80

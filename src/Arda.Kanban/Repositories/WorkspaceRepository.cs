@@ -450,7 +450,7 @@ namespace Arda.Kanban.Repositories
             return LoadProperties(workload, props);
         }
         
-        WorkspaceItemProperties GetWorkloadItemProperties(Guid wbid, WorkspaceItemPropertiesFilter props)
+        public WorkspaceItemProperties GetWorkloadItemProperties(Guid wbid, WorkspaceItemPropertiesFilter props)
         {
             var w = _context.WorkloadBacklogs.Find(wbid);
 
