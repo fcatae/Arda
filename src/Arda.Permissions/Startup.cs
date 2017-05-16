@@ -60,12 +60,12 @@ namespace Arda.Permissions
             // Registering distributed cache approach to the application.
             services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
             {
-                Configuration = Configuration["Storage:Redis:Configuration"],
-                InstanceName = Configuration["Storage:Redis:InstanceName"]
+                Configuration = Configuration["Storage_Redis_Configuration"],
+                InstanceName = Configuration["Storage_Redis_InstanceName"]
             }));
 
             //// Adding database connection by dependency injection.
-            var connectionString = Configuration["Storage:SqlServer-Permissions:ConnectionString"];
+            var connectionString = Configuration["Storage_SqlServer_Permissions_ConnectionString"];
             services.AddDbContext<PermissionsContext>(options => options.UseSqlServer(connectionString));
             
             //// Injecting repository dependencies to permissions.
