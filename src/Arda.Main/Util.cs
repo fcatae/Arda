@@ -291,12 +291,47 @@ namespace Arda.Common.Utils
 
         public static void SetEnvironmentVariables(IConfiguration config)
         {
-            MainURL = config["Endpoints_ardaapp"];
-            PermissionsURL = config["Endpoints_permissions_service"];
-            KanbanURL = config["Endpoints_kanban_service"];
-            ReportsURL = config["Endpoints_reports_service"];
+            MainURL = config.Get("Endpoints_ardaapp");
+            PermissionsURL = config.Get("Endpoints_permissions_service");
+            KanbanURL = config.Get("Endpoints_kanban_service");
+            ReportsURL = config.Get("Endpoints_reports_service");
 
             KanbanClient = new KanbanClient(new Uri(KanbanURL));
+        }
+
+
+        public static string Get(this IConfiguration config, string name)
+        {
+            string val1 = config[name];
+            string val2 = config[Rename(name)];
+
+            return val1 ?? val2;
+        }
+
+        public static string Get(this IConfigurationRoot config, string name)
+        {
+            string val1 = config[name];
+            string val2 = config[Rename(name)];
+
+            return val1 ?? val2;
+        }
+
+        static string Rename(string name)
+        {
+            string current = name;
+
+            if (name.Contains("SqlServer_"))
+                current = name.Replace("SqlServer_", "SqlServer-");
+
+            if (name.Contains("Endpoint_"))
+                current = name.Replace("Endpoint_", "Endpoint:");
+
+            if (name.EndsWith("_service"))
+                current = name.Replace("_service", "-service");
+
+            current = current.Replace("_", ":");
+
+            return current;
         }
     }
 }
