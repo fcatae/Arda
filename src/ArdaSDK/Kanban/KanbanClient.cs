@@ -36,6 +36,11 @@ namespace ArdaSDK.Kanban
         public virtual IWorkspaceFoldersService WorkspaceFoldersService { get; private set; }
 
         /// <summary>
+        /// Gets the IWorkspaceItemLogsService.
+        /// </summary>
+        public virtual IWorkspaceItemLogsService WorkspaceItemLogsService { get; private set; }
+
+        /// <summary>
         /// Gets the IWorkspaceItemsService.
         /// </summary>
         public virtual IWorkspaceItemsService WorkspaceItemsService { get; private set; }
@@ -125,6 +130,7 @@ namespace ArdaSDK.Kanban
         private void Initialize()
         {
             WorkspaceFoldersService = new WorkspaceFoldersService(this);
+            WorkspaceItemLogsService = new WorkspaceItemLogsService(this);
             WorkspaceItemsService = new WorkspaceItemsService(this);
             WorkspacesService = new WorkspacesService(this);
             BaseUri = new System.Uri("http://localhost/");
