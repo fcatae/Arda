@@ -401,8 +401,68 @@ namespace Arda.Kanban.Repositories
             return true;
         }
 
-        // advanced scenario
+        // appointments
         
+        public List<WorkspaceItemLog> GetLogs(Guid wbid)
+        {
+            var response = (from a in _context.Appointments
+                            where a.AppointmentWorkloadWBID == wbid
+                            orderby a.AppointmentDate descending
+                            select new WorkspaceItemLog
+                            {
+                                // _AppointmentWorkloadWBID and _WorkloadTitle: does not return the workload title -- it is obvious from wbid
+                                Id = a.AppointmentID,
+                                CreatedDate = a.AppointmentDate,
+                                CreatedBy = a.AppointmentUserUniqueName,
+                                Text= a.AppointmentComment,
+
+                                Properties = new WorkspaceItemLogProperties()
+                                {
+                                    LaborHours = a.AppointmentHoursDispensed,
+                                    Expenses = a.AppointmentTE
+                                }
+                            }).ToList();
+
+            return response;
+        }
+
+        public void AppendLog(Guid workloadId, WorkspaceItemLog log)
+        {
+            if (workloadId == Guid.Empty)
+                throw new ArgumentNullException(nameof(workloadId));
+
+            if (log.Id == Guid.Empty)
+                throw new ArgumentNullException(nameof(log.Id));
+
+            if (log.CreatedBy == null)
+                throw new ArgumentNullException(nameof(log.CreatedBy));
+
+            int appointmentHours = (log.Properties == null) ? 0 : (log.Properties.LaborHours);
+            decimal appointmentExpense = (log.Properties == null) ? 0 : (log.Properties.Expenses);
+
+            var appointmentToBeSaved = new Appointment()
+            {
+                AppointmentWorkloadWBID = workloadId,
+
+                // guid generated
+                AppointmentID = log.Id,
+                AppointmentUserUniqueName = log.CreatedBy,
+                AppointmentDate = log.CreatedDate,
+                AppointmentComment = log.Text,
+
+                // extra data
+                AppointmentHoursDispensed = appointmentHours,
+                AppointmentTE = appointmentExpense
+            };
+
+            _context.Appointments.Add(appointmentToBeSaved);
+
+            var response = _context.SaveChanges();            
+        }
+
+
+        // advanced scenario
+
         public IEnumerable<WorkspaceItem> List(WorkspaceItemPropertiesFilter props)
         {
             var workloads = (from w in _context.WorkloadBacklogs
@@ -450,9 +510,21 @@ namespace Arda.Kanban.Repositories
             return LoadProperties(workload, props);
         }
         
-        WorkspaceItemProperties GetWorkloadItemProperties(Guid wbid, WorkspaceItemPropertiesFilter props)
+        public WorkspaceItemProperties GetWorkloadItemProperties(Guid wbid, WorkspaceItemPropertiesFilter props)
         {
             var w = _context.WorkloadBacklogs.Find(wbid);
+
+            var a = (from wb in _context.WorkloadBacklogs
+                     select wb)
+                    .ToArray();
+
+            //var b = (from wb in a
+            //         where wb.WBUsers. UserUniqueName != null
+            //         select wb).ToArray();
+
+            var a2 = a.ToArray();
+
+            int i = 1;
 
             return new WorkspaceItemProperties()
             {
@@ -466,17 +538,17 @@ namespace Arda.Kanban.Repositories
                 IsWorkload = props.HasIsWorkload ? (bool?)w.WBIsWorkload : null,
                 LastAppointmentId = props.HasLastAppointmentId ? w.LastAppointmentId : null,
 
-                Files = props.HasFiles ? (from f in w.WBFiles
-                                          select f.FileLink) : null,
+                Files = (props.HasFiles && w.WBFiles != null) ? (from f in w.WBFiles
+                                          select f.FileLink).ToArray() : null,
 
-                Metrics = props.HasMetrics ? (from m in w.WBMetrics
-                                              select m.MetricMetricID) : null,
+                Metrics = (props.HasMetrics && w.WBMetrics != null ) ? (from m in w.WBMetrics
+                                              select m.MetricMetricID).ToArray() : null,
 
-                Technologies = props.HasTechnologies ? (from t in w.WBTechnologies
-                                                        select t.TechnologyTechnologyId) : null,
+                Technologies = (props.HasTechnologies && w.WBTechnologies != null ) ? (from t in w.WBTechnologies
+                                                        select t.TechnologyTechnologyId).ToArray() : null,
 
-                WorkloadUsers = props.HasWorkloadUsers ? (from u in w.WBUsers
-                                                          select u.UserUniqueName).ToArray() : null
+                WorkloadUsers = (props.HasWorkloadUsers && w.WBUsers != null) ? (from u in w.WBUsers
+                                                                                 select u.UserUniqueName).ToArray() : null
             };
         }
 
@@ -484,8 +556,8 @@ namespace Arda.Kanban.Repositories
         {
             Guid wbid = workload.Id;
 
-            var w = _context.WorkloadBacklogs.Find(wbid);
-
+            var w = _context.WorkloadBacklogs.First( ww => ww.WBID == wbid);
+            
             workload.Properties = new WorkspaceItemProperties()
                 {
                     ActivityID = props.HasActivityID ? (Guid?)w.WBActivityActivityID : null,
@@ -498,18 +570,18 @@ namespace Arda.Kanban.Repositories
                     IsWorkload = props.HasIsWorkload ? (bool?)w.WBIsWorkload : null,
                     LastAppointmentId = props.HasLastAppointmentId ? w.LastAppointmentId : null,
 
-                    Files = props.HasFiles ? (from f in w.WBFiles
-                                              select f.FileLink).ToArray() : null,
+                    Files = (props.HasFiles && w.WBFiles != null) ? (from f in w.WBFiles
+                                                                     select f.FileLink).ToArray() : null,
 
-                    Metrics = props.HasMetrics ? (from m in w.WBMetrics
-                                                  select m.MetricMetricID).ToArray() : null,
+                    Metrics = (props.HasMetrics && w.WBMetrics != null) ? (from m in w.WBMetrics
+                                                                           select m.MetricMetricID).ToArray() : null,
 
-                    Technologies = props.HasTechnologies ? (from t in w.WBTechnologies
-                                                            select t.TechnologyTechnologyId).ToArray() : null,
+                    Technologies = (props.HasTechnologies && w.WBTechnologies != null) ? (from t in w.WBTechnologies
+                                                                                          select t.TechnologyTechnologyId).ToArray() : null,
 
-                    WorkloadUsers = props.HasWorkloadUsers ? (from u in w.WBUsers
-                                                              select u.UserUniqueName).ToArray() : null
-                };
+                    WorkloadUsers = (props.HasWorkloadUsers && w.WBUsers != null) ? (from u in w.WBUsers
+                                                                                     select u.UserUniqueName).ToArray() : null
+            };
 
             return workload;
         }
