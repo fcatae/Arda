@@ -22,7 +22,7 @@ namespace IntegrationTests.ArdaSDK
 
             var config = builder.Build();
 
-            var kanbanUrl = config["Endpoints:kanban-service"];
+            var kanbanUrl = config["Endpoints_kanban_service"];
 
             Console.WriteLine("- Kanban URL = " + kanbanUrl);
 

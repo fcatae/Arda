@@ -30,7 +30,7 @@ namespace IntegrationTests
 
         static string GetConnectionString()
         {
-            return Configuration["Storage:SqlServer-Kanban:ConnectionString"];
+            return Configuration["Storage_SqlServer_Kanban_ConnectionString"];
         }
 
         public static TransactionalKanbanContext GetTransactionContext()

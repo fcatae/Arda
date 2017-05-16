@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: main
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: main
+    spec:
+      containers:
+      - env:
+        - name: Authentication_AzureAd_AADInstance
+          value: https://login.microsoftonline.com/
+        - name: Authentication_AzureAd_CallbackPath
+          value: /auth/response
+        - name: Authentication_AzureAd_ClientId
+          value: 7bd1e232-c076-44c4-b136-a5cc8639d2e7
+        - name: Authentication_AzureAd_ClientSecret
+          value: iMYYfeBZ0Uodsm+AkKBCILLC/njfJTz6iD3LcBOWzQI=
+        - name: Authentication_AzureAd_Domain
+          value: microsoft.onmicrosoft.com
+        - name: Authentication_AzureAd_GraphResourceId
+          value: https://graph.microsoft.com
+        - name: Authentication_AzureAd_PostLogoutRedirectUri
+          value: https://localhost:44304/
+        - name: Authentication_AzureAd_TenantId
+          value: 72f988bf-86f1-41af-91ab-2d7cd011db47
+        - name: Storage_Redis_Configuration
+          value: arda.redis.cache.windows.net:6379,password=BojNoTy+j4BTPoUhhdI7kmZ8GEEuhtoJw1PN+Um4lAg=,ssl=False,abortConnect=False
+        - name: Storage_Redis_InstanceName
+          value: arda.redis.cache.windows.net
+        - name: Storage_SqlServer_Kanban_ConnectionString
+          value: Server=tcp:arda.database.windows.net,1433;User
+            ID=arda_sa;Initial Catalog=Arda_Kanban;Persist Security Info=False;Password=db@1029384756;Encrypt=True;TrustServerCertificate=False;Connection
+            Timeout=30;
+        - name: Storage_SqlServer_Permissions_ConnectionString
+          value: Server=tcp:arda.database.windows.net,1433;User
+            ID=arda_sa;Initial Catalog=Arda_Permissions;Persist Security Info=False;Password=db@1029384756;Encrypt=True;TrustServerCertificate=False;Connection
+            Timeout=30;
+        - name: Endpoints_ardaapp
+          value: https://localhost:44304/
+        - name: Endpoints_kanban-service
+          value: http://kanban/
+        - name: Endpoints_permissions-service
+          value: http://permissions/
+        - name: Endpoints_reports-service
+          value: http://reports/
+        - name: KESTREL_LISTEN_KANBAN
+          value: http://0.0.0.0:80
+        - name: KESTREL_LISTEN_PERMISSIONS
+          value: http://0.0.0.0:80
+        - name: KESTREL_LISTEN_REPORTS
+          value: http://0.0.0.0:80
+        - name: certPassword
+          value: Pa$$w0rd
+        image: visouza/arda.main
+        name: main
+        ports:
+        - containerPort: 443
+        - containerPort: 80
+        resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,34 +1,36 @@
-version: '2.1'
+version: "3"
 services:
   main:
-     image: ardafull
-     command: run.cmd Arda.Main
-     env_file: environment_secrets.env
-     ports:
-        - "80:80"
-        - "443:443"
+    image: visouza/arda.main
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "44304:443"
+      - "8080:80"
+      
+    depends_on: 
+      - kanban
+      - permissions
+      - reports
+  
   kanban:
-     image: ardafull
-     hostname: kanban
-     command: run.cmd Arda.Kanban
-     env_file: environment_secrets.env
-     ports:
-        - "81:81"
+    image: visouza/arda.kanban  
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "81:80"
+  
   permissions:
-     image: ardafull
-     hostname: permissions
-     command: run.cmd Arda.Permissions
-     env_file: environment_secrets.env
-     ports:
-        - "82:82"
+    image: visouza/arda.permissions
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "82:80"
+
   reports:
-     image: ardafull
-     hostname: reports
-     command: run.cmd Arda.Reports
-     env_file: environment_secrets.env
-     ports:
-        - "83:83"     
-networks:
-  default:
-    external:
-      name: nat
+    image: visouza/arda.reports
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "83:80"   
+   

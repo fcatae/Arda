@@ -59,12 +59,12 @@ namespace Arda.Kanban
             // Registering distributed cache approach to the application.
             services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
             {
-                Configuration = Configuration["Storage:Redis:Configuration"],
-                InstanceName = Configuration["Storage:Redis:InstanceName"]
+                Configuration = Configuration["Storage_Redis_Configuration"],
+                InstanceName = Configuration["Storage_Redis_InstanceName"]
             }));
 
             //// Adding database connection by dependency injection.
-            var connectionString = Configuration["Storage:SqlServer-Kanban:ConnectionString"];
+            var connectionString = Configuration["Storage_SqlServer_Kanban_ConnectionString"];
             services.AddDbContext<KanbanContext>(options => options.UseSqlServer(connectionString));
 
             //Registering services.
