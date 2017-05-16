@@ -10,6 +10,7 @@ using Arda.Kanban.Models;
 using Arda.Kanban.Models.Repositories;
 using Arda.Kanban.Repositories;
 using Swashbuckle.AspNetCore.Swagger;
+using Arda.Common.Utils;
 
 namespace Arda.Kanban
 {
@@ -59,12 +60,12 @@ namespace Arda.Kanban
             // Registering distributed cache approach to the application.
             services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
             {
-                Configuration = Configuration["Storage_Redis_Configuration"],
-                InstanceName = Configuration["Storage_Redis_InstanceName"]
+                Configuration = Configuration.Get("Storage_Redis_Configuration"),
+                InstanceName = Configuration.Get("Storage_Redis_InstanceName")
             }));
 
             //// Adding database connection by dependency injection.
-            var connectionString = Configuration["Storage_SqlServer_Kanban_ConnectionString"];
+            var connectionString = Configuration.Get("Storage_SqlServer_Kanban_ConnectionString");
             services.AddDbContext<KanbanContext>(options => options.UseSqlServer(connectionString));
 
             //Registering services.

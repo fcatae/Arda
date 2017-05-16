@@ -22,7 +22,7 @@ namespace IntegrationTests.ArdaSDK
 
             var config = builder.Build();
 
-            var kanbanUrl = config["Endpoints_kanban_service"];
+            var kanbanUrl = config["Endpoints:kanban-service"];
 
             Console.WriteLine("- Kanban URL = " + kanbanUrl);
 
@@ -94,6 +94,26 @@ namespace IntegrationTests.ArdaSDK
             if (!success)
                 throw new InvalidOperationException("TestEdit(TestWorkspacePatchEdit)");
         }
+
+        [Fact]
+        public void WorkspaceFolders_TestLogs()
+        {
+            // Add a workload
+            WorkspaceItem result = (WorkspaceItem)_client.WorkspaceFoldersService.AddItem(_user, new AddItemInput() { Title = "Test to be removed", ItemState = 2 });
+            Guid workloadId = result.Id.Value;
+
+            var initial = _client.WorkspaceItemLogsService.GetLogs(workloadId);
+
+            _client.WorkspaceItemLogsService.AppendLog(workloadId, new InputAppendLog() { Text = "Example" }, _user);
+
+            var final = _client.WorkspaceItemLogsService.GetLogs(workloadId);
+            if (final.Count() != 1)
+                throw new InvalidOperationException();
+
+            // Delete the workload
+            _client.WorkspaceItemsService.Delete(workloadId);
+        }
+
 
         [Fact]
         public void WorkspaceItem_UpdateStatus()
