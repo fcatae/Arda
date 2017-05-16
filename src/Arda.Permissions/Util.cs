@@ -203,34 +203,42 @@ namespace Arda.Common.Utils
 
         public static void SetEnvironmentVariables(IConfiguration config)
         {
-            MainURL = config["Endpoint_ardaapp"];
-            PermissionsURL = config["Endpoints_permissions_service"];
-            KanbanURL = config["Endpoints_kanban_service"];
-            ReportsURL = config["Endpoints_reports_service"];
+            MainURL = config.Get("Endpoint_ardaapp");
+            PermissionsURL = config.Get("Endpoints_permissions_service");
+            KanbanURL = config.Get("Endpoints_kanban_service");
+            ReportsURL = config.Get("Endpoints_reports_service");
 
 
             var options = new RedisCacheOptions
             {
-                Configuration = config["Storage_Redis_Configuration"],
-                InstanceName = config["Storage_Redis_InstanceName"]
+                Configuration = config.Get("Storage_Redis_Configuration"),
+                InstanceName = config.Get("Storage_Redis_InstanceName")
             };
 
-            Console.WriteLine("antes de alterar: options: " + options.Configuration + "\r\n");
-            Util.ResolveDns(options);
-            Console.WriteLine("Depois de alterar: options: " + options.Configuration + "\r\n");
+            var redisConfig = options.Configuration;
 
-            _redis = ConnectionMultiplexer.Connect(options.Configuration);
+            if ( redisConfig != null)
+            {
+                Console.WriteLine("antes de alterar: options: " + options.Configuration + "\r\n");
+                Util.ResolveDns(options);
+                Console.WriteLine("Depois de alterar: options: " + options.Configuration + "\r\n");
 
-            _cache = new RedisCache(options);
+                _redis = ConnectionMultiplexer.Connect(options.Configuration);
+
+                _cache = new RedisCache(options);
+            }
         }
 
         public static void ResolveDns(this RedisCacheOptions options)
-        {
-            // Assume that the first part is host and port.
-            var hostWithPort = options.Configuration.Substring(0, options.Configuration.IndexOf(","));
-            var resolved = TryResolveDns(hostWithPort);
-            var replaced = options.Configuration.Replace(hostWithPort, resolved);
-            options.Configuration = replaced;
+        {            
+            if(options.Configuration !=null )
+            {
+                // Assume that the first part is host and port.
+                var hostWithPort = options.Configuration.Substring(0, options.Configuration.IndexOf(","));
+                var resolved = TryResolveDns(hostWithPort);
+                var replaced = options.Configuration.Replace(hostWithPort, resolved);
+                options.Configuration = replaced;
+            }
         }
 
         private static string TryResolveDns(string redisUrl)
@@ -275,5 +283,38 @@ namespace Arda.Common.Utils
             return DB.StringGet(key);
         }
 
+        public static string Get(this IConfiguration config, string name)
+        {
+            string val1 = config[name];
+            string val2 = config[Rename(name)];
+
+            return val1 ?? val2;
+        }
+
+        public static string Get(this IConfigurationRoot config, string name)
+        {
+            string val1 = config[name];
+            string val2 = config[Rename(name)];
+
+            return val1 ?? val2;
+        }
+
+        static string Rename(string name)
+        {
+            string current = name;
+
+            if (name.Contains("SqlServer_"))
+                current = name.Replace("SqlServer_", "SqlServer-");
+
+            if (name.Contains("Endpoint_"))
+                current = name.Replace("Endpoint_", "Endpoint:");
+
+            if (name.EndsWith("_service"))
+                current = name.Replace("_service", "-service");
+
+            current = current.Replace("_", ":");
+
+            return current;
+        }
     }
 }
