@@ -10,6 +10,7 @@ using Arda.Permissions.Repositories;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 using Swashbuckle.AspNetCore.Swagger;
+using Arda.Common.Utils;
 
 namespace Arda.Permissions
 {
@@ -60,12 +61,12 @@ namespace Arda.Permissions
             // Registering distributed cache approach to the application.
             services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
             {
-                Configuration = Configuration["Storage_Redis_Configuration"],
-                InstanceName = Configuration["Storage_Redis_InstanceName"]
+                Configuration = Configuration.Get("Storage_Redis_Configuration"),
+                InstanceName = Configuration.Get("Storage_Redis_InstanceName")
             }));
 
             //// Adding database connection by dependency injection.
-            var connectionString = Configuration["Storage_SqlServer_Permissions_ConnectionString"];
+            var connectionString = Configuration.Get("Storage_SqlServer_Permissions_ConnectionString");
             services.AddDbContext<PermissionsContext>(options => options.UseSqlServer(connectionString));
             
             //// Injecting repository dependencies to permissions.
