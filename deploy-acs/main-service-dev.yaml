@@ -1,16 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: main
+  name: main
+spec:
+  ports:
+  - name: "https"
+    port: 443
+    targetPort: 443
+  selector:
+    app: main
+  type: 
+    loadBalancer
+
+---
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   name: main
 spec:
   replicas: 1
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
-        io.kompose.service: main
+        app: main
     spec:
       containers:
       - env:
@@ -19,31 +36,27 @@ spec:
         - name: Authentication_AzureAd_CallbackPath
           value: /auth/response
         - name: Authentication_AzureAd_ClientId
-          value: 7bd1e232-c076-44c4-b136-a5cc8639d2e7
+          value: [clientid]
         - name: Authentication_AzureAd_ClientSecret
-          value: iMYYfeBZ0Uodsm+AkKBCILLC/njfJTz6iD3LcBOWzQI=
+          value: [client secret]
         - name: Authentication_AzureAd_Domain
           value: microsoft.onmicrosoft.com
         - name: Authentication_AzureAd_GraphResourceId
           value: https://graph.microsoft.com
         - name: Authentication_AzureAd_PostLogoutRedirectUri
-          value: https://localhost:44304/
+          value: https://main endpoint/
         - name: Authentication_AzureAd_TenantId
-          value: 72f988bf-86f1-41af-91ab-2d7cd011db47
+          value: [azure tenant id]
         - name: Storage_Redis_Configuration
-          value: arda.redis.cache.windows.net:6379,password=BojNoTy+j4BTPoUhhdI7kmZ8GEEuhtoJw1PN+Um4lAg=,ssl=False,abortConnect=False
+          value: [Azure Redis Connection strign ssl=false]
         - name: Storage_Redis_InstanceName
           value: arda.redis.cache.windows.net
         - name: Storage_SqlServer_Kanban_ConnectionString
-          value: Server=tcp:arda.database.windows.net,1433;User
-            ID=arda_sa;Initial Catalog=Arda_Kanban;Persist Security Info=False;Password=db@1029384756;Encrypt=True;TrustServerCertificate=False;Connection
-            Timeout=30;
+          value: [SQLDB connection String]
         - name: Storage_SqlServer_Permissions_ConnectionString
-          value: Server=tcp:arda.database.windows.net,1433;User
-            ID=arda_sa;Initial Catalog=Arda_Permissions;Persist Security Info=False;Password=db@1029384756;Encrypt=True;TrustServerCertificate=False;Connection
-            Timeout=30;
+          value: [SQL DB permission connection string]
         - name: Endpoints_ardaapp
-          value: https://localhost:44304/
+          value: https://main endpoint/
         - name: Endpoints_kanban_service
           value: http://kanban/
         - name: Endpoints_permissions_service
@@ -65,4 +78,4 @@ spec:
         - containerPort: 80
         resources: {}
       restartPolicy: Always
-status: {}
+

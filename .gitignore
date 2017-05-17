@@ -244,3 +244,8 @@ ModelManifest.xml
 environment_secrets.env
 
 /app_data/
+
+permissions-service-prod.yaml
+kanban-service-prod.yaml
+main-service-prod.yaml
+reports-service-prod.yaml
