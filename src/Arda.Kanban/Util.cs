@@ -211,18 +211,49 @@ namespace Arda.Common.Utils
         
         public static string Get(this IConfiguration config, string name)
         {
+            string tenantVal = GetTenantConfiguration(config, name);
+
             string val1 = config[name];
             string val2 = config[Rename(name)];
 
-            return val1 ?? val2;
+            return tenantVal ?? val1 ?? val2;
         }
 
         public static string Get(this IConfigurationRoot config, string name)
         {
+            string tenantVal = GetTenantConfiguration(config, name);
+
             string val1 = config[name];
             string val2 = config[Rename(name)];
 
-            return val1 ?? val2;
+            return tenantVal ?? val1 ?? val2;
+        }
+
+        static string GetTenantConfiguration(IConfiguration config, string name)
+        {
+            if(config["ArdaTenantId"] != null)
+            {
+                if( name.Contains("SqlServer_Kanban"))
+                {
+                    string ardaTenant = config["ArdaTenantId"];
+                    var comp = ardaTenant.Split('/');
+                    string tenantServer = comp[0];
+                    string tenantId = comp[1];
+
+                    var client = new HttpClient();
+                    var request = new HttpRequestMessage(HttpMethod.Get, $"http://{tenantServer}/database/{tenantId}/config");
+                    request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    var responseSend = client.SendAsync(request).Result;
+                    var responseStr = responseSend.Content.ReadAsStringAsync().Result;
+
+                    dynamic responseObj = JsonConvert.DeserializeObject(responseStr);
+
+                    return responseObj.kanban_Database; // Storage_SqlServer_Kanban_Connection_String;
+                }
+            }
+
+            return null;
         }
 
         static string Rename(string name)

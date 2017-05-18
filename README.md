@@ -1,3 +1,4 @@
+
 # Welcome
 Welcome to the Arda Project!
 
@@ -20,3 +21,4 @@ Here we have a content navigation summary. Enjoy!
 6. [Configuration](https://github.com/DXBrazil/Arda/wiki/Configuration)<br />
 7. [Technical Decisions](https://github.com/DXBrazil/Arda/wiki/Technical-Decisions)<br />
 8. [Authentication](https://github.com/DXBrazil/Arda/wiki/Authentication)<br />
+
