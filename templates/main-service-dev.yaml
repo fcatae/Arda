@@ -36,33 +36,33 @@ spec:
         - name: Authentication_AzureAd_CallbackPath
           value: /auth/response
         - name: Authentication_AzureAd_ClientId
-          value: [clientid]
+          value: ##Authentication_AzureAd_ClientId##
         - name: Authentication_AzureAd_ClientSecret
-          value: [client secret]
+          value: ##Authentication_AzureAd_ClientSecret##
         - name: Authentication_AzureAd_Domain
           value: microsoft.onmicrosoft.com
         - name: Authentication_AzureAd_GraphResourceId
           value: https://graph.microsoft.com
         - name: Authentication_AzureAd_PostLogoutRedirectUri
-          value: https://main endpoint/
+          value: ##Authentication_AzureAd_PostLogoutRedirectUri##
         - name: Authentication_AzureAd_TenantId
-          value: [azure tenant id]
+          value: ##Authentication_AzureAd_TenantId##
         - name: Storage_Redis_Configuration
-          value: [Azure Redis Connection strign ssl=false]
+          value: ##Storage_Redis_Configuration##
         - name: Storage_Redis_InstanceName
-          value: arda.redis.cache.windows.net
+          value: ##Storage_Redis_InstanceName##
         - name: Storage_SqlServer_Kanban_ConnectionString
-          value: [SQLDB connection String]
+          value: ##Storage_SqlServer_Kanban_ConnectionString##
         - name: Storage_SqlServer_Permissions_ConnectionString
-          value: [SQL DB permission connection string]
+          value: ##Storage_SqlServer_Permissions_ConnectionString##
         - name: Endpoints_ardaapp
-          value: https://main endpoint/
+          value: ##Endpoints_ardaapp##
         - name: Endpoints_kanban_service
-          value: http://kanban/
+          value: ##Endpoints_kanban_service##
         - name: Endpoints_permissions_service
-          value: http://permissions/
+          value: ##Endpoints_permissions_service##
         - name: Endpoints_reports_service
-          value: http://reports/
+          value: ##Endpoints_reports_service##
         - name: KESTREL_LISTEN_KANBAN
           value: http://0.0.0.0:80
         - name: KESTREL_LISTEN_PERMISSIONS
