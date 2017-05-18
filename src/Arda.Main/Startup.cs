@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 
+using Arda.Common.Utils;
+
 namespace Arda.Main
 {
     public partial class Startup
@@ -61,8 +63,8 @@ namespace Arda.Main
             // Registering distributed cache approach to the application.
             services.AddSingleton<IDistributedCache>(serviceProvider => new RedisCache(new RedisCacheOptions
             {
-                Configuration = Configuration["Storage_Redis_Configuration"],
-                InstanceName = Configuration["Storage_Redis_InstanceName"]
+                Configuration = Configuration.Get("Storage_Redis_Configuration"),
+                InstanceName = Configuration.Get("Storage_Redis_InstanceName")
             }));
 
             services.AddSingleton<TestManager, TestManager>();
