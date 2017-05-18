@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: main
+  name: main
+spec:
+  ports:
+  - name: "https"
+    port: 443
+    targetPort: 443
+  selector:
+    app: main
+  type: 
+    loadBalancer
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: main
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: main
+    spec:
+      containers:
+      - env:
+        - name: Authentication_AzureAd_AADInstance
+          value: https://login.microsoftonline.com/
+        - name: Authentication_AzureAd_CallbackPath
+          value: /auth/response
+        - name: Authentication_AzureAd_ClientId
+          value: [clientid]
+        - name: Authentication_AzureAd_ClientSecret
+          value: [client secret]
+        - name: Authentication_AzureAd_Domain
+          value: microsoft.onmicrosoft.com
+        - name: Authentication_AzureAd_GraphResourceId
+          value: https://graph.microsoft.com
+        - name: Authentication_AzureAd_PostLogoutRedirectUri
+          value: https://main endpoint/
+        - name: Authentication_AzureAd_TenantId
+          value: [azure tenant id]
+        - name: Storage_Redis_Configuration
+          value: [Azure Redis Connection strign ssl=false]
+        - name: Storage_Redis_InstanceName
+          value: arda.redis.cache.windows.net
+        - name: Storage_SqlServer_Kanban_ConnectionString
+          value: [SQLDB connection String]
+        - name: Storage_SqlServer_Permissions_ConnectionString
+          value: [SQL DB permission connection string]
+        - name: Endpoints_ardaapp
+          value: https://main endpoint/
+        - name: Endpoints_kanban_service
+          value: http://kanban/
+        - name: Endpoints_permissions_service
+          value: http://permissions/
+        - name: Endpoints_reports_service
+          value: http://reports/
+        - name: KESTREL_LISTEN_KANBAN
+          value: http://0.0.0.0:80
+        - name: KESTREL_LISTEN_PERMISSIONS
+          value: http://0.0.0.0:80
+        - name: KESTREL_LISTEN_REPORTS
+          value: http://0.0.0.0:80
+        - name: certPassword
+          value: Pa$$w0rd
+        image: visouza/arda.main
+        name: main
+        ports:
+        - containerPort: 443
+        - containerPort: 80
+        resources: {}
+      restartPolicy: Always
+
