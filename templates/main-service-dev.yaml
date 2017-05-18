@@ -12,8 +12,7 @@ spec:
     targetPort: 443
   selector:
     app: main
-  type: 
-    loadBalancer
+  type: LoadBalancer
 
 ---
 
