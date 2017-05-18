@@ -236,7 +236,7 @@ namespace Arda.Common.Utils
                 if( name.Contains("SqlServer_Kanban"))
                 {
                     string ardaTenant = config["ArdaTenantId"];
-                    var comp = ardaTenant.Split(':');
+                    var comp = ardaTenant.Split('/');
                     string tenantServer = comp[0];
                     string tenantId = comp[1];
 
