@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.ApplicationInsights;
 using System.Linq;
+using ArdaSDK.Kanban;
 
 namespace Arda.Common.Utils
 {
@@ -21,6 +22,8 @@ namespace Arda.Common.Utils
         public static string ReportsURL;
         public static string PermissionsURL;
 
+        public static KanbanClient KanbanClient;
+
         private static IDistributedCache _cacheDontUse;
 
         static Util()
@@ -28,7 +31,7 @@ namespace Arda.Common.Utils
 
         }
 
-        public static string GetCurrentUserName(this Microsoft.AspNetCore.Mvc.ControllerBase controller)
+        public static string GetCurrentUser(this Microsoft.AspNetCore.Mvc.ControllerBase controller)
         {
             return controller.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
         }
@@ -288,10 +291,47 @@ namespace Arda.Common.Utils
 
         public static void SetEnvironmentVariables(IConfiguration config)
         {
-            MainURL = config["Endpoints:ardaapp"];
-            PermissionsURL = config["Endpoints:permissions-service"];
-            KanbanURL = config["Endpoints:kanban-service"];
-            ReportsURL = config["Endpoints:reports-service"];            
+            MainURL = config.Get("Endpoints_ardaapp");
+            PermissionsURL = config.Get("Endpoints_permissions_service");
+            KanbanURL = config.Get("Endpoints_kanban_service");
+            ReportsURL = config.Get("Endpoints_reports_service");
+
+            KanbanClient = new KanbanClient(new Uri(KanbanURL));
+        }
+
+
+        public static string Get(this IConfiguration config, string name)
+        {
+            string val1 = config[name];
+            string val2 = config[Rename(name)];
+
+            return val1 ?? val2;
+        }
+
+        public static string Get(this IConfigurationRoot config, string name)
+        {
+            string val1 = config[name];
+            string val2 = config[Rename(name)];
+
+            return val1 ?? val2;
+        }
+
+        static string Rename(string name)
+        {
+            string current = name;
+
+            if (name.Contains("SqlServer_"))
+                current = name.Replace("SqlServer_", "SqlServer-");
+
+            if (name.Contains("Endpoint_"))
+                current = name.Replace("Endpoint_", "Endpoint:");
+
+            if (name.EndsWith("_service"))
+                current = name.Replace("_service", "-service");
+
+            current = current.Replace("_", ":");
+
+            return current;
         }
     }
 }

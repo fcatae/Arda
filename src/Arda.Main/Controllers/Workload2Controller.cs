@@ -15,20 +15,22 @@ using Microsoft.Net.Http.Headers;
 using System.Net;
 using Arda.Main.ViewModels;
 
+using ArdaSDK.Kanban;
+using ArdaSDK.Kanban.Models;
+
 namespace Arda.Main.Controllers
 {
     [Authorize]
-    public class WorkloadController : Controller
+    public class Workload2Controller : Controller
     {
         [HttpGet]
         public async Task<JsonResult> ListBacklogsByUser([FromQuery] string User)
         {
-            var loggedUser = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-
-            var workloads = new List<string>();
+            var loggedUser = this.GetCurrentUser();
 
             string filtered_user = (User == null || User == "") ? loggedUser : User;
 
+            var workloads = new List<string>();
             var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listworkloadbyuser", filtered_user, "");
 
             var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == false)
@@ -50,7 +52,6 @@ namespace Arda.Main.Controllers
             return Json(dados);
         }
 
-
         [HttpGet]
         public async Task<JsonResult> ListWorkloadsByUser([FromQuery] string User, [FromQuery] string Tag)
         {
@@ -63,7 +64,7 @@ namespace Arda.Main.Controllers
 
         private async Task<JsonResult> ListWorkloads(string User)
         {
-            var loggedUser = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var loggedUser = this.GetCurrentUser();
 
             var workloads = new List<string>();
 
@@ -86,6 +87,22 @@ namespace Arda.Main.Controllers
                          })
                          .Distinct()
                          .ToList();
+
+            Util.KanbanClient.WorkspaceFoldersService.ListItems(filtered_user);
+            var w = new WorkspaceItem();
+            var r = new
+            {
+                id = w.Id,
+                title = w.Title,
+                start = w.StartDate.Value.ToString("dd/MM/yyyy"),
+                end = w.EndDate.Value.ToString("dd/MM/yyyy"),
+                status = w.ItemState.Value,
+                hours = 0,
+                attachments = 0,
+                tag = "",
+                users = "", //x._WorkloadUsers,
+                textual = w.Summary
+            };
 
             return Json(dados);
         }
@@ -137,7 +154,8 @@ namespace Arda.Main.Controllers
         public async Task<HttpResponseMessage> Add(ICollection<IFormFile> WBFiles, WorkloadViewModel2 workload)
         {
             //Owner:
-            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var uniqueName = this.GetCurrentUser();
+
             //Complete WB fields:
             workload.WBCreatedBy = uniqueName;
             workload.WBCreatedDate = DateTime.Now;
@@ -189,7 +207,7 @@ namespace Arda.Main.Controllers
         public async Task<WorkloadViewModel> AddSimple(ICollection<IFormFile> WBFiles, WorkloadViewModel2 workload)
         {
             //Owner:
-            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var uniqueName = this.GetCurrentUser();
 
             workload.WBActivity = Guid.Empty;
             workload.WBComplexity = 0;
@@ -230,7 +248,7 @@ namespace Arda.Main.Controllers
         public async Task<HttpResponseMessage> Update(ICollection<IFormFile> WBFiles, List<string> oldFiles, WorkloadViewModel workload)
         {
             //Owner:
-            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var uniqueName = this.GetCurrentUser();
             //Update WB fields:
             //workload.WBCreatedBy = uniqueName;
             //workload.WBCreatedDate = DateTime.Now;
@@ -268,7 +286,7 @@ namespace Arda.Main.Controllers
         [HttpGet]
         public async Task<JsonResult> GetWorkload(Guid workloadID)
         {
-            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var uniqueName = this.GetCurrentUser();
 
             var workload = await Util.ConnectToRemoteService<WorkloadViewModel>(HttpMethod.Get, Util.KanbanURL + "api/workload/details?=" + workloadID, uniqueName, "");
             return Json(workload);
@@ -277,7 +295,7 @@ namespace Arda.Main.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> UpdateStatus([FromQuery]string Id, [FromQuery]int Status)
         {
-            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var uniqueName = this.GetCurrentUser();
             //System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             //string requestFromPost = reader.ReadToEnd();
 
@@ -288,7 +306,7 @@ namespace Arda.Main.Controllers
         [HttpDelete]
         public async Task<HttpResponseMessage> Delete(Guid workloadID)
         {
-            var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var uniqueName = this.GetCurrentUser();
 
             await Util.ConnectToRemoteService(HttpMethod.Delete, Util.KanbanURL + "api/workload/delete?=" + workloadID, uniqueName, "");
             return new HttpResponseMessage(HttpStatusCode.OK);
@@ -341,7 +359,7 @@ namespace Arda.Main.Controllers
         [HttpGet]
         public async Task<JsonResult> ListArchiveWithFilter([FromQuery] string User)
         {
-            var loggedUser = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var loggedUser = this.GetCurrentUser();
 
             var workloads = new List<string>();
 

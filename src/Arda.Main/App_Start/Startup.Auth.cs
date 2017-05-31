@@ -33,12 +33,12 @@ namespace Arda.Main
         public void ConfigureAuth(IApplicationBuilder app)
         {
             // Populate Azure AD Configuration Values
-            Authority = Configuration["Authentication:AzureAd:AADInstance"] + Configuration["Authentication:AzureAd:TenantId"];
-            CallbackPath = Configuration["Authentication:AzureAd:CallbackPath"];
-            ClientId = Configuration["Authentication:AzureAd:ClientId"];
-            ClientSecret = Configuration["Authentication:AzureAd:ClientSecret"];
-            GraphResourceId = Configuration["Authentication:AzureAd:GraphResourceId"];
-            PostLogoutRedirectUri = Configuration["Authentication:AzureAd:PostLogoutRedirectUri"];            
+            Authority = Configuration.Get("Authentication_AzureAd_AADInstance") + Configuration.Get("Authentication_AzureAd_TenantId");
+            CallbackPath = Configuration.Get("Authentication_AzureAd_CallbackPath");
+            ClientId = Configuration.Get("Authentication_AzureAd_ClientId");
+            ClientSecret = Configuration.Get("Authentication_AzureAd_ClientSecret");
+            GraphResourceId = Configuration.Get("Authentication_AzureAd_GraphResourceId");
+            PostLogoutRedirectUri = Configuration.Get("Authentication_AzureAd_PostLogoutRedirectUri");            
 
             IsSimpleAuthForDemo = (ClientId == null || ClientId == "");
 

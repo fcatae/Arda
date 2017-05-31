@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Arda.Main
 {
@@ -18,13 +19,15 @@ namespace Arda.Main
                             .Build();
 
             var builder = new WebHostBuilder()
-                .UseKestrel(options => {
+                .UseKestrel(options =>
+                {
                     options.NoDelay = true;
                     options.UseHttps("arda.pfx", "Pa$$w0rd");
                     options.UseConnectionLogging();
                 })
+
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://0.0.0.0:80")
+                .UseUrls("http://*:80","https://*:443")
                 .UseIISIntegration()
                 .UseStartup<Startup>();
 

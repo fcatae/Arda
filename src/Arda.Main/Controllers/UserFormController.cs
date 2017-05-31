@@ -11,7 +11,7 @@ using System.Net.Http.Headers;
 using Arda.Main.ViewModels;
 using Newtonsoft.Json;
 
-// For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+using ArdaSDK.Kanban;
 
 namespace Arda.Main.Controllers
 {
@@ -21,7 +21,7 @@ namespace Arda.Main.Controllers
         [HttpGet]
         public IActionResult New(string template)
         {
-            var user = this.GetCurrentUserName();
+            var user = this.GetCurrentUser();
 
             ViewBag.Title = "Title";
 
@@ -45,7 +45,7 @@ namespace Arda.Main.Controllers
         [HttpPost]
         public async Task<IActionResult> Submit([FromForm] string workloadTitle, [FromForm] string workloadDate, [FromForm] string workloadDescription)
         {
-            var user = this.GetCurrentUserName();
+            var user = this.GetCurrentUser();
 
             UsageTelemetry.Track(user, ArdaUsage.Userform_Submit);
 
@@ -56,7 +56,7 @@ namespace Arda.Main.Controllers
 
         async Task CreateWorkload(string title, DateTime date, string description)
         {
-            var uniqueName = this.GetCurrentUserName();
+            var uniqueName = this.GetCurrentUser();
 
             var workload = new WorkloadViewModel2()
             {
@@ -79,6 +79,16 @@ namespace Arda.Main.Controllers
             };            
                         
             var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
+
+            // Util.KanbanClient.WorkspaceFolders.Create(uniqueName, "workload");
+
+            //var client = new ArdaSDK.Kanban.KanbanClient();
+            //client.WorkspaceFolders.Create("abc");
+            //var workspace = new ArdaSDK.Kanban.WorkspaceFolders(client);
+
+            // workspace.
+                ///.KanbanClient();
+            
         }
     }
 }

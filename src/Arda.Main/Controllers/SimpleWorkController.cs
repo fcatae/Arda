@@ -18,39 +18,8 @@ using Arda.Main.ViewModels;
 namespace Arda.Main.Controllers
 {
     [Authorize]
-    public class WorkloadController : Controller
+    public class SimpleWorkController : Controller
     {
-        [HttpGet]
-        public async Task<JsonResult> ListBacklogsByUser([FromQuery] string User)
-        {
-            var loggedUser = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-
-            var workloads = new List<string>();
-
-            string filtered_user = (User == null || User == "") ? loggedUser : User;
-
-            var existentWorkloads = await Util.ConnectToRemoteService<List<WorkloadsByUserViewModel>>(HttpMethod.Get, Util.KanbanURL + "api/workload/listworkloadbyuser", filtered_user, "");
-
-            var dados = existentWorkloads.Where(x => x._WorkloadIsWorkload == false)
-                         .Select(x => new {
-                             id = x._WorkloadID,
-                             title = x._WorkloadTitle,
-                             start = x._WorkloadStartDate.ToString("dd/MM/yyyy"),
-                             end = x._WorkloadEndDate.ToString("dd/MM/yyyy"),
-                             hours = x._WorkloadHours,
-                             attachments = x._WorkloadAttachments,
-                             tag = x._WorkloadExpertise,
-                             status = x._WorkloadStatus,
-                             users = x._WorkloadUsers,
-                             textual = x._WorkloadTitle + " (Started in " + x._WorkloadStartDate.ToString("dd/MM/yyyy") + " and Ending in " + x._WorkloadEndDate.ToString("dd/MM/yyyy") + ", with  " + x._WorkloadHours + " hours spent on this."
-                         })
-                         .Distinct()
-                         .ToList();
-
-            return Json(dados);
-        }
-
-
         [HttpGet]
         public async Task<JsonResult> ListWorkloadsByUser([FromQuery] string User, [FromQuery] string Tag)
         {
