@@ -4,4 +4,4 @@ ARG source=.
 COPY $source .
 RUN ["dotnet", "restore"]
 EXPOSE 80
-ENTRYPOINT ["dotnet", "Arda.Permissions.dll"]
+ENTRYPOINT ["dotnet", "run"]

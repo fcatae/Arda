@@ -4,4 +4,4 @@ ARG source=.
 COPY $source .
 RUN ["dotnet", "restore"]
 EXPOSE 80
-ENTRYPOINT ["dotnet", "Arda.Kanban.dll"]
+ENTRYPOINT ["dotnet", "run"]
