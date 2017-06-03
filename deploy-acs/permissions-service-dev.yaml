@@ -35,33 +35,33 @@ spec:
         - name: Authentication_AzureAd_CallbackPath
           value: /auth/response
         - name: Authentication_AzureAd_ClientId
-          value: ##Authentication_AzureAd_ClientId##
+          value: #{Authentication_AzureAd_ClientId}#
         - name: Authentication_AzureAd_ClientSecret
-          value: ##Authentication_AzureAd_ClientSecret##
+          value: #{Authentication_AzureAd_ClientSecret}#
         - name: Authentication_AzureAd_Domain
           value: microsoft.onmicrosoft.com
         - name: Authentication_AzureAd_GraphResourceId
           value: https://graph.microsoft.com
         - name: Authentication_AzureAd_PostLogoutRedirectUri
-          value: ##Authentication_AzureAd_PostLogoutRedirectUri##
+          value: #{Authentication_AzureAd_PostLogoutRedirectUri}#
         - name: Authentication_AzureAd_TenantId
-          value: ##Authentication_AzureAd_TenantId##
+          value: #{Authentication_AzureAd_TenantId}#
         - name: Storage_Redis_Configuration
-          value: ##Storage_Redis_Configuration##
+          value: #{Storage_Redis_Configuration}#
         - name: Storage_Redis_InstanceName
-          value: ##Storage_Redis_InstanceName##
+          value: #{Storage_Redis_InstanceName}#
         - name: Storage_SqlServer_Kanban_ConnectionString
-          value: ##Storage_SqlServer_Kanban_ConnectionString##
+          value: #{Storage_SqlServer_Kanban_ConnectionString}#
         - name: Storage_SqlServer_Permissions_ConnectionString
-          value: ##Storage_SqlServer_Permissions_ConnectionString##
+          value: #{Storage_SqlServer_Permissions_ConnectionString}#
         - name: Endpoints_ardaapp
-          value: ##Endpoints_ardaapp##
+          value: #{Endpoints_ardaapp}#
         - name: Endpoints_kanban_service
-          value: ##Endpoints_kanban_service##
+          value: #{Endpoints_kanban_service}#
         - name: Endpoints_permissions_service
-          value: ##Endpoints_permissions_service##
+          value: #{Endpoints_permissions_service}#
         - name: Endpoints_reports_service
-          value: ##Endpoints_reports_service##
+          value: #{Endpoints_reports_service}#
         - name: KESTREL_LISTEN_KANBAN
           value: http://0.0.0.0:80
         - name: KESTREL_LISTEN_PERMISSIONS
