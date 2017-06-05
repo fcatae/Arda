@@ -1,4 +1,6 @@
 //Initialize:
+var $ : any;
+var folders : any;
 
 function Initialize() {
     //Click events:
@@ -77,7 +79,7 @@ function InitializeKanban() {
         RefreshTaskList();
     });
 
-    if (window.hackIsAdmin != null) {
+    if (window["hackIsAdmin"] != null) {
         GetUserList();
         $('#filter-assign').change(function () {
             RefreshTaskList();
@@ -162,7 +164,7 @@ function getUserImageTask(user, taskId) {
     //});
 
     var url = '/users/photo/' + user;
-    img = $('<img class="user">').attr('src', url);
+    var img = $('<img class="user">').attr('src', url);
     $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
 
 }
@@ -244,13 +246,13 @@ function gettasklist(callback, type, user) {
     var filter_user = user ? '?user=' + user : '';
     var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
 
-    httpCall('GET', '/Workload' + filter_type + filter_user, null, callback);
+    httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
 }
 
 function update(task) {
     httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
         // done
-    })
+    }, null)
 }
 
 function RefreshTaskList() {
@@ -292,7 +294,7 @@ function loadTaskList(filter_type, filter_user) {
 
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
-            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users, task.description);
+            createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
         });
     },
         filter_type,
@@ -788,7 +790,7 @@ function addWorkload(e) {
                     getGUID(function (data) {
                         $('#WBID').attr('value', data);
                     });
-                    createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users, workload.description);
+                    createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users /* , workload.description */);
                 } else {
                     $('#msg').text('Error!');
                 }
