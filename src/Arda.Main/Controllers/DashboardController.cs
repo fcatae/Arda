@@ -19,6 +19,18 @@ namespace Arda.Main.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
+        public async Task<IActionResult> V3()
+        {
+            var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+
+            ViewBag.User = user;
+            ViewBag.UserStatus = 2;
+
+            UsageTelemetry.Track(user, ArdaUsage.Dashboard_Index);
+
+            return View();
+        }
+
         public async Task<IActionResult> Index()
         {
             var user = User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;

@@ -24,6 +24,7 @@
     "slash": "^1.0.0",
     "tiny-lr": "^0.2.1",
     "vinyl": "^1.1.1",
-    "win-spawn": "^2.0.0"
+    "win-spawn": "^2.0.0",
+    "typescript": "2.3.4"
   }
 }
