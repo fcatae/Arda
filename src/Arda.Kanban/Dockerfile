@@ -13,7 +13,7 @@ FROM microsoft/aspnetcore-build:1.1.1
 WORKDIR /app
 
 #Copying the entire application files to /app directory
-COPY ./bin/Debug/netcoreapp1.0/publish .
+COPY ./bin/Debug/netcoreapp1.1/publish .
 
 #Exposing the application to the internet through port 80
 EXPOSE 80/tcp
