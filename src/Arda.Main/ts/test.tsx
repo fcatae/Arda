@@ -51,8 +51,9 @@ class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
        return   <div className="folder-tasks" id={this.props.id}>
                     <TemplateHeader title={this.props.title}></TemplateHeader>
                     <TemplateBody {...this.props}></TemplateBody>
-                    <div className="folder-footer" hidden></div>
+                    <div className="folder-footer" hidden></div> 
                 </div>;
+                // PICTURE IS BROKEN
    }
 }
 
