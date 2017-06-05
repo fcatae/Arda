@@ -26,5 +26,9 @@
     "vinyl": "^1.1.1",
     "win-spawn": "^2.0.0",
     "typescript": "2.3.4"
+  },
+  "dependencies": {
+    "@types/react": "^15.0.27",
+    "@types/react-dom": "^15.5.0"
   }
 }

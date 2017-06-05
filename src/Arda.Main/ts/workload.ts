@@ -52,6 +52,8 @@ function moveTask(id, state) {
 
     folder.appendChild(taskElem);
 
+    ReactDOM.render(React.createElement(App, null), document.querySelector('#' + id + ' .app') );
+
     var task = { Id: id, State: state };
     update(task);
 }
@@ -90,7 +92,7 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').id = taskId;
     clone.querySelector('.task').classList.add(tag);
 
-    clone.querySelector('.task .templateTitle').textContent = taskTitle;
+    // clone.querySelector('.task .templateTitle').textContent = taskTitle;
 
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         clone.querySelector('.task .templateStart').textContent = start;
@@ -106,7 +108,13 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').addEventListener('dragstart', dragstart);
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
+    var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
+    clone.querySelector('.task .app').id = validIdName;
+
     folder.appendChild(clone, true);
+
+    var taskProp = { title: taskTitle };
+    ReactDOM.render(React.createElement(TemplateTitle, taskProp), document.getElementById(validIdName) );
 
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         $.each(users, function (index, value) {

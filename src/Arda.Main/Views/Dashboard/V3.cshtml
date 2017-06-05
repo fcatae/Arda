@@ -99,9 +99,8 @@
                     <!-- hack: take a look at V2 implementation for createTaskInFolder at workload.js -->
                     <div id="templateId" class="task hack-force-hide-template-layout" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
                         <div class="folder-tasks">
-                            <div class="folder-header">
-                                <p><span class="templateTitle">templateTitle</span></p>
-
+                            <div class="folder-header app">
+                                <!-- title -->
                             </div>
                             <!-- hack: hide folder-body for Dashboard V2 implementation -->
                             <div class="folder-body" hidden>
@@ -135,7 +134,7 @@
                             </div>
                             <div class="folder-footer" hidden>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
                 </template>
                 <div class="col-xs-12">
@@ -214,5 +213,8 @@
     });
 
 </script>
+<script src="~/lib/react/react.js"></script>
+<script src="~/lib/react/react-dom.js"></script>
 <script src="~/components/workload.js"></script>
 <script src="~/lib/simplebar.min.js"></script>
+

@@ -1,3 +1,13 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 // Initialize functions
 // Scope: Modal, Dashboard, Kanban
 function Initialize() {
@@ -669,6 +679,28 @@ function clearValidate() {
         field.siblings().children("button").removeClass('error');
     }
 }
+var TemplateTitle = (function (_super) {
+    __extends(TemplateTitle, _super);
+    function TemplateTitle() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateTitle.prototype.render = function () {
+        return React.createElement("p", null,
+            React.createElement("span", { className: "templateTitle" }, this.props.title));
+    };
+    return TemplateTitle;
+}(React.Component));
+var App = (function (_super) {
+    __extends(App, _super);
+    function App() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    App.prototype.render = function () {
+        return React.createElement("div", null, "Hello World!");
+    };
+    return App;
+}(React.Component));
+// ReactDOM.render(<App/>, document.getElementById('app'));
 //Microsoft Graph API calls:
 function GetImage(user, token) {
     var url = "https://graph.microsoft.com/v1.0/me/photo/$value";
@@ -768,6 +800,7 @@ function moveTask(id, state) {
     var folder = document.querySelector(task_state);
     var taskElem = document.getElementById(id);
     folder.appendChild(taskElem);
+    ReactDOM.render(React.createElement(App, null), document.querySelector('#' + id + ' .app'));
     var task = { Id: id, State: state };
     update(task);
 }
@@ -798,7 +831,7 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     var folder = document.querySelector(folderSelector);
     clone.querySelector('.task').id = taskId;
     clone.querySelector('.task').classList.add(tag);
-    clone.querySelector('.task .templateTitle').textContent = taskTitle;
+    // clone.querySelector('.task .templateTitle').textContent = taskTitle;
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         clone.querySelector('.task .templateStart').textContent = start;
         clone.querySelector('.task .templateEnd').textContent = end;
@@ -811,7 +844,11 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     }
     clone.querySelector('.task').addEventListener('dragstart', dragstart);
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId); });
+    var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
+    clone.querySelector('.task .app').id = validIdName;
     folder.appendChild(clone, true);
+    var taskProp = { title: taskTitle };
+    ReactDOM.render(React.createElement(TemplateTitle, taskProp), document.getElementById(validIdName));
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         $.each(users, function (index, value) {
             getUserImageTask(value.Item1, taskId);
