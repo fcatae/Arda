@@ -13,7 +13,7 @@ FROM microsoft/aspnetcore-build:1.1.1
 WORKDIR /app
 
 #Publishing the project
-RUN ["dotnet", "publish"]
+CMD "dotnet publish"
 
 #Copying the entire application files to /app directory
 COPY ./bin/Debug/netcoreapp1.1/publish .
