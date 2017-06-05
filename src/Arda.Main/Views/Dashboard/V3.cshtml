@@ -97,41 +97,15 @@
 
                 <template id="templateTask">
                     <!-- hack: take a look at V2 implementation for createTaskInFolder at workload.js -->
-                    <div id="templateId" class="task hack-force-hide-template-layout" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
+                    <div id="templateId" class="task IGNORE-hack-force-hide-template-layout" draggable="true" data-toggle="modal" data-target="#WorkloadModal">
                         <div class="folder-tasks">
-                            <div class="folder-header app">
+                            <div class="folder-header">
                                 <!-- title -->
                             </div>
                             <!-- hack: hide folder-body for Dashboard V2 implementation -->
-                            <div class="folder-body" hidden>
-                                <p>
-                                    <i class="fa fa-calendar fa-task-def" aria-hidden="true">
-                                    </i>
-                                    <span class="templateStart">
-                                        templateStart
-                                    </span>
-                                    <i class="fa fa-calendar-check-o fa-task-def" aria-hidden="true">
-                                    </i>
-                                    <span class="templateEnd">
-                                        templateEnd
-                                    </span>
-                                </p>
+                            <div class="folder-body app" >
+                            </div>
 
-                                <p>
-                                    <i class="fa fa-clock-o fa-task-def" aria-hidden="true">
-                                    </i>
-                                    <span class="templateHours">
-                                        templateHours
-                                    </span>
-                                    <i class="fa fa-paperclip fa-task-def" aria-hidden="true">
-                                    </i>
-                                    <span class="templateAttachments">
-                                        templateAttachments
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="folder-body" hidden>
-                            </div>
                             <div class="folder-footer" hidden>
                             </div>
                         </div>                        

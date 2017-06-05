@@ -95,10 +95,10 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     // clone.querySelector('.task .templateTitle').textContent = taskTitle;
 
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
-        clone.querySelector('.task .templateStart').textContent = start;
-        clone.querySelector('.task .templateEnd').textContent = end;
-        clone.querySelector('.task .templateHours').textContent = hours;
-        clone.querySelector('.task .templateAttachments').textContent = attachments;
+        // clone.querySelector('.task .templateStart').textContent = start;
+        // clone.querySelector('.task .templateEnd').textContent = end;
+        // clone.querySelector('.task .templateHours').textContent = hours;
+        // clone.querySelector('.task .templateAttachments').textContent = attachments;
     } 
     else {
         // will not work
@@ -113,8 +113,9 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
 
     folder.appendChild(clone, true);
 
-    var taskProp = { title: taskTitle };
-    ReactDOM.render(React.createElement(TemplateTitle, taskProp), document.getElementById(validIdName) );
+    var taskProp = { title: taskTitle, dateStart: start, dateEnd: end, users: users };
+
+    ReactDOM.render(React.createElement(TemplateBody, taskProp), document.getElementById(validIdName) );
 
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         $.each(users, function (index, value) {

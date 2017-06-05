@@ -690,6 +690,26 @@ var TemplateTitle = (function (_super) {
     };
     return TemplateTitle;
 }(React.Component));
+var TemplateBody = (function (_super) {
+    __extends(TemplateBody, _super);
+    function TemplateBody() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateBody.prototype.render = function () {
+        return React.createElement("div", { className: "folder-body" },
+            React.createElement("p", null,
+                React.createElement("i", { className: "fa fa-calendar fa-task-def", "aria-hidden": "true" }),
+                React.createElement("span", { className: "templateStart" }, this.props.dateStart),
+                React.createElement("i", { className: "fa fa-calendar-check-o fa-task-def", "aria-hidden": "true" }),
+                React.createElement("span", { className: "templateEnd" }, this.props.dateEnd)),
+            React.createElement("p", null,
+                React.createElement("i", { className: "fa fa-clock-o fa-task-def", "aria-hidden": "true" }),
+                React.createElement("span", { className: "templateHours" }),
+                React.createElement("i", { className: "fa fa-paperclip fa-task-def", "aria-hidden": "true" }),
+                React.createElement("span", { className: "templateAttachments" })));
+    };
+    return TemplateBody;
+}(React.Component));
 var App = (function (_super) {
     __extends(App, _super);
     function App() {
@@ -833,10 +853,10 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').classList.add(tag);
     // clone.querySelector('.task .templateTitle').textContent = taskTitle;
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
-        clone.querySelector('.task .templateStart').textContent = start;
-        clone.querySelector('.task .templateEnd').textContent = end;
-        clone.querySelector('.task .templateHours').textContent = hours;
-        clone.querySelector('.task .templateAttachments').textContent = attachments;
+        // clone.querySelector('.task .templateStart').textContent = start;
+        // clone.querySelector('.task .templateEnd').textContent = end;
+        // clone.querySelector('.task .templateHours').textContent = hours;
+        // clone.querySelector('.task .templateAttachments').textContent = attachments;
     }
     else {
         // will not work
@@ -847,8 +867,8 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
     clone.querySelector('.task .app').id = validIdName;
     folder.appendChild(clone, true);
-    var taskProp = { title: taskTitle };
-    ReactDOM.render(React.createElement(TemplateTitle, taskProp), document.getElementById(validIdName));
+    var taskProp = { title: taskTitle, dateStart: start, dateEnd: end, users: users };
+    ReactDOM.render(React.createElement(TemplateBody, taskProp), document.getElementById(validIdName));
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         $.each(users, function (index, value) {
             getUserImageTask(value.Item1, taskId);
