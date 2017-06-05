@@ -8,6 +8,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 // Initialize functions
 // Scope: Modal, Dashboard, Kanban
 function Initialize() {
@@ -679,16 +687,17 @@ function clearValidate() {
         field.siblings().children("button").removeClass('error');
     }
 }
-var TemplateTitle = (function (_super) {
-    __extends(TemplateTitle, _super);
-    function TemplateTitle() {
+var TemplateHeader = (function (_super) {
+    __extends(TemplateHeader, _super);
+    function TemplateHeader() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TemplateTitle.prototype.render = function () {
-        return React.createElement("p", null,
-            React.createElement("span", { className: "templateTitle" }, this.props.title));
+    TemplateHeader.prototype.render = function () {
+        return React.createElement("div", { className: "folder-header" },
+            React.createElement("p", null,
+                React.createElement("span", { className: "templateTitle" }, this.props.title)));
     };
-    return TemplateTitle;
+    return TemplateHeader;
 }(React.Component));
 var TemplateBody = (function (_super) {
     __extends(TemplateBody, _super);
@@ -709,6 +718,19 @@ var TemplateBody = (function (_super) {
                 React.createElement("span", { className: "templateAttachments" })));
     };
     return TemplateBody;
+}(React.Component));
+var TemplateTask = (function (_super) {
+    __extends(TemplateTask, _super);
+    function TemplateTask() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateTask.prototype.render = function () {
+        return React.createElement("div", { className: "folder-tasks", id: this.props.id },
+            React.createElement(TemplateHeader, { title: this.props.title }),
+            React.createElement(TemplateBody, __assign({}, this.props)),
+            React.createElement("div", { className: "folder-footer", hidden: true }));
+    };
+    return TemplateTask;
 }(React.Component));
 var App = (function (_super) {
     __extends(App, _super);
@@ -850,7 +872,7 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     var clone = document.importNode(content, true);
     var folder = document.querySelector(folderSelector);
     clone.querySelector('.task').id = taskId;
-    clone.querySelector('.task').classList.add(tag);
+    //clone.querySelector('.task').classList.add(tag);
     // clone.querySelector('.task .templateTitle').textContent = taskTitle;
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         // clone.querySelector('.task .templateStart').textContent = start;
@@ -865,10 +887,10 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').addEventListener('dragstart', dragstart);
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId); });
     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
-    clone.querySelector('.task .app').id = validIdName;
+    clone.querySelector('.task.app').id = validIdName;
     folder.appendChild(clone, true);
-    var taskProp = { title: taskTitle, dateStart: start, dateEnd: end, users: users };
-    ReactDOM.render(React.createElement(TemplateBody, taskProp), document.getElementById(validIdName));
+    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: users };
+    ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName));
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         $.each(users, function (index, value) {
             getUserImageTask(value.Item1, taskId);

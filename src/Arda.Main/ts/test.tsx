@@ -1,14 +1,16 @@
 interface ITaskLegacyItem {
-    id?;
+    id;
     title;
     dateStart?;
     dateEnd?;
     users?;
 }
 
-class TemplateTitle extends React.Component<ITaskLegacyItem,{}> {
+class TemplateHeader extends React.Component<{title},{}> {
    render() {
-       return <p><span className="templateTitle">{this.props.title}</span></p>;
+       return   <div className="folder-header">
+                    <p><span className="templateTitle">{this.props.title}</span></p>
+                </div>;
    }
 }
 
@@ -41,6 +43,16 @@ class TemplateBody extends React.Component<ITaskLegacyItem,{}> {
                 </span>
             </p>
         </div>;
+   }
+}
+
+class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
+   render() {
+       return   <div className="folder-tasks" id={this.props.id}>
+                    <TemplateHeader title={this.props.title}></TemplateHeader>
+                    <TemplateBody {...this.props}></TemplateBody>
+                    <div className="folder-footer" hidden></div>
+                </div>;
    }
 }
 

@@ -90,7 +90,7 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     var folder = document.querySelector(folderSelector);
 
     clone.querySelector('.task').id = taskId;
-    clone.querySelector('.task').classList.add(tag);
+    //clone.querySelector('.task').classList.add(tag);
 
     // clone.querySelector('.task .templateTitle').textContent = taskTitle;
 
@@ -109,13 +109,13 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
-    clone.querySelector('.task .app').id = validIdName;
+    clone.querySelector('.task.app').id = validIdName;
 
     folder.appendChild(clone, true);
 
-    var taskProp = { title: taskTitle, dateStart: start, dateEnd: end, users: users };
+    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: users };
 
-    ReactDOM.render(React.createElement(TemplateBody, taskProp), document.getElementById(validIdName) );
+    ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName) );
 
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         $.each(users, function (index, value) {
