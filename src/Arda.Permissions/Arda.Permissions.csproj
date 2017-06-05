@@ -16,6 +16,9 @@
     <None Update="docker-compose.yml;Dockerfile;.dockerignore">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
+    <None Update="DockerfileWindows">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
