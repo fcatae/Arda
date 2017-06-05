@@ -1,6 +1,3 @@
-//Initialize:
-var $;
-var folders;
 function Initialize() {
     //Click events:
     //New Workload:
@@ -139,7 +136,8 @@ function getUserImageTask(user, taskId) {
     $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
 }
 function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
-    var content = document.querySelector('#templateTask').content;
+    var elemTask = document.querySelector('#templateTask');
+    var content = elemTask.content;
     var clone = document.importNode(content, true);
     var folder = document.querySelector(folderSelector);
     clone.querySelector('.task').id = taskId;

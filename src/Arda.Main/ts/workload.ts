@@ -1,6 +1,6 @@
 //Initialize:
-var $ : any;
-var folders : any;
+declare var $ : any
+declare var folders : any;
 
 function Initialize() {
     //Click events:
@@ -170,7 +170,8 @@ function getUserImageTask(user, taskId) {
 }
 
 function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
-    var content = document.querySelector('#templateTask').content;
+    var elemTask = document.querySelector('#templateTask') as HTMLTemplateElement;
+    var content = elemTask.content;
     var clone = document.importNode(content, true);
     var folder = document.querySelector(folderSelector);
 
@@ -546,7 +547,7 @@ function GetImageBase64FromGraph(url, element, token) {
     request.responseType = "blob";
     request.onload = function () {
         if (request.readyState === 4 && request.status === 200) {
-            var image = document.getElementById(element);
+            var image = document.getElementById(element) as HTMLImageElement;
             var reader = new FileReader();
             reader.onload = function () {
                 image.src = reader.result;
