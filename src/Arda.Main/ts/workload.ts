@@ -113,15 +113,17 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
 
     folder.appendChild(clone, true);
 
-    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: users };
+    var userArray = users.map( item => item.Item1 );
+
+    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
 
     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName) );
 
-    if (clone.querySelector('.hack-force-hide-template-layout') == null) {
-        $.each(users, function (index, value) {
-            getUserImageTask(value.Item1, taskId);
-        });
-    } 
+    // if (clone.querySelector('.hack-force-hide-template-layout') == null) {
+    //     $.each(users, function (index, value) {
+    //         getUserImageTask(value.Item1, taskId);
+    //     });
+    // } 
 }
 
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {

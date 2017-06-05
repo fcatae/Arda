@@ -46,14 +46,25 @@ class TemplateBody extends React.Component<ITaskLegacyItem,{}> {
    }
 }
 
+class TemplateFooter extends React.Component<{users: string[]},{}> {
+   render() {       
+       var userImages = this.props.users.map( email => <img className="user" src={'/users/photo/' + email}></img>)
+
+       return   <div className="folder-footer">
+                    {userImages}
+                </div>;
+   }
+}
+
 class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
    render() {
+       var users = this.props.users;
+
        return   <div className="folder-tasks" id={this.props.id}>
                     <TemplateHeader title={this.props.title}></TemplateHeader>
                     <TemplateBody {...this.props}></TemplateBody>
-                    <div className="folder-footer" hidden></div> 
+                    <TemplateFooter users={users}></TemplateFooter>
                 </div>;
-                // PICTURE IS BROKEN
    }
 }
 

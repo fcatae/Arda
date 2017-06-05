@@ -719,16 +719,28 @@ var TemplateBody = (function (_super) {
     };
     return TemplateBody;
 }(React.Component));
+var TemplateFooter = (function (_super) {
+    __extends(TemplateFooter, _super);
+    function TemplateFooter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateFooter.prototype.render = function () {
+        var userImages = this.props.users.map(function (email) { return React.createElement("img", { className: "user", src: '/users/photo/' + email }); });
+        return React.createElement("div", { className: "folder-footer" }, userImages);
+    };
+    return TemplateFooter;
+}(React.Component));
 var TemplateTask = (function (_super) {
     __extends(TemplateTask, _super);
     function TemplateTask() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     TemplateTask.prototype.render = function () {
+        var users = this.props.users;
         return React.createElement("div", { className: "folder-tasks", id: this.props.id },
             React.createElement(TemplateHeader, { title: this.props.title }),
             React.createElement(TemplateBody, __assign({}, this.props)),
-            React.createElement("div", { className: "folder-footer", hidden: true }));
+            React.createElement(TemplateFooter, { users: users }));
     };
     return TemplateTask;
 }(React.Component));
@@ -889,7 +901,8 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
     clone.querySelector('.task.app').id = validIdName;
     folder.appendChild(clone, true);
-    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: users };
+    var userArray = users.map(function (item) { return item.Item1; });
+    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName));
     if (clone.querySelector('.hack-force-hide-template-layout') == null) {
         $.each(users, function (index, value) {
