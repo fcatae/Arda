@@ -1,3 +1,6 @@
+// Validate Modal
+// Scope: modal dialog
+
 //Workload Validation:
 
 function validateForm(e, data, callback) {
