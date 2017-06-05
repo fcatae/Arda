@@ -90,40 +90,21 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     var folder = document.querySelector(folderSelector);
 
     clone.querySelector('.task').id = taskId;
-    //clone.querySelector('.task').classList.add(tag);
-
-    // clone.querySelector('.task .templateTitle').textContent = taskTitle;
-
-    if (clone.querySelector('.hack-force-hide-template-layout') == null) {
-        // clone.querySelector('.task .templateStart').textContent = start;
-        // clone.querySelector('.task .templateEnd').textContent = end;
-        // clone.querySelector('.task .templateHours').textContent = hours;
-        // clone.querySelector('.task .templateAttachments').textContent = attachments;
-    } 
-    else {
-        // will not work
-        //clone.querySelector('.task .templateDescription').textContent = description;
-    }
 
     clone.querySelector('.task').addEventListener('dragstart', dragstart);
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
+    // fix problems
     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
-    clone.querySelector('.task.app').id = validIdName;
+    var userArray = users.map( item => item.Item1 );
+
+    clone.querySelector('.task').id = validIdName;
 
     folder.appendChild(clone, true);
-
-    var userArray = users.map( item => item.Item1 );
 
     var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
 
     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName) );
-
-    // if (clone.querySelector('.hack-force-hide-template-layout') == null) {
-    //     $.each(users, function (index, value) {
-    //         getUserImageTask(value.Item1, taskId);
-    //     });
-    // } 
 }
 
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {

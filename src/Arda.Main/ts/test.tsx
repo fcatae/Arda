@@ -29,19 +29,6 @@ class TemplateBody extends React.Component<ITaskLegacyItem,{}> {
                     {this.props.dateEnd}
                 </span>
             </p>
-
-            <p>
-                <i className="fa fa-clock-o fa-task-def" aria-hidden="true">
-                </i>
-                <span className="templateHours">
-                    {/* ignore */}
-                </span>
-                <i className="fa fa-paperclip fa-task-def" aria-hidden="true">
-                </i>
-                <span className="templateAttachments">
-                    {/* ignore */}
-                </span>
-            </p>
         </div>;
    }
 }
