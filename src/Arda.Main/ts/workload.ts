@@ -1,6 +1,8 @@
 //Initialize:
 declare var $ : any
-declare var folders : any;
+
+//Global Variables:
+var folders = $('.folder');
 
 //Kanban:
 
@@ -8,6 +10,7 @@ declare var folders : any;
 
 function InitializeKanban() {
 
+    ReactDOM.render(React.createElement(DashboardFolderHeader, null), document.getElementById('dashboard-folder-header') );
     ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );
 
     //Board Initialization

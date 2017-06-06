@@ -116,6 +116,32 @@ var Folder = (function (_super) {
     };
     return Folder;
 }(React.Component));
+var DashboardFolderHeader = (function (_super) {
+    __extends(DashboardFolderHeader, _super);
+    function DashboardFolderHeader() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    DashboardFolderHeader.prototype.render = function () {
+        return React.createElement("div", { className: "row" },
+            React.createElement("div", { className: "col-xs-12 col-md-3" },
+                React.createElement("div", { className: "row" },
+                    React.createElement("h3", { className: "dashboard-panel-title dashboard-panel-title--todo" }, "todo"),
+                    React.createElement("button", { id: "btnNewSimple", className: "ds-button-update", "data-toggle": "modal", "data-target": "#WorkloadModal" },
+                        React.createElement("i", { className: "fa fa-plus", "aria-hidden": "true" }),
+                        " Quick Create"))),
+            React.createElement("div", { className: "col-xs-12 col-md-3" },
+                React.createElement("div", { className: "row" },
+                    React.createElement("h3", { className: "dashboard-panel-title dashboard-panel-title--doing" }, "doing"))),
+            React.createElement("div", { className: "col-xs-12 col-md-3" },
+                React.createElement("div", { className: "row" },
+                    React.createElement("h3", { className: "dashboard-panel-title dashboard-panel-title--done" }, "done"))),
+            React.createElement("div", { className: "col-xs-12 col-md-3" },
+                React.createElement("div", { className: "row" },
+                    React.createElement("h3", { className: "dashboard-panel-title dashboard-panel-title--approved" }, "archive"))),
+            React.createElement("div", { className: "clearfix" }));
+    };
+    return DashboardFolderHeader;
+}(React.Component));
 var DashboardFolders = (function (_super) {
     __extends(DashboardFolders, _super);
     function DashboardFolders() {
@@ -830,9 +856,12 @@ function formatDate(dateStr, callback) {
     var str = month + '/' + day + '/' + year;
     callback(str);
 }
+//Global Variables:
+var folders = $('.folder');
 //Kanban:
 // initialize
 function InitializeKanban() {
+    ReactDOM.render(React.createElement(DashboardFolderHeader, null), document.getElementById('dashboard-folder-header'));
     ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
     //Board Initialization
     folders.map(function (i, folder) {
