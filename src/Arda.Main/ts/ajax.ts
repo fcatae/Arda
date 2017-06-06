@@ -18,12 +18,11 @@ function httpCall(action, url, data, callback, error) {
 }
 
 
-function gettasklist(callback, type, user) {
-
-    var filter_user = user ? '?user=' + user : '';
-    var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
-
-    httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
+function gettasklist(callback) {
+    // var filter_user = user ? '?user=' + user : '';
+    // var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
+    //httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
+    httpCall('GET', '/Workload/ListWorkloadsByUser' , null, callback, null);
 }
 
 function update(task) {

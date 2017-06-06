@@ -30,9 +30,11 @@ function httpCall(action, url, data, callback, error) {
     });
 }
 function gettasklist(callback, type, user) {
-    var filter_user = user ? '?user=' + user : '';
-    var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
-    httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
+    // var filter_user = user ? '?user=' + user : '';
+    // var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
+    //httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
+    httpCall('GET', '/Workload/ListWorkloadsByUser', null, callback, null);
+    alert('gettasklist');
 }
 function update(task) {
     httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
@@ -868,44 +870,45 @@ function InitializeKanban() {
         folder.addEventListener('dragover', dragover);
         folder.addEventListener('drop', drop.bind(folder));
     });
-    $('.dashboard-filter-field').change(function () {
-        RefreshTaskList();
-    });
-    if (window["hackIsAdmin"] != null) {
-        GetUserList();
-        $('#filter-assign').change(function () {
-            RefreshTaskList();
-        });
-    }
-    else {
-        $('#filter-assign').css('visibility', 'hidden');
-    }
+    // $('.dashboard-filter-field').change(function () {
+    //     RefreshTaskList();
+    // });
+    // if (window["hackIsAdmin"] != null) {
+    //     GetUserList();
+    //     $('#filter-assign').change(function () {
+    //         RefreshTaskList();
+    //     });
+    // }
+    // else {
+    //     $('#filter-assign').css('visibility', 'hidden');
+    // }
+    //$('#filter-assign').css('visibility', 'hidden');
 }
-function GetUserList() {
-    var url = '/Users/ViewRestrictedUserList';
-    $.ajax({
-        url: url,
-        type: "GET",
-        cache: false,
-        success: function (data, textStatus, jqXHR) {
-            var userListElem = $('#filter-assign');
-            data.map(function (user) {
-                //alert(JSON.stringify(user));
-                var name = user.Name;
-                var id = user.Email;
-                var opt = new Option(name, id);
-                userListElem.append(opt);
-            });
-        }
-    });
-}
+// function GetUserList() {
+//     var url = '/Users/ViewRestrictedUserList';
+//     $.ajax({
+//         url: url,
+//         type: "GET",
+//         cache: false,
+//         success: function (data, textStatus, jqXHR) {
+//             var userListElem = $('#filter-assign');
+//             data.map(function (user) {
+//                 //alert(JSON.stringify(user));
+//                 var name = user.Name;
+//                 var id = user.Email;
+//                 var opt = new Option(name, id);
+//                 userListElem.append(opt);
+//             })
+//         }
+//     });
+// }
 function RefreshTaskList() {
-    var selected_user = $('select[name=filter-assign] option:selected').val();
-    var selected_type = $('input[name=type]:checked').val();
-    var filter_user = selected_user; // (selected_user.length > 0) ? el.target.selectedOptions[0].value : null;
-    var filter_type = (selected_type == 2); // is BACKLOG?
-    // alert('filter: ' + filter_type + ', user = ' + filter_user);
-    loadTaskList(filter_type, filter_user);
+    // var selected_user = $('select[name=filter-assign] option:selected').val();
+    // var selected_type = $('input[name=type]:checked').val();
+    // var filter_user = selected_user; // (selected_user.length > 0) ? el.target.selectedOptions[0].value : null;
+    // var filter_type = (selected_type == 2); // is BACKLOG?
+    // loadTaskList(filter_type, filter_user);
+    loadTaskList(null, null);
 }
 function loadTaskList(filter_type, filter_user) {
     //alert(filter_user);
