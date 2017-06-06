@@ -1,0 +1,42 @@
+version: "3"
+services:
+  main:
+    image: visouza/arda.main:nanoserver
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "443:443"
+      - "80:80"
+      
+    depends_on: 
+      - kanban
+      - permissions
+      - reports
+  
+  kanban:
+    image: visouza/arda.kanban:nanoserver  
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "80"
+  
+  permissions:
+    image: visouza/arda.permissions:nanoserver
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "80"
+
+  reports:
+    image: visouza/arda.reports:nanoserver
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "80"
+
+
+networks:
+  default:
+    external:
+      name: nat
+   
