@@ -23,9 +23,10 @@ function loadTaskList() {
         tasklist.map(function (task) {
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
         });
+
+        ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );            
     });
 
-    ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );
 }
 
 // task
@@ -52,54 +53,44 @@ function moveTask(id, state) {
 }
 
 function createTask(id, title, start, end, hours, attachments, tag, state, users) {
-    var task_state = '.state' + state;
-    createTaskInFolder(id, title, start, end, hours, attachments, tag, task_state, users);
+    // fix problems
+    var validIdName = '_' + id; // avoid issues when taskId starts with numbers
+    var userArray = users.map( item => item.Item1 );
+    var taskProp = { id: validIdName, title: title, dateStart: start, dateEnd: end, users: userArray };
+
+    folderM[state].tasks.push(taskProp);
+
+    // var task_state = '.state' + state;
+    // createTaskInFolder(id, title, start, end, hours, attachments, tag, task_state, users);
 }
 
 // task
-function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
+// function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
 
-    // <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
-    var elemTask = document.querySelector('#templateTask') as HTMLTemplateElement;
-    var content = elemTask.content; 
-    var clone = document.importNode(content, true);
+//     // <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
+//     var elemTask = document.querySelector('#templateTask') as HTMLTemplateElement;
+//     var content = elemTask.content; 
+//     var clone = document.importNode(content, true);
     
-    var folder = document.querySelector(folderSelector);
+//     var folder = document.querySelector(folderSelector);
 
-    clone.querySelector('.task').id = taskId;
+//     clone.querySelector('.task').id = taskId;
 
-    clone.querySelector('.task').addEventListener('dragstart', dragstart);
-    clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
+//     clone.querySelector('.task').addEventListener('dragstart', dragstart);
+//     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
 
-    // fix problems
-    var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
-    var userArray = users.map( item => item.Item1 );
+//     // fix problems
+//     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
+//     var userArray = users.map( item => item.Item1 );
 
-    clone.querySelector('.task').id = validIdName;
+//     clone.querySelector('.task').id = validIdName;
 
-    folder.appendChild(clone, true);
+//     folder.appendChild(clone, true);
 
-    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
+//     var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
 
-    ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName) );
-}
-
-function createTaskInFolder2(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
-
-    // <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
-    var elemTask = document.querySelector('#templateTask') as HTMLTemplateElement;
-    var content = elemTask.content; 
-    var clone = document.importNode(content, true);
-
-    clone.querySelector('.task').addEventListener('dragstart', dragstart);
-    clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
-
-    var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
-    clone.querySelector('.task').id = validIdName;
-
-    var folder = document.querySelector(folderSelector);
-    folder.appendChild(clone, true);
-}
+//     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName) );
+// }
 
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
 
