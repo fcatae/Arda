@@ -18,8 +18,6 @@ function RefreshTaskList() {
 }
 
 function loadTaskList() {
-    // remove it asap
-    clearTasks();
 
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
@@ -27,25 +25,12 @@ function loadTaskList() {
         });
     });
 
-    //ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );
+    ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );
 }
 
 // task
 function dragstart(ev) {
     ev.dataTransfer.setData('text', ev.target.id);
-}
-
-function clearFolder(state) {
-    var task_state = '.state' + state;
-    var folder = document.querySelector(task_state);
-    $(folder).empty();
-}
-
-function clearTasks() {
-    clearFolder('0');
-    clearFolder('1');
-    clearFolder('2');
-    clearFolder('3');
 }
 
 function moveTask(id, state) {

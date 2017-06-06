@@ -905,54 +905,13 @@ var folders = $('.folder');
 function InitializeKanban() {
     ReactDOM.render(React.createElement(DashboardFolderHeader, null), document.getElementById('dashboard-folder-header'));
     ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
-    //Board Initialization
-    // folders.map(function (i, folder) {
-    //     // folder.addEventListener('dragover', dragover);
-    //     // folder.addEventListener('drop', drop.bind(folder));
-    // });
-    // $('.dashboard-filter-field').change(function () {
-    //     RefreshTaskList();
-    // });
-    // if (window["hackIsAdmin"] != null) {
-    //     GetUserList();
-    //     $('#filter-assign').change(function () {
-    //         RefreshTaskList();
-    //     });
-    // }
-    // else {
-    //     $('#filter-assign').css('visibility', 'hidden');
-    // }
-    //$('#filter-assign').css('visibility', 'hidden');
 }
-// function GetUserList() {
-//     var url = '/Users/ViewRestrictedUserList';
-//     $.ajax({
-//         url: url,
-//         type: "GET",
-//         cache: false,
-//         success: function (data, textStatus, jqXHR) {
-//             var userListElem = $('#filter-assign');
-//             data.map(function (user) {
-//                 //alert(JSON.stringify(user));
-//                 var name = user.Name;
-//                 var id = user.Email;
-//                 var opt = new Option(name, id);
-//                 userListElem.append(opt);
-//             })
-//         }
-//     });
-// }
 function RefreshTaskList() {
-    // var selected_user = $('select[name=filter-assign] option:selected').val();
-    // var selected_type = $('input[name=type]:checked').val();
-    // var filter_user = selected_user; // (selected_user.length > 0) ? el.target.selectedOptions[0].value : null;
-    // var filter_type = (selected_type == 2); // is BACKLOG?
-    // loadTaskList(filter_type, filter_user);
     loadTaskList();
 }
 function loadTaskList() {
     // remove it asap
-    clearTasks();
+    //clearTasks();
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
@@ -964,37 +923,17 @@ function loadTaskList() {
 function dragstart(ev) {
     ev.dataTransfer.setData('text', ev.target.id);
 }
-// function dragover(ev) {
-//     ev.preventDefault();
+// function clearFolder(state) {
+//     var task_state = '.state' + state;
+//     var folder = document.querySelector(task_state);
+//     $(folder).empty();
 // }
-// // folder
-// function drop(ev) {
-//     var target = this;
-//     ev.preventDefault();
-//     var data = ev.dataTransfer.getData('text');
-//     var elem = document.getElementById(data);
-//     target.appendChild(elem);
-//     var state = target.dataset['state'];
-//     var numstate = state | 0;
-//     var taskId = data;
-//     // remove the underscore
-//     if(taskId[0] == '_') {
-//         taskId = taskId.slice(1);
-//     }
-//     var task = { Id: taskId, State: numstate };
-//     update(task);
+// function clearTasks() {
+//     clearFolder('0');
+//     clearFolder('1');
+//     clearFolder('2');
+//     clearFolder('3');
 // }
-function clearFolder(state) {
-    var task_state = '.state' + state;
-    var folder = document.querySelector(task_state);
-    $(folder).empty();
-}
-function clearTasks() {
-    clearFolder('0');
-    clearFolder('1');
-    clearFolder('2');
-    clearFolder('3');
-}
 function moveTask(id, state) {
     var task_state = '.state' + state;
     var folder = document.querySelector(task_state);
