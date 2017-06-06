@@ -62,7 +62,7 @@ class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
 class TemplateTask2 extends React.Component<ITaskLegacyItem,{}> {
 
     dragstart(ev) {
-        ev.dataTransfer.setData('text', ev.target.id);
+        ev.dataTransfer.setData('text', this.props.id);
     }    
 
    render() {
@@ -70,7 +70,7 @@ class TemplateTask2 extends React.Component<ITaskLegacyItem,{}> {
        var validIdName = '_' + this.props.id; // avoid issues when taskId starts with numbers
        var taskId = this.props.id;
        return   <div id={validIdName} className="task" draggable={true} data-toggle="modal" data-target="#WorkloadModal" 
-                                                        onDragStart={this.dragstart} onClick={function () { taskedit(taskId) }}>
+                                                        onDragStart={this.dragstart.bind(this)} onClick={function () { taskedit(taskId) }}>
                     <div className="folder-tasks" id={this.props.id}>
                         <TemplateHeader title={this.props.title}></TemplateHeader>
                         <TemplateBody {...this.props}></TemplateBody>
@@ -122,7 +122,6 @@ var folderM1 = new FolderModel(1);
 var folderM2 = new FolderModel(2);
 var folderM3 = new FolderModel(3);
 var folderM = [folderM0, folderM1, folderM2, folderM3];
-folderM3.tasks.push({id: 'a13456', title: 'abc'});
 
 class Folder extends React.Component<{taskState: number, model: FolderModel},{}> {
 
@@ -134,7 +133,7 @@ class Folder extends React.Component<{taskState: number, model: FolderModel},{}>
     
     // jquery-alike
     var data = ev.dataTransfer.getData('text');
-    var elem = document.getElementById(data);
+    var elem = document.getElementById('_' + data);
     var target = document.querySelector('.folder.state' + this.props.taskState) as HTMLDivElement;
     target.appendChild(elem);
 
