@@ -281,7 +281,7 @@ namespace Arda.Main.Controllers
             //System.IO.StreamReader reader = new System.IO.StreamReader(HttpContext.Request.Body);
             //string requestFromPost = reader.ReadToEnd();
 
-            await Util.ConnectToRemoteService<string>(HttpMethod.Put, Util.KanbanURL + "api/workload/updatestatus?id=" + Id + "&status=" + Status, uniqueName, "");
+            await Util.ConnectToRemoteService<object>(HttpMethod.Put, Util.KanbanURL + "api/workload/updatestatus?id=" + Id + "&status=" + Status, uniqueName, "");
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
