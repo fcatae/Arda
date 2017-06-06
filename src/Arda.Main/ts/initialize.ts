@@ -88,3 +88,24 @@ function InitializeKanban() {
         $('#filter-assign').css('visibility', 'hidden');
     }
 }
+
+function GetUserList() {
+    var url = '/Users/ViewRestrictedUserList';
+    $.ajax({
+        url: url,
+        type: "GET",
+        cache: false,
+        success: function (data, textStatus, jqXHR) {
+
+            var userListElem = $('#filter-assign');
+
+            data.map(function (user) {
+                //alert(JSON.stringify(user));
+                var name = user.Name;
+                var id = user.Email;
+                var opt = new Option(name, id);
+                userListElem.append(opt);
+            })
+        }
+    });
+}

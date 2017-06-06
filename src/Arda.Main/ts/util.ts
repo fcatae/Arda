@@ -55,17 +55,3 @@ function formatDate(dateStr, callback) {
     var str = month + '/' + day + '/' + year;
     callback(str)
 }
-
-function getGUID(callback) {
-    $.ajax({
-        url: '/Workload/GetGuid',
-        type: 'GET',
-        processData: false,
-        contentType: false,
-        cache: false,
-        success: function (data) {
-            callback(data);
-        }
-    });
-}
-

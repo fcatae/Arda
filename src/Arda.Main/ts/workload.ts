@@ -26,12 +26,6 @@ function drop(ev) {
     update(task);
 }
 
-//var tasks = $('.task');
-//tasks.map(function (i, task) {
-//    task.draggable = true;
-//    task.addEventListener('dragstart', dragstart);
-//});
-
 function clearFolder(state) {
     var task_state = '.state' + state;
     var folder = document.querySelector(task_state);
@@ -61,26 +55,6 @@ function moveTask(id, state) {
 function createTask(id, title, start, end, hours, attachments, tag, state, users) {
     var task_state = '.state' + state;
     createTaskInFolder(id, title, start, end, hours, attachments, tag, task_state, users);
-}
-
-function getUserImageTask(user, taskId) {
-    //var url = '/users/GetUserPhoto?=' + user;
-    //var url = '/users/photo/' + user;
-
-    //$.ajax({
-    //    url: url,
-    //    type: "GET",
-    //    cache: true,
-    //    success: function (data) {
-    //        img = $('<img class="user">').attr('src', data);
-    //        $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
-    //    }
-    //});
-
-    var url = '/users/photo/' + user;
-    var img = $('<img class="user">').attr('src', url);
-    $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
-
 }
 
 function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
@@ -118,24 +92,8 @@ function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, use
     $('#' + taskId + ' .folder-tasks .folder-footer img').remove();
 
     $.each(users, function (index, value) {
-        getUserImageTask(value.Item1, taskId);
+        //getUserImageTask(value.Item1, taskId);
     });
-}
-
-function httpCall(action, url, data, callback, error) {
-
-    $.ajax({
-        type: action, // GET POST PUT
-        url: url,
-        data: JSON.stringify(data),
-        cache: false,
-        contentType: 'application/json',
-        dataType: 'json',
-        success: callback,
-        error: error,
-        processData: false
-    });
-
 }
 
 function taskedit(id) {
@@ -144,20 +102,6 @@ function taskedit(id) {
 
 function taskdone(id) {
     moveTask(id, 2);
-}
-
-function gettasklist(callback, type, user) {
-
-    var filter_user = user ? '?user=' + user : '';
-    var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
-
-    httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
-}
-
-function update(task) {
-    httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
-        // done
-    }, null)
 }
 
 function RefreshTaskList() {
@@ -169,27 +113,6 @@ function RefreshTaskList() {
     // alert('filter: ' + filter_type + ', user = ' + filter_user);
 
     loadTaskList(filter_type, filter_user);
-}
-
-function GetUserList() {
-    var url = '/Users/ViewRestrictedUserList';
-    $.ajax({
-        url: url,
-        type: "GET",
-        cache: false,
-        success: function (data, textStatus, jqXHR) {
-
-            var userListElem = $('#filter-assign');
-
-            data.map(function (user) {
-                //alert(JSON.stringify(user));
-                var name = user.Name;
-                var id = user.Email;
-                var opt = new Option(name, id);
-                userListElem.append(opt);
-            })
-        }
-    });
 }
 
 function loadTaskList(filter_type, filter_user) {

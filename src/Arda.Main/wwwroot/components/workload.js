@@ -16,6 +16,104 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
+function httpCall(action, url, data, callback, error) {
+    $.ajax({
+        type: action,
+        url: url,
+        data: JSON.stringify(data),
+        cache: false,
+        contentType: 'application/json',
+        dataType: 'json',
+        success: callback,
+        error: error,
+        processData: false
+    });
+}
+function gettasklist(callback, type, user) {
+    var filter_user = user ? '?user=' + user : '';
+    var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
+    httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
+}
+function update(task) {
+    httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
+        // done
+    }, null);
+}
+function getGUID(callback) {
+    $.ajax({
+        url: '/Workload/GetGuid',
+        type: 'GET',
+        processData: false,
+        contentType: false,
+        cache: false,
+        success: function (data) {
+            callback(data);
+        }
+    });
+}
+var TemplateHeader = (function (_super) {
+    __extends(TemplateHeader, _super);
+    function TemplateHeader() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateHeader.prototype.render = function () {
+        return React.createElement("div", { className: "folder-header" },
+            React.createElement("p", null,
+                React.createElement("span", { className: "templateTitle" }, this.props.title)));
+    };
+    return TemplateHeader;
+}(React.Component));
+var TemplateBody = (function (_super) {
+    __extends(TemplateBody, _super);
+    function TemplateBody() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateBody.prototype.render = function () {
+        return React.createElement("div", { className: "folder-body" },
+            React.createElement("p", null,
+                React.createElement("i", { className: "fa fa-calendar fa-task-def", "aria-hidden": "true" }),
+                React.createElement("span", { className: "templateStart" }, this.props.dateStart),
+                React.createElement("i", { className: "fa fa-calendar-check-o fa-task-def", "aria-hidden": "true" }),
+                React.createElement("span", { className: "templateEnd" }, this.props.dateEnd)));
+    };
+    return TemplateBody;
+}(React.Component));
+var TemplateFooter = (function (_super) {
+    __extends(TemplateFooter, _super);
+    function TemplateFooter() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateFooter.prototype.render = function () {
+        var userImages = this.props.users.map(function (email) { return React.createElement("img", { key: email, className: "user", src: '/users/photo/' + email }); });
+        return React.createElement("div", { className: "folder-footer" }, userImages);
+    };
+    return TemplateFooter;
+}(React.Component));
+var TemplateTask = (function (_super) {
+    __extends(TemplateTask, _super);
+    function TemplateTask() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateTask.prototype.render = function () {
+        var users = this.props.users;
+        return React.createElement("div", { className: "folder-tasks", id: this.props.id },
+            React.createElement(TemplateHeader, { title: this.props.title }),
+            React.createElement(TemplateBody, __assign({}, this.props)),
+            React.createElement(TemplateFooter, { users: users }));
+    };
+    return TemplateTask;
+}(React.Component));
+var App = (function (_super) {
+    __extends(App, _super);
+    function App() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    App.prototype.render = function () {
+        return React.createElement("div", null, "Hello World!");
+    };
+    return App;
+}(React.Component));
+// ReactDOM.render(<App/>, document.getElementById('app'));
 // Initialize functions
 // Scope: Modal, Dashboard, Kanban
 function Initialize() {
@@ -92,6 +190,24 @@ function InitializeKanban() {
     else {
         $('#filter-assign').css('visibility', 'hidden');
     }
+}
+function GetUserList() {
+    var url = '/Users/ViewRestrictedUserList';
+    $.ajax({
+        url: url,
+        type: "GET",
+        cache: false,
+        success: function (data, textStatus, jqXHR) {
+            var userListElem = $('#filter-assign');
+            data.map(function (user) {
+                //alert(JSON.stringify(user));
+                var name = user.Name;
+                var id = user.Email;
+                var opt = new Option(name, id);
+                userListElem.append(opt);
+            });
+        }
+    });
 }
 //Database Operations:
 function loadWorkload(workloadID) {
@@ -687,74 +803,6 @@ function clearValidate() {
         field.siblings().children("button").removeClass('error');
     }
 }
-var TemplateHeader = (function (_super) {
-    __extends(TemplateHeader, _super);
-    function TemplateHeader() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TemplateHeader.prototype.render = function () {
-        return React.createElement("div", { className: "folder-header" },
-            React.createElement("p", null,
-                React.createElement("span", { className: "templateTitle" }, this.props.title)));
-    };
-    return TemplateHeader;
-}(React.Component));
-var TemplateBody = (function (_super) {
-    __extends(TemplateBody, _super);
-    function TemplateBody() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TemplateBody.prototype.render = function () {
-        return React.createElement("div", { className: "folder-body" },
-            React.createElement("p", null,
-                React.createElement("i", { className: "fa fa-calendar fa-task-def", "aria-hidden": "true" }),
-                React.createElement("span", { className: "templateStart" }, this.props.dateStart),
-                React.createElement("i", { className: "fa fa-calendar-check-o fa-task-def", "aria-hidden": "true" }),
-                React.createElement("span", { className: "templateEnd" }, this.props.dateEnd)),
-            React.createElement("p", null,
-                React.createElement("i", { className: "fa fa-clock-o fa-task-def", "aria-hidden": "true" }),
-                React.createElement("span", { className: "templateHours" }),
-                React.createElement("i", { className: "fa fa-paperclip fa-task-def", "aria-hidden": "true" }),
-                React.createElement("span", { className: "templateAttachments" })));
-    };
-    return TemplateBody;
-}(React.Component));
-var TemplateFooter = (function (_super) {
-    __extends(TemplateFooter, _super);
-    function TemplateFooter() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TemplateFooter.prototype.render = function () {
-        var userImages = this.props.users.map(function (email) { return React.createElement("img", { className: "user", src: '/users/photo/' + email }); });
-        return React.createElement("div", { className: "folder-footer" }, userImages);
-    };
-    return TemplateFooter;
-}(React.Component));
-var TemplateTask = (function (_super) {
-    __extends(TemplateTask, _super);
-    function TemplateTask() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TemplateTask.prototype.render = function () {
-        var users = this.props.users;
-        return React.createElement("div", { className: "folder-tasks", id: this.props.id },
-            React.createElement(TemplateHeader, { title: this.props.title }),
-            React.createElement(TemplateBody, __assign({}, this.props)),
-            React.createElement(TemplateFooter, { users: users }));
-    };
-    return TemplateTask;
-}(React.Component));
-var App = (function (_super) {
-    __extends(App, _super);
-    function App() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    App.prototype.render = function () {
-        return React.createElement("div", null, "Hello World!");
-    };
-    return App;
-}(React.Component));
-// ReactDOM.render(<App/>, document.getElementById('app'));
 //Microsoft Graph API calls:
 function GetImage(user, token) {
     var url = "https://graph.microsoft.com/v1.0/me/photo/$value";
@@ -803,18 +851,6 @@ function formatDate(dateStr, callback) {
     var str = month + '/' + day + '/' + year;
     callback(str);
 }
-function getGUID(callback) {
-    $.ajax({
-        url: '/Workload/GetGuid',
-        type: 'GET',
-        processData: false,
-        contentType: false,
-        cache: false,
-        success: function (data) {
-            callback(data);
-        }
-    });
-}
 //Kanban:
 function dragstart(ev) {
     ev.dataTransfer.setData('text', ev.target.id);
@@ -833,11 +869,6 @@ function drop(ev) {
     var task = { Id: elem.id, State: numstate };
     update(task);
 }
-//var tasks = $('.task');
-//tasks.map(function (i, task) {
-//    task.draggable = true;
-//    task.addEventListener('dragstart', dragstart);
-//});
 function clearFolder(state) {
     var task_state = '.state' + state;
     var folder = document.querySelector(task_state);
@@ -862,53 +893,21 @@ function createTask(id, title, start, end, hours, attachments, tag, state, users
     var task_state = '.state' + state;
     createTaskInFolder(id, title, start, end, hours, attachments, tag, task_state, users);
 }
-function getUserImageTask(user, taskId) {
-    //var url = '/users/GetUserPhoto?=' + user;
-    //var url = '/users/photo/' + user;
-    //$.ajax({
-    //    url: url,
-    //    type: "GET",
-    //    cache: true,
-    //    success: function (data) {
-    //        img = $('<img class="user">').attr('src', data);
-    //        $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
-    //    }
-    //});
-    var url = '/users/photo/' + user;
-    var img = $('<img class="user">').attr('src', url);
-    $('#' + taskId + ' .folder-tasks .folder-footer').append(img);
-}
 function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
     var elemTask = document.querySelector('#templateTask');
     var content = elemTask.content;
     var clone = document.importNode(content, true);
     var folder = document.querySelector(folderSelector);
     clone.querySelector('.task').id = taskId;
-    //clone.querySelector('.task').classList.add(tag);
-    // clone.querySelector('.task .templateTitle').textContent = taskTitle;
-    if (clone.querySelector('.hack-force-hide-template-layout') == null) {
-        // clone.querySelector('.task .templateStart').textContent = start;
-        // clone.querySelector('.task .templateEnd').textContent = end;
-        // clone.querySelector('.task .templateHours').textContent = hours;
-        // clone.querySelector('.task .templateAttachments').textContent = attachments;
-    }
-    else {
-        // will not work
-        //clone.querySelector('.task .templateDescription').textContent = description;
-    }
     clone.querySelector('.task').addEventListener('dragstart', dragstart);
     clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId); });
+    // fix problems
     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
-    clone.querySelector('.task.app').id = validIdName;
-    folder.appendChild(clone, true);
     var userArray = users.map(function (item) { return item.Item1; });
+    clone.querySelector('.task').id = validIdName;
+    folder.appendChild(clone, true);
     var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName));
-    if (clone.querySelector('.hack-force-hide-template-layout') == null) {
-        $.each(users, function (index, value) {
-            getUserImageTask(value.Item1, taskId);
-        });
-    }
 }
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
     var task = $('#' + taskId);
@@ -918,20 +917,7 @@ function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, use
     $('#' + taskId + ' .templateAttachments').text(attachments);
     $('#' + taskId + ' .folder-tasks .folder-footer img').remove();
     $.each(users, function (index, value) {
-        getUserImageTask(value.Item1, taskId);
-    });
-}
-function httpCall(action, url, data, callback, error) {
-    $.ajax({
-        type: action,
-        url: url,
-        data: JSON.stringify(data),
-        cache: false,
-        contentType: 'application/json',
-        dataType: 'json',
-        success: callback,
-        error: error,
-        processData: false
+        //getUserImageTask(value.Item1, taskId);
     });
 }
 function taskedit(id) {
@@ -940,16 +926,6 @@ function taskedit(id) {
 function taskdone(id) {
     moveTask(id, 2);
 }
-function gettasklist(callback, type, user) {
-    var filter_user = user ? '?user=' + user : '';
-    var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
-    httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
-}
-function update(task) {
-    httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
-        // done
-    }, null);
-}
 function RefreshTaskList() {
     var selected_user = $('select[name=filter-assign] option:selected').val();
     var selected_type = $('input[name=type]:checked').val();
@@ -957,24 +933,6 @@ function RefreshTaskList() {
     var filter_type = (selected_type == 2); // is BACKLOG?
     // alert('filter: ' + filter_type + ', user = ' + filter_user);
     loadTaskList(filter_type, filter_user);
-}
-function GetUserList() {
-    var url = '/Users/ViewRestrictedUserList';
-    $.ajax({
-        url: url,
-        type: "GET",
-        cache: false,
-        success: function (data, textStatus, jqXHR) {
-            var userListElem = $('#filter-assign');
-            data.map(function (user) {
-                //alert(JSON.stringify(user));
-                var name = user.Name;
-                var id = user.Email;
-                var opt = new Option(name, id);
-                userListElem.append(opt);
-            });
-        }
-    });
 }
 function loadTaskList(filter_type, filter_user) {
     //alert(filter_user);
