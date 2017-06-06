@@ -38,7 +38,7 @@ class TemplateFooter extends React.Component<{users: string[]},{}> {
        var userImages = null;
        
        if( this.props.users ) {
-           this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>)
+           userImages = this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>)
        }
 
        return   <div className="folder-footer">
@@ -101,7 +101,7 @@ var folderM1 = new FolderModel(1);
 var folderM2 = new FolderModel(2);
 var folderM3 = new FolderModel(3);
 var folderM = [folderM0, folderM1, folderM2, folderM3];
-folderM3.tasks.push({id: 'a13456', title: 'abc'});
+//folderM3.tasks.push({id: 'a13456', title: 'abc'});
 
 class Folder extends React.Component<{taskState: number, model: FolderModel},{}> {
 
@@ -138,7 +138,7 @@ class Folder extends React.Component<{taskState: number, model: FolderModel},{}>
 
        var tasks = null;
        if(this.props.model.tasks) {
-           alert(this.props.model.tasks.length)
+           
            tasks = this.props.model.tasks.map( t => <TemplateTask key={t.id} {...t}></TemplateTask>)
        }
 

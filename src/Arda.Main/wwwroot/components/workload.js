@@ -87,7 +87,7 @@ var TemplateFooter = (function (_super) {
     TemplateFooter.prototype.render = function () {
         var userImages = null;
         if (this.props.users) {
-            this.props.users.map(function (email) { return React.createElement("img", { key: email, className: "user", src: '/users/photo/' + email }); });
+            userImages = this.props.users.map(function (email) { return React.createElement("img", { key: email, className: "user", src: '/users/photo/' + email }); });
         }
         return React.createElement("div", { className: "folder-footer" }, userImages);
     };
@@ -145,7 +145,7 @@ var folderM1 = new FolderModel(1);
 var folderM2 = new FolderModel(2);
 var folderM3 = new FolderModel(3);
 var folderM = [folderM0, folderM1, folderM2, folderM3];
-folderM3.tasks.push({ id: 'a13456', title: 'abc' });
+//folderM3.tasks.push({id: 'a13456', title: 'abc'});
 var Folder = (function (_super) {
     __extends(Folder, _super);
     function Folder() {
@@ -177,7 +177,6 @@ var Folder = (function (_super) {
         var className = "folder state" + this.props.model.state.toString();
         var tasks = null;
         if (this.props.model.tasks) {
-            alert(this.props.model.tasks.length);
             tasks = this.props.model.tasks.map(function (t) { return React.createElement(TemplateTask, __assign({ key: t.id }, t)); });
         }
         return React.createElement("div", { className: "col-xs-12 col-md-3 dashboard-panel", "data-simplebar-direction": "vertical" },
@@ -907,10 +906,10 @@ function InitializeKanban() {
     ReactDOM.render(React.createElement(DashboardFolderHeader, null), document.getElementById('dashboard-folder-header'));
     ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
     //Board Initialization
-    folders.map(function (i, folder) {
-        // folder.addEventListener('dragover', dragover);
-        // folder.addEventListener('drop', drop.bind(folder));
-    });
+    // folders.map(function (i, folder) {
+    //     // folder.addEventListener('dragover', dragover);
+    //     // folder.addEventListener('drop', drop.bind(folder));
+    // });
     // $('.dashboard-filter-field').change(function () {
     //     RefreshTaskList();
     // });
@@ -952,48 +951,49 @@ function RefreshTaskList() {
     loadTaskList();
 }
 function loadTaskList() {
-    //alert(filter_user);
+    // remove it asap
     clearTasks();
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
         });
     });
+    //ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );
 }
 // task
 function dragstart(ev) {
     ev.dataTransfer.setData('text', ev.target.id);
 }
-function dragover(ev) {
-    ev.preventDefault();
-}
-// folder
-function drop(ev) {
-    var target = this;
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData('text');
-    var elem = document.getElementById(data);
-    target.appendChild(elem);
-    var state = target.dataset['state'];
-    var numstate = state | 0;
-    var taskId = data;
-    // remove the underscore
-    if (taskId[0] == '_') {
-        taskId = taskId.slice(1);
-    }
-    var task = { Id: taskId, State: numstate };
-    update(task);
-}
+// function dragover(ev) {
+//     ev.preventDefault();
+// }
+// // folder
+// function drop(ev) {
+//     var target = this;
+//     ev.preventDefault();
+//     var data = ev.dataTransfer.getData('text');
+//     var elem = document.getElementById(data);
+//     target.appendChild(elem);
+//     var state = target.dataset['state'];
+//     var numstate = state | 0;
+//     var taskId = data;
+//     // remove the underscore
+//     if(taskId[0] == '_') {
+//         taskId = taskId.slice(1);
+//     }
+//     var task = { Id: taskId, State: numstate };
+//     update(task);
+// }
 function clearFolder(state) {
-    // var task_state = '.state' + state;
-    // var folder = document.querySelector(task_state);
-    // $(folder).empty();
+    var task_state = '.state' + state;
+    var folder = document.querySelector(task_state);
+    $(folder).empty();
 }
 function clearTasks() {
-    // clearFolder('0');
-    // clearFolder('1');
-    // clearFolder('2');
-    // clearFolder('3');
+    clearFolder('0');
+    clearFolder('1');
+    clearFolder('2');
+    clearFolder('3');
 }
 function moveTask(id, state) {
     var task_state = '.state' + state;
