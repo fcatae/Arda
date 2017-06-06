@@ -35,7 +35,7 @@ class TemplateBody extends React.Component<ITaskLegacyItem,{}> {
 
 class TemplateFooter extends React.Component<{users: string[]},{}> {
    render() {       
-       var userImages = this.props.users.map( email => <img className="user" src={'/users/photo/' + email}></img>)
+       var userImages = this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>)
 
        return   <div className="folder-footer">
                     {userImages}
