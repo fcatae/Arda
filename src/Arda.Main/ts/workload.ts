@@ -15,8 +15,8 @@ function InitializeKanban() {
 
     //Board Initialization
     folders.map(function (i, folder) {
-        folder.addEventListener('dragover', dragover);
-        folder.addEventListener('drop', drop.bind(folder));
+        // folder.addEventListener('dragover', dragover);
+        // folder.addEventListener('drop', drop.bind(folder));
     });
 
     // $('.dashboard-filter-field').change(function () {
@@ -69,8 +69,7 @@ function RefreshTaskList() {
 }
 
 function loadTaskList() {
-    //alert(filter_user);
-
+    // remove it asap
     clearTasks();
 
     gettasklist(function (tasklist) {
@@ -78,6 +77,8 @@ function loadTaskList() {
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
         });
     });
+
+    
 }
 
 

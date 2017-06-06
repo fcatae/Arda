@@ -29,12 +29,11 @@ function httpCall(action, url, data, callback, error) {
         processData: false
     });
 }
-function gettasklist(callback, type, user) {
+function gettasklist(callback) {
     // var filter_user = user ? '?user=' + user : '';
     // var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
     //httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
     httpCall('GET', '/Workload/ListWorkloadsByUser', null, callback, null);
-    alert('gettasklist');
 }
 function update(task) {
     httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
@@ -86,7 +85,10 @@ var TemplateFooter = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     TemplateFooter.prototype.render = function () {
-        var userImages = this.props.users.map(function (email) { return React.createElement("img", { key: email, className: "user", src: '/users/photo/' + email }); });
+        var userImages = null;
+        if (this.props.users) {
+            this.props.users.map(function (email) { return React.createElement("img", { key: email, className: "user", src: '/users/photo/' + email }); });
+        }
         return React.createElement("div", { className: "folder-footer" }, userImages);
     };
     return TemplateFooter;
@@ -104,19 +106,6 @@ var TemplateTask = (function (_super) {
             React.createElement(TemplateFooter, { users: users }));
     };
     return TemplateTask;
-}(React.Component));
-var Folder = (function (_super) {
-    __extends(Folder, _super);
-    function Folder() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    Folder.prototype.render = function () {
-        var className = "folder state" + this.props.taskState.toString();
-        var state = this.props.taskState;
-        return React.createElement("div", { className: "col-xs-12 col-md-3 dashboard-panel", "data-simplebar-direction": "vertical" },
-            React.createElement("div", { className: className, "data-state": state }));
-    };
-    return Folder;
 }(React.Component));
 var DashboardFolderHeader = (function (_super) {
     __extends(DashboardFolderHeader, _super);
@@ -144,6 +133,58 @@ var DashboardFolderHeader = (function (_super) {
     };
     return DashboardFolderHeader;
 }(React.Component));
+var FolderModel = (function () {
+    function FolderModel(state) {
+        this.state = state;
+        this.tasks = [];
+    }
+    return FolderModel;
+}());
+var folderM0 = new FolderModel(0);
+var folderM1 = new FolderModel(1);
+var folderM2 = new FolderModel(2);
+var folderM3 = new FolderModel(3);
+var folderM = [folderM0, folderM1, folderM2, folderM3];
+folderM3.tasks.push({ id: 'a13456', title: 'abc' });
+var Folder = (function (_super) {
+    __extends(Folder, _super);
+    function Folder() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Folder.prototype.allowDrop = function (ev) {
+        ev.preventDefault();
+    };
+    Folder.prototype.drop = function (ev) {
+        ev.preventDefault();
+        // jquery-alike
+        var data = ev.dataTransfer.getData('text');
+        var elem = document.getElementById(data);
+        var target = document.querySelector('.folder.state' + this.props.taskState);
+        target.appendChild(elem);
+        // react
+        var numstate = this.props.taskState;
+        var taskId = ev.dataTransfer.getData('text');
+        ;
+        // remove the underscore
+        if (taskId[0] == '_') {
+            taskId = taskId.slice(1);
+        }
+        var task = { Id: taskId, State: numstate };
+        update(task);
+    };
+    Folder.prototype.render = function () {
+        var state = this.props.model.state;
+        var className = "folder state" + this.props.model.state.toString();
+        var tasks = null;
+        if (this.props.model.tasks) {
+            alert(this.props.model.tasks.length);
+            tasks = this.props.model.tasks.map(function (t) { return React.createElement(TemplateTask, __assign({ key: t.id }, t)); });
+        }
+        return React.createElement("div", { className: "col-xs-12 col-md-3 dashboard-panel", "data-simplebar-direction": "vertical" },
+            React.createElement("div", { className: className, "data-state": state, onDragOver: this.allowDrop, onDrop: this.drop.bind(this) }, tasks));
+    };
+    return Folder;
+}(React.Component));
 var DashboardFolders = (function (_super) {
     __extends(DashboardFolders, _super);
     function DashboardFolders() {
@@ -151,10 +192,10 @@ var DashboardFolders = (function (_super) {
     }
     DashboardFolders.prototype.render = function () {
         return React.createElement("div", null,
-            React.createElement(Folder, { taskState: 0 }),
-            React.createElement(Folder, { taskState: 1 }),
-            React.createElement(Folder, { taskState: 2 }),
-            React.createElement(Folder, { taskState: 3 }));
+            React.createElement(Folder, { taskState: 0, model: folderM0 }),
+            React.createElement(Folder, { taskState: 1, model: folderM1 }),
+            React.createElement(Folder, { taskState: 2, model: folderM2 }),
+            React.createElement(Folder, { taskState: 3, model: folderM3 }));
     };
     return DashboardFolders;
 }(React.Component));
@@ -867,8 +908,8 @@ function InitializeKanban() {
     ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
     //Board Initialization
     folders.map(function (i, folder) {
-        folder.addEventListener('dragover', dragover);
-        folder.addEventListener('drop', drop.bind(folder));
+        // folder.addEventListener('dragover', dragover);
+        // folder.addEventListener('drop', drop.bind(folder));
     });
     // $('.dashboard-filter-field').change(function () {
     //     RefreshTaskList();
@@ -908,16 +949,16 @@ function RefreshTaskList() {
     // var filter_user = selected_user; // (selected_user.length > 0) ? el.target.selectedOptions[0].value : null;
     // var filter_type = (selected_type == 2); // is BACKLOG?
     // loadTaskList(filter_type, filter_user);
-    loadTaskList(null, null);
+    loadTaskList();
 }
-function loadTaskList(filter_type, filter_user) {
+function loadTaskList() {
     //alert(filter_user);
     clearTasks();
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
         });
-    }, filter_type, filter_user);
+    });
 }
 // task
 function dragstart(ev) {
@@ -944,15 +985,15 @@ function drop(ev) {
     update(task);
 }
 function clearFolder(state) {
-    var task_state = '.state' + state;
-    var folder = document.querySelector(task_state);
-    $(folder).empty();
+    // var task_state = '.state' + state;
+    // var folder = document.querySelector(task_state);
+    // $(folder).empty();
 }
 function clearTasks() {
-    clearFolder('0');
-    clearFolder('1');
-    clearFolder('2');
-    clearFolder('3');
+    // clearFolder('0');
+    // clearFolder('1');
+    // clearFolder('2');
+    // clearFolder('3');
 }
 function moveTask(id, state) {
     var task_state = '.state' + state;

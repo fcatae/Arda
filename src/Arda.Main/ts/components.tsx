@@ -35,7 +35,11 @@ class TemplateBody extends React.Component<ITaskLegacyItem,{}> {
 
 class TemplateFooter extends React.Component<{users: string[]},{}> {
    render() {       
-       var userImages = this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>)
+       var userImages = null;
+       
+       if( this.props.users ) {
+           this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>)
+       }
 
        return   <div className="folder-footer">
                     {userImages}
@@ -52,17 +56,6 @@ class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
                     <TemplateBody {...this.props}></TemplateBody>
                     <TemplateFooter users={users}></TemplateFooter>
                 </div>;
-   }
-}
-
-class Folder extends React.Component<{taskState: number},{}> {
-   render() {       
-       var className = "folder state" + this.props.taskState.toString();
-       var state = this.props.taskState;
-
-       return   <div className="col-xs-12 col-md-3 dashboard-panel" data-simplebar-direction="vertical">
-                    <div className={className} data-state={state}></div>
-                </div>
    }
 }
 
@@ -95,14 +88,75 @@ class DashboardFolderHeader extends React.Component<{},{}> {
     }
 }
 
+class FolderModel {
+    constructor(state) {
+        this.state = state;
+        this.tasks = [];
+    }
+    public state: number;
+    public tasks: ITaskLegacyItem[];
+}
+var folderM0 = new FolderModel(0);
+var folderM1 = new FolderModel(1);
+var folderM2 = new FolderModel(2);
+var folderM3 = new FolderModel(3);
+var folderM = [folderM0, folderM1, folderM2, folderM3];
+folderM3.tasks.push({id: 'a13456', title: 'abc'});
+
+class Folder extends React.Component<{taskState: number, model: FolderModel},{}> {
+
+   allowDrop(ev) {
+       ev.preventDefault();
+   }
+   drop(ev) {
+    ev.preventDefault();
+    
+    // jquery-alike
+    var data = ev.dataTransfer.getData('text');
+    var elem = document.getElementById(data);
+    var target = document.querySelector('.folder.state' + this.props.taskState) as HTMLDivElement;
+    target.appendChild(elem);
+
+    // react
+    var numstate = this.props.taskState; 
+
+    var taskId = ev.dataTransfer.getData('text');;
+
+    // remove the underscore
+    if(taskId[0] == '_') {
+        taskId = taskId.slice(1);
+    }
+
+    var task = { Id: taskId, State: numstate };
+
+    update(task);        
+   }
+
+   render() {       
+       var state = this.props.model.state;
+       var className = "folder state" + this.props.model.state.toString();
+
+       var tasks = null;
+       if(this.props.model.tasks) {
+           alert(this.props.model.tasks.length)
+           tasks = this.props.model.tasks.map( t => <TemplateTask key={t.id} {...t}></TemplateTask>)
+       }
+
+       return   <div className="col-xs-12 col-md-3 dashboard-panel" data-simplebar-direction="vertical">
+                    <div className={className} data-state={state} onDragOver={this.allowDrop} onDrop={this.drop.bind(this)}>
+                        {tasks}
+                    </div>
+                </div>
+   }
+}
 
 class DashboardFolders extends React.Component<{},{}> {
    render() {       
        return   <div>
-                    <Folder taskState={0}></Folder>
-                    <Folder taskState={1}></Folder>
-                    <Folder taskState={2}></Folder>
-                    <Folder taskState={3}></Folder>
+                    <Folder taskState={0} model={folderM0}></Folder>
+                    <Folder taskState={1} model={folderM1}></Folder>
+                    <Folder taskState={2} model={folderM2}></Folder>
+                    <Folder taskState={3} model={folderM3}></Folder>
                 </div>
    }
 }
