@@ -59,6 +59,27 @@ class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
    }
 }
 
+class TemplateTask2 extends React.Component<ITaskLegacyItem,{}> {
+
+    dragstart(ev) {
+        ev.dataTransfer.setData('text', ev.target.id);
+    }    
+
+   render() {
+       var users = this.props.users;
+       var validIdName = '_' + this.props.id; // avoid issues when taskId starts with numbers
+       var taskId = this.props.id;
+       return   <div id={validIdName} className="task" draggable={true} data-toggle="modal" data-target="#WorkloadModal" 
+                                                        onDragStart={this.dragstart} onClick={function () { taskedit(taskId) }}>
+                    <div className="folder-tasks" id={this.props.id}>
+                        <TemplateHeader title={this.props.title}></TemplateHeader>
+                        <TemplateBody {...this.props}></TemplateBody>
+                        <TemplateFooter users={users}></TemplateFooter>
+                    </div>
+                </div>;
+   }
+}
+
 class DashboardFolderHeader extends React.Component<{},{}> {
     render() {
         return <div className="row">
@@ -101,7 +122,7 @@ var folderM1 = new FolderModel(1);
 var folderM2 = new FolderModel(2);
 var folderM3 = new FolderModel(3);
 var folderM = [folderM0, folderM1, folderM2, folderM3];
-//folderM3.tasks.push({id: 'a13456', title: 'abc'});
+folderM3.tasks.push({id: 'a13456', title: 'abc'});
 
 class Folder extends React.Component<{taskState: number, model: FolderModel},{}> {
 
@@ -139,7 +160,7 @@ class Folder extends React.Component<{taskState: number, model: FolderModel},{}>
        var tasks = null;
        if(this.props.model.tasks) {
            
-           tasks = this.props.model.tasks.map( t => <TemplateTask key={t.id} {...t}></TemplateTask>)
+           tasks = this.props.model.tasks.map( t => <TemplateTask2 key={t.id} {...t}></TemplateTask2>)
        }
 
        return   <div className="col-xs-12 col-md-3 dashboard-panel" data-simplebar-direction="vertical">

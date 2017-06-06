@@ -107,6 +107,26 @@ var TemplateTask = (function (_super) {
     };
     return TemplateTask;
 }(React.Component));
+var TemplateTask2 = (function (_super) {
+    __extends(TemplateTask2, _super);
+    function TemplateTask2() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TemplateTask2.prototype.dragstart = function (ev) {
+        ev.dataTransfer.setData('text', ev.target.id);
+    };
+    TemplateTask2.prototype.render = function () {
+        var users = this.props.users;
+        var validIdName = '_' + this.props.id; // avoid issues when taskId starts with numbers
+        var taskId = this.props.id;
+        return React.createElement("div", { id: validIdName, className: "task", draggable: true, "data-toggle": "modal", "data-target": "#WorkloadModal", onDragStart: this.dragstart, onClick: function () { taskedit(taskId); } },
+            React.createElement("div", { className: "folder-tasks", id: this.props.id },
+                React.createElement(TemplateHeader, { title: this.props.title }),
+                React.createElement(TemplateBody, __assign({}, this.props)),
+                React.createElement(TemplateFooter, { users: users })));
+    };
+    return TemplateTask2;
+}(React.Component));
 var DashboardFolderHeader = (function (_super) {
     __extends(DashboardFolderHeader, _super);
     function DashboardFolderHeader() {
@@ -145,7 +165,7 @@ var folderM1 = new FolderModel(1);
 var folderM2 = new FolderModel(2);
 var folderM3 = new FolderModel(3);
 var folderM = [folderM0, folderM1, folderM2, folderM3];
-//folderM3.tasks.push({id: 'a13456', title: 'abc'});
+folderM3.tasks.push({ id: 'a13456', title: 'abc' });
 var Folder = (function (_super) {
     __extends(Folder, _super);
     function Folder() {
@@ -177,7 +197,7 @@ var Folder = (function (_super) {
         var className = "folder state" + this.props.model.state.toString();
         var tasks = null;
         if (this.props.model.tasks) {
-            tasks = this.props.model.tasks.map(function (t) { return React.createElement(TemplateTask, __assign({ key: t.id }, t)); });
+            tasks = this.props.model.tasks.map(function (t) { return React.createElement(TemplateTask2, __assign({ key: t.id }, t)); });
         }
         return React.createElement("div", { className: "col-xs-12 col-md-3 dashboard-panel", "data-simplebar-direction": "vertical" },
             React.createElement("div", { className: className, "data-state": state, onDragOver: this.allowDrop, onDrop: this.drop.bind(this) }, tasks));
@@ -910,30 +930,17 @@ function RefreshTaskList() {
     loadTaskList();
 }
 function loadTaskList() {
-    // remove it asap
-    //clearTasks();
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
         });
     });
-    //ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );
+    ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
 }
 // task
 function dragstart(ev) {
     ev.dataTransfer.setData('text', ev.target.id);
 }
-// function clearFolder(state) {
-//     var task_state = '.state' + state;
-//     var folder = document.querySelector(task_state);
-//     $(folder).empty();
-// }
-// function clearTasks() {
-//     clearFolder('0');
-//     clearFolder('1');
-//     clearFolder('2');
-//     clearFolder('3');
-// }
 function moveTask(id, state) {
     var task_state = '.state' + state;
     var folder = document.querySelector(task_state);
@@ -968,6 +975,18 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     folder.appendChild(clone, true);
     var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName));
+}
+function createTaskInFolder2(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
+    // <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
+    var elemTask = document.querySelector('#templateTask');
+    var content = elemTask.content;
+    var clone = document.importNode(content, true);
+    clone.querySelector('.task').addEventListener('dragstart', dragstart);
+    clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId); });
+    var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
+    clone.querySelector('.task').id = validIdName;
+    var folder = document.querySelector(folderSelector);
+    folder.appendChild(clone, true);
 }
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
     // fix problems

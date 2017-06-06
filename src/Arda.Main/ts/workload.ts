@@ -84,6 +84,23 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName) );
 }
 
+function createTaskInFolder2(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
+
+    // <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
+    var elemTask = document.querySelector('#templateTask') as HTMLTemplateElement;
+    var content = elemTask.content; 
+    var clone = document.importNode(content, true);
+
+    clone.querySelector('.task').addEventListener('dragstart', dragstart);
+    clone.querySelector('.task').addEventListener('click', function () { taskedit(taskId) });
+
+    var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
+    clone.querySelector('.task').id = validIdName;
+
+    var folder = document.querySelector(folderSelector);
+    folder.appendChild(clone, true);
+}
+
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
 
     // fix problems
