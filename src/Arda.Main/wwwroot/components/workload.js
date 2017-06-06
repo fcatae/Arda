@@ -103,6 +103,33 @@ var TemplateTask = (function (_super) {
     };
     return TemplateTask;
 }(React.Component));
+var Folder = (function (_super) {
+    __extends(Folder, _super);
+    function Folder() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Folder.prototype.render = function () {
+        var className = "folder state" + this.props.taskState.toString();
+        var state = this.props.taskState;
+        return React.createElement("div", { className: "col-xs-12 col-md-3 dashboard-panel", "data-simplebar-direction": "vertical" },
+            React.createElement("div", { className: className, "data-state": state }));
+    };
+    return Folder;
+}(React.Component));
+var DashboardFolders = (function (_super) {
+    __extends(DashboardFolders, _super);
+    function DashboardFolders() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    DashboardFolders.prototype.render = function () {
+        return React.createElement("div", null,
+            React.createElement(Folder, { taskState: 0 }),
+            React.createElement(Folder, { taskState: 1 }),
+            React.createElement(Folder, { taskState: 2 }),
+            React.createElement(Folder, { taskState: 3 }));
+    };
+    return DashboardFolders;
+}(React.Component));
 // Initialize functions
 // Scope: Modal, Dashboard, Kanban
 function Initialize() {
@@ -160,43 +187,6 @@ function InitializeFields() {
     $.getJSON('/metric/GetMetrics', null, callbackGetMetrics);
     //Get User Users:
     $.getJSON('/users/GetUsers', null, callbackGetUsers);
-}
-function InitializeKanban() {
-    //Board Initialization
-    folders.map(function (i, folder) {
-        folder.addEventListener('dragover', dragover);
-        folder.addEventListener('drop', drop.bind(folder));
-    });
-    $('.dashboard-filter-field').change(function () {
-        RefreshTaskList();
-    });
-    if (window["hackIsAdmin"] != null) {
-        GetUserList();
-        $('#filter-assign').change(function () {
-            RefreshTaskList();
-        });
-    }
-    else {
-        $('#filter-assign').css('visibility', 'hidden');
-    }
-}
-function GetUserList() {
-    var url = '/Users/ViewRestrictedUserList';
-    $.ajax({
-        url: url,
-        type: "GET",
-        cache: false,
-        success: function (data, textStatus, jqXHR) {
-            var userListElem = $('#filter-assign');
-            data.map(function (user) {
-                //alert(JSON.stringify(user));
-                var name = user.Name;
-                var id = user.Email;
-                var opt = new Option(name, id);
-                userListElem.append(opt);
-            });
-        }
-    });
 }
 //Database Operations:
 function loadWorkload(workloadID) {
@@ -842,6 +832,44 @@ function formatDate(dateStr, callback) {
 }
 //Kanban:
 // initialize
+function InitializeKanban() {
+    ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
+    //Board Initialization
+    folders.map(function (i, folder) {
+        folder.addEventListener('dragover', dragover);
+        folder.addEventListener('drop', drop.bind(folder));
+    });
+    $('.dashboard-filter-field').change(function () {
+        RefreshTaskList();
+    });
+    if (window["hackIsAdmin"] != null) {
+        GetUserList();
+        $('#filter-assign').change(function () {
+            RefreshTaskList();
+        });
+    }
+    else {
+        $('#filter-assign').css('visibility', 'hidden');
+    }
+}
+function GetUserList() {
+    var url = '/Users/ViewRestrictedUserList';
+    $.ajax({
+        url: url,
+        type: "GET",
+        cache: false,
+        success: function (data, textStatus, jqXHR) {
+            var userListElem = $('#filter-assign');
+            data.map(function (user) {
+                //alert(JSON.stringify(user));
+                var name = user.Name;
+                var id = user.Email;
+                var opt = new Option(name, id);
+                userListElem.append(opt);
+            });
+        }
+    });
+}
 function RefreshTaskList() {
     var selected_user = $('select[name=filter-assign] option:selected').val();
     var selected_type = $('input[name=type]:checked').val();
@@ -913,6 +941,7 @@ function createTask(id, title, start, end, hours, attachments, tag, state, users
 }
 // task
 function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
+    // <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
     var elemTask = document.querySelector('#templateTask');
     var content = elemTask.content;
     var clone = document.importNode(content, true);
@@ -929,15 +958,6 @@ function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, t
     ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName));
 }
 function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
-    var task = $('#' + taskId);
-    $('#' + taskId + ' .templateTitle').text(taskTitle);
-    $('#' + taskId + ' .templateStart').text(start);
-    $('#' + taskId + ' .templateEnd').text(end);
-    //$('#' + taskId + ' .templateAttachments').text(attachments);
-    //$('#' + taskId + ' .folder-tasks .folder-footer img').remove();
-    $.each(users, function (index, value) {
-        //getUserImageTask(value.Item1, taskId);
-    });
     // fix problems
     var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
     var userArray = users.map(function (item) { return item.Item1; });

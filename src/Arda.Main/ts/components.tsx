@@ -54,3 +54,26 @@ class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
                 </div>;
    }
 }
+
+class Folder extends React.Component<{taskState: number},{}> {
+   render() {       
+       var className = "folder state" + this.props.taskState.toString();
+       var state = this.props.taskState;
+
+       return   <div className="col-xs-12 col-md-3 dashboard-panel" data-simplebar-direction="vertical">
+                    <div className={className} data-state={state}></div>
+                </div>
+   }
+}
+
+class DashboardFolders extends React.Component<{},{}> {
+   render() {       
+       return   <div>
+                    <Folder taskState={0}></Folder>
+                    <Folder taskState={1}></Folder>
+                    <Folder taskState={2}></Folder>
+                    <Folder taskState={3}></Folder>
+                </div>
+   }
+}
+

@@ -5,6 +5,53 @@ declare var folders : any;
 //Kanban:
 
 // initialize
+
+function InitializeKanban() {
+
+    ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders') );
+
+    //Board Initialization
+    folders.map(function (i, folder) {
+        folder.addEventListener('dragover', dragover);
+        folder.addEventListener('drop', drop.bind(folder));
+    });
+
+    $('.dashboard-filter-field').change(function () {
+        RefreshTaskList();
+    });
+
+    if (window["hackIsAdmin"] != null) {
+        GetUserList();
+        $('#filter-assign').change(function () {
+            RefreshTaskList();
+        });
+    }
+    else {
+        $('#filter-assign').css('visibility', 'hidden');
+    }
+}
+
+function GetUserList() {
+    var url = '/Users/ViewRestrictedUserList';
+    $.ajax({
+        url: url,
+        type: "GET",
+        cache: false,
+        success: function (data, textStatus, jqXHR) {
+
+            var userListElem = $('#filter-assign');
+
+            data.map(function (user) {
+                //alert(JSON.stringify(user));
+                var name = user.Name;
+                var id = user.Email;
+                var opt = new Option(name, id);
+                userListElem.append(opt);
+            })
+        }
+    });
+}
+
 function RefreshTaskList() {
     var selected_user = $('select[name=filter-assign] option:selected').val();
     var selected_type = $('input[name=type]:checked').val();
@@ -103,9 +150,12 @@ function createTask(id, title, start, end, hours, attachments, tag, state, users
 
 // task
 function createTaskInFolder(taskId, taskTitle, start, end, hours, attachments, tag, folderSelector, users) {
+
+    // <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
     var elemTask = document.querySelector('#templateTask') as HTMLTemplateElement;
-    var content = elemTask.content;
+    var content = elemTask.content; 
     var clone = document.importNode(content, true);
+    
     var folder = document.querySelector(folderSelector);
 
     clone.querySelector('.task').id = taskId;
