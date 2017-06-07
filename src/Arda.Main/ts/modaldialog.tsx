@@ -238,3 +238,32 @@ class ModalForm extends React.Component<IModalFormState,IModalFormState> {
    }
 }
 
+class ModalDialogContent extends React.Component<{modalTitle:string, form: IModalFormState, show: any},{}> {
+   render() {
+       let modalTitle = this.props.modalTitle;
+
+       return <div className="modal-content">
+                <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title">{modalTitle}</h4>
+                </div>
+                <div className="modal-body" style={{width: '100%'}}>
+
+                    <form onSubmit={()=>false}>
+
+                        <div className="appmodalform">
+                            <ModalForm {...this.props.form}></ModalForm>
+                        </div>
+                        
+                        <div>
+                            <div className="pull-right" id="msg"></div>
+                            <div id="buttonsPanel" className="appmodal">
+                                <ModalButtonList show={this.props.show}></ModalButtonList>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>;
+   }
+}

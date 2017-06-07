@@ -53,11 +53,11 @@ class TemplateBody extends React.Component<ITaskLegacyItem,{}> {
 
 class TemplateFooter extends React.Component<{users: string[]},{}> {
    render() {
+       let enumUsers = func => ( this.props.users ) ? this.props.users.map( func ) : null;
+
        return   <div className="folder-footer">
                     {
-                        ( this.props.users ) ? 
-                            this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>) 
-                            : null
+                        enumUsers( email => <img key={email} className="user" src={'/users/photo/' + email}></img>)                             
                     }
                 </div>;
    }
@@ -155,12 +155,12 @@ class Folder extends React.Component<IFolderModel,{}> {
    }
 
    render() {
+       let enumTemplates = func => (this.props.tasks) ? this.props.tasks.map( func ) : null;
+
        return   <div className="col-xs-12 col-md-3 dashboard-panel" style={ {overflowY: 'scroll'} }>
                     <div className="folder" onDragOver={this.allowDrop} onDrop={this.drop.bind(this)}>
                         {
-                            (this.props.tasks) ? 
-                                this.props.tasks.map( t => <TemplateTask key={t.id} {...t}></TemplateTask>)
-                                : null
+                            enumTemplates( t => <TemplateTask key={t.id} {...t}></TemplateTask>)
                         }
                     </div>
                 </div>
