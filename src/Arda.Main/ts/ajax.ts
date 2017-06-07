@@ -1,6 +1,30 @@
 //Initialize:
 declare var $ : any
 
+function gettasklist(callback) {
+    httpCall('GET', '/Workload/ListWorkloadsByUser' , null, callback, null);
+}
+
+function update(task, callback) {
+    httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, callback, null)
+}
+
+function addWorkloadSimpleV3HttpCall(data, callback, error) {
+    httpCall('POST', '/Workload2/AddSimpleV3', data, callback, error);
+}
+
+function updateWorkloadSimpleV3HttpCall(data, callback, error) {
+    httpCall('PUT', '/Workload2/UpdateSimpleV3', data, callback, error);
+}
+
+function loadWorkload(workloadID: string, callback) {
+    httpCall('GET', '/Workload/GetWorkload?=' + workloadID, null, callback, null);
+}
+
+function deleteWorkloadHttpCall(workloadID, callback, error) {
+    httpCall('DELETE', '/Workload/Delete?=' + workloadID, null, callback, error);
+}
+
 function httpCall(action, url, data, callback, error) {
 
     $.ajax({
@@ -16,31 +40,3 @@ function httpCall(action, url, data, callback, error) {
     });
 
 }
-
-
-function gettasklist(callback) {
-    // var filter_user = user ? '?user=' + user : '';
-    // var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
-    //httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
-    httpCall('GET', '/Workload/ListWorkloadsByUser' , null, callback, null);
-}
-
-function update(task) {
-    httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
-        // done
-    }, null)
-}
-
-function getGUID(callback) {
-    $.ajax({
-        url: '/Workload/GetGuid',
-        type: 'GET',
-        processData: false,
-        contentType: false,
-        cache: false,
-        success: function (data) {
-            callback(data);
-        }
-    });
-}
-

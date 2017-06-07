@@ -244,6 +244,88 @@ namespace Arda.Main.Controllers
             return workload;
         }
 
+        public class WorkloadSimpleViewModel
+        {
+            public Guid Id { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public int? Status { get; set; }            
+        }
+        [HttpPost]
+        public async Task<WorkloadViewModel> AddSimpleV3([FromBody]WorkloadSimpleViewModel work)
+        {
+            if (work == null)
+                throw new ArgumentOutOfRangeException(nameof(work));
+
+            if (work.Title == null || work.Title == "")
+                throw new ArgumentOutOfRangeException(nameof(work.Title));
+
+            var uniqueName = this.GetCurrentUser();
+            var now = DateTime.Now;
+            var today = new DateTime(now.Year, now.Month, now.Day);
+
+            WorkloadViewModel workload = new WorkloadViewModel2()
+            {
+                WBID = (work.Id == Guid.Empty) ? Guid.NewGuid() : work.Id,
+                
+                WBTitle = work.Title,
+                WBDescription = work.Description,
+                WBStatus = (work.Status.HasValue) ? work.Status.Value : 0,
+
+                WBCreatedBy = uniqueName,
+                WBCreatedDate = DateTime.Now,
+
+                WBStartDate = today,
+                WBEndDate = today,
+                WBUsers = new string[] { uniqueName },
+                
+                WBIsWorkload = true,
+
+                WBActivity = Guid.Empty,
+                WBComplexity = 0,
+                WBExpertise = 0,
+                WBFilesList = null,
+                WBMetrics = null,
+                WBTechnologies = null
+            };
+            
+            var response = await Util.ConnectToRemoteService(HttpMethod.Post, Util.KanbanURL + "api/workload/add", uniqueName, "", workload);
+
+            UsageTelemetry.Track(uniqueName, ArdaUsage.Workload_Add);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"ConnectToRemote(Kanban/api/workload/add) failed with HTTP ${response.StatusCode}");
+
+            return workload;
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateSimpleV3([FromBody]WorkloadSimpleViewModel work)
+        {
+            if (work == null)
+                throw new ArgumentNullException(nameof(work));
+
+            if (work.Id == Guid.Empty)
+                throw new ArgumentOutOfRangeException(nameof(work));
+
+            if (work.Title == null || work.Title == "")
+                throw new ArgumentOutOfRangeException(nameof(work.Title));
+
+            var uniqueName = this.GetCurrentUser();
+
+            var workload = await Util.ConnectToRemoteService<WorkloadViewModel>(HttpMethod.Get, Util.KanbanURL + "api/workload/details?=" + work.Id, uniqueName, "");
+
+            workload.WBTitle = work.Title;
+            workload.WBDescription = work.Description;
+            workload.WBStatus = (work.Status.HasValue) ? work.Status.Value : workload.WBStatus;
+
+            var request = await Util.ConnectToRemoteService(HttpMethod.Put, Util.KanbanURL + "api/workload/edit", uniqueName, "", workload);
+
+            if (!request.IsSuccessStatusCode)
+                throw new InvalidOperationException("api/workload/edit failed");
+
+            return Ok(workload);
+        }
+
         [HttpPut]
         public async Task<HttpResponseMessage> Update(ICollection<IFormFile> WBFiles, List<string> oldFiles, WorkloadViewModel workload)
         {

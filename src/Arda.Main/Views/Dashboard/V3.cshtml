@@ -1,34 +1,10 @@
-﻿@using System.Security.Principal
-@using System.Net.Http;
-@using Arda.Common.Utils
-
-@{
-    // ASSUME user status == 2 always
-    // if (ViewBag.UserStatus == 2)
-    //var userStatus = ViewBag.UserStatus;
-
-    <section class="concontainer-fluid">
+﻿    <section class="concontainer-fluid">
         <div class="col-xs-12">
             <div class="row">
-                <!-- compatibility: keep fields referenced by jquery -->
-                <div style="display: none">
-                    @*<input type="radio" name="type" id="dashboard-filter-type-1" checked />
-                    <input type="radio" name="type" id="dashboard-filter-type-2" />*@
-                    @*<select id="filter-assign" name="filter-assign">
-                        <option value="">Choose a team member</option>
-                    </select>*@
-                    <input id="search-box" />
-                    <input id="_WBID" type="hidden" />
-                    <button id="btnNew">New Workload</button>
-                </div>                
-
-                <template id="templateTask">
-                    <div id="templateId" class="task" draggable="true" data-toggle="modal" data-target="#WorkloadModal"></div>
-                </template>
-
                 <div id="dashboard-folder-header" class="col-xs-12">
                     <!-- use react to render -->
                 </div>
+
                 <div class="col-xs-12 container-fluid--dashboard">
                     <div id="dashboard-folders" class="row">
                         <!-- use react to render -->
@@ -38,32 +14,18 @@
         </div>
     </section>
     
-}
 <!-- Workload Modal -->
-@await Html.PartialAsync("_WorkloadModalSimple")
+@await Html.PartialAsync("_WorkloadModalV3")
 
 <script>
-    //Initialization:
+    //Initialization code
     $(function () {
-        @{
-                <text>
-                //Initialize:
-                Initialize();
-
-                InitializeFields();
-
-                InitializeKanban();
-
-                RefreshTaskList();
-
-                </text>
-        }
-
+        Initialize();       // initialize.ts
+        InitializeKanban(); // workload.ts
     });
 
 </script>
 <script src="~/lib/react/react.js"></script>
 <script src="~/lib/react/react-dom.js"></script>
 <script src="~/components/workload.js"></script>
-<script src="~/lib/simplebar.min.js"></script>
 

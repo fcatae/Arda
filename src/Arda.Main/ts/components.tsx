@@ -6,6 +6,12 @@ interface ITaskLegacyItem {
     users?;
 }
 
+interface IFolderModel {
+    state: number;
+    tasks: ITaskLegacyItem[];
+    callback: any;    
+}
+
 class TemplateHeader extends React.Component<{title},{}> {
    render() {
        return   <div className="folder-header">
@@ -15,66 +21,71 @@ class TemplateHeader extends React.Component<{title},{}> {
 }
 
 class TemplateBody extends React.Component<ITaskLegacyItem,{}> {
+    
+    formatDate(dateStr: string) {
+        // HACK
+        if(dateStr.length<=10) return dateStr;
+        
+        var date = new Date(dateStr);
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        var str = month + '/' + day + '/' + year;
+        return str;
+    }
+
    render() {
         return <div className="folder-body">
-            <p>
-                <i className="fa fa-calendar fa-task-def" aria-hidden="true">
-                </i>
-                <span className="templateStart">
-                    {this.props.dateStart}   
-                </span>
-                <i className="fa fa-calendar-check-o fa-task-def" aria-hidden="true">
-                </i>
-                <span className="templateEnd">
-                    {this.props.dateEnd}
-                </span>
-            </p>
-        </div>;
+                    <p>
+                        <i className="fa fa-calendar fa-task-def" aria-hidden="true"></i>
+                        <span className="templateStart">
+                            {this.formatDate(this.props.dateStart)}   
+                        </span>
+
+                        <i className="fa fa-calendar-check-o fa-task-def" aria-hidden="true"></i>
+                        <span className="templateEnd">
+                            {this.formatDate(this.props.dateEnd)}
+                        </span>
+                    </p>
+                </div>;
    }
 }
 
 class TemplateFooter extends React.Component<{users: string[]},{}> {
-   render() {       
-       var userImages = null;
-       
-       if( this.props.users ) {
-           userImages = this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>)
-       }
-
+   render() {
        return   <div className="folder-footer">
-                    {userImages}
+                    {
+                        ( this.props.users ) ? 
+                            this.props.users.map( email => <img key={email} className="user" src={'/users/photo/' + email}></img>) 
+                            : null
+                    }
                 </div>;
    }
 }
 
 class TemplateTask extends React.Component<ITaskLegacyItem,{}> {
-   render() {
-       var users = this.props.users;
-
-       return   <div className="folder-tasks" id={this.props.id}>
-                    <TemplateHeader title={this.props.title}></TemplateHeader>
-                    <TemplateBody {...this.props}></TemplateBody>
-                    <TemplateFooter users={users}></TemplateFooter>
-                </div>;
-   }
-}
-
-class TemplateTask2 extends React.Component<ITaskLegacyItem,{}> {
 
     dragstart(ev) {
         ev.dataTransfer.setData('text', this.props.id);
     }    
 
+    onclick() {
+        taskedit(this.props.id);
+    }
+
    render() {
-       var users = this.props.users;
-       var validIdName = '_' + this.props.id; // avoid issues when taskId starts with numbers
-       var taskId = this.props.id;
-       return   <div id={validIdName} className="task" draggable={true} data-toggle="modal" data-target="#WorkloadModal" 
-                                                        onDragStart={this.dragstart.bind(this)} onClick={function () { taskedit(taskId) }}>
-                    <div className="folder-tasks" id={this.props.id}>
+       return   <div className="task"      
+                        id={'_'+this.props.id}                   
+                        key={this.props.id}
+                        draggable={true} 
+                        data-toggle="modal" data-target="#WorkloadModal"
+                        onDragStart={this.dragstart.bind(this)} 
+                        onClick={this.onclick.bind(this)}>
+
+                    <div className="folder-tasks">
                         <TemplateHeader title={this.props.title}></TemplateHeader>
                         <TemplateBody {...this.props}></TemplateBody>
-                        <TemplateFooter users={users}></TemplateFooter>
+                        <TemplateFooter users={this.props.users}></TemplateFooter>
                     </div>
                 </div>;
    }
@@ -86,7 +97,7 @@ class DashboardFolderHeader extends React.Component<{},{}> {
                         <div className="col-xs-12 col-md-3">
                             <div className="row">
                                 <h3 className="dashboard-panel-title dashboard-panel-title--todo">todo</h3>
-                                <button id="btnNewSimple" className="ds-button-update" data-toggle="modal" data-target="#WorkloadModal"><i className="fa fa-plus" aria-hidden="true"></i> Quick Create</button>
+                                <button id="btnNewSimple" className="ds-button-update" data-toggle="modal" data-target="#WorkloadModal" onClick={newWorkloadStateSimple}><i className="fa fa-plus" aria-hidden="true"></i> Quick Create</button>
                             </div>
                         </div>
                         <div className="col-xs-12 col-md-3">
@@ -110,74 +121,78 @@ class DashboardFolderHeader extends React.Component<{},{}> {
 }
 
 class FolderModel {
-    constructor(state) {
-        this.state = state;
+    constructor() {
         this.tasks = [];
     }
-    public state: number;
     public tasks: ITaskLegacyItem[];
-}
-var folderM0 = new FolderModel(0);
-var folderM1 = new FolderModel(1);
-var folderM2 = new FolderModel(2);
-var folderM3 = new FolderModel(3);
-var folderM = [folderM0, folderM1, folderM2, folderM3];
 
-class Folder extends React.Component<{taskState: number, model: FolderModel},{}> {
+    add(task: ITaskLegacyItem) {
+        this.tasks.push(task);
+    }
+
+    remove(task: ITaskLegacyItem) {
+        let index = this.tasks.indexOf(task);
+        
+        (index >=0) && this.tasks.splice(index, 1);
+    }
+}
+
+var folderM = [new FolderModel(), new FolderModel(), new FolderModel(), new FolderModel()];
+var dictM = {};
+
+class Folder extends React.Component<IFolderModel,{}> {
 
    allowDrop(ev) {
        ev.preventDefault();
    }
    drop(ev) {
-    ev.preventDefault();
-    
-    // jquery-alike
-    var data = ev.dataTransfer.getData('text');
-    var elem = document.getElementById('_' + data);
-    var target = document.querySelector('.folder.state' + this.props.taskState) as HTMLDivElement;
-    target.appendChild(elem);
+        ev.preventDefault();
+        
+        var numstate = this.props.state; 
+        var taskId = ev.dataTransfer.getData('text');;
 
-    // react
-    var numstate = this.props.taskState; 
-
-    var taskId = ev.dataTransfer.getData('text');;
-
-    // remove the underscore
-    if(taskId[0] == '_') {
-        taskId = taskId.slice(1);
-    }
-
-    var task = { Id: taskId, State: numstate };
-
-    update(task);        
+        (this.props.callback) && this.props.callback(taskId, numstate); 
    }
 
-   render() {       
-       var state = this.props.model.state;
-       var className = "folder state" + this.props.model.state.toString();
-
-       var tasks = null;
-       if(this.props.model.tasks) {
-           
-           tasks = this.props.model.tasks.map( t => <TemplateTask2 key={t.id} {...t}></TemplateTask2>)
-       }
-
-       return   <div className="col-xs-12 col-md-3 dashboard-panel" data-simplebar-direction="vertical">
-                    <div className={className} data-state={state} onDragOver={this.allowDrop} onDrop={this.drop.bind(this)}>
-                        {tasks}
+   render() {
+       return   <div className="col-xs-12 col-md-3 dashboard-panel" style={ {overflowY: 'scroll'} }>
+                    <div className="folder" onDragOver={this.allowDrop} onDrop={this.drop.bind(this)}>
+                        {
+                            (this.props.tasks) ? 
+                                this.props.tasks.map( t => <TemplateTask key={t.id} {...t}></TemplateTask>)
+                                : null
+                        }
                     </div>
                 </div>
    }
 }
 
 class DashboardFolders extends React.Component<{},{}> {
+    moveTask(id, nextState) {
+        var task = dictM[id];
+        var curState = task.state;
+        
+        var callback = null;
+        // call the update API
+        update({ Id: id, State: nextState }, callback);    
+
+        // update the folder states
+        folderM[curState].remove(task);
+        folderM[nextState].add(task);
+
+        // update the task state
+        task.state = nextState;
+
+        // update react
+        this.forceUpdate();
+    }
+
    render() {       
        return   <div>
-                    <Folder taskState={0} model={folderM0}></Folder>
-                    <Folder taskState={1} model={folderM1}></Folder>
-                    <Folder taskState={2} model={folderM2}></Folder>
-                    <Folder taskState={3} model={folderM3}></Folder>
+                    <Folder state={0} tasks={folderM[0].tasks} callback={this.moveTask.bind(this)}></Folder>
+                    <Folder state={1} tasks={folderM[1].tasks} callback={this.moveTask.bind(this)}></Folder>
+                    <Folder state={2} tasks={folderM[2].tasks} callback={this.moveTask.bind(this)}></Folder>
+                    <Folder state={3} tasks={folderM[3].tasks} callback={this.moveTask.bind(this)}></Folder>
                 </div>
    }
 }
-

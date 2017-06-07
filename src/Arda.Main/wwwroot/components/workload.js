@@ -16,6 +16,24 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
+function gettasklist(callback) {
+    httpCall('GET', '/Workload/ListWorkloadsByUser', null, callback, null);
+}
+function update(task, callback) {
+    httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, callback, null);
+}
+function addWorkloadSimpleV3HttpCall(data, callback, error) {
+    httpCall('POST', '/Workload2/AddSimpleV3', data, callback, error);
+}
+function updateWorkloadSimpleV3HttpCall(data, callback, error) {
+    httpCall('PUT', '/Workload2/UpdateSimpleV3', data, callback, error);
+}
+function loadWorkload(workloadID, callback) {
+    httpCall('GET', '/Workload/GetWorkload?=' + workloadID, null, callback, null);
+}
+function deleteWorkloadHttpCall(workloadID, callback, error) {
+    httpCall('DELETE', '/Workload/Delete?=' + workloadID, null, callback, error);
+}
 function httpCall(action, url, data, callback, error) {
     $.ajax({
         type: action,
@@ -27,29 +45,6 @@ function httpCall(action, url, data, callback, error) {
         success: callback,
         error: error,
         processData: false
-    });
-}
-function gettasklist(callback) {
-    // var filter_user = user ? '?user=' + user : '';
-    // var filter_type = type ? '/ListBacklogsByUser' : '/ListWorkloadsByUser';
-    //httpCall('GET', '/Workload' + filter_type + filter_user, null, callback, null);
-    httpCall('GET', '/Workload/ListWorkloadsByUser', null, callback, null);
-}
-function update(task) {
-    httpCall('PUT', '/Workload/UpdateStatus?id=' + task.Id + '&status=' + task.State, task, function (data) {
-        // done
-    }, null);
-}
-function getGUID(callback) {
-    $.ajax({
-        url: '/Workload/GetGuid',
-        type: 'GET',
-        processData: false,
-        contentType: false,
-        cache: false,
-        success: function (data) {
-            callback(data);
-        }
     });
 }
 var TemplateHeader = (function (_super) {
@@ -69,13 +64,24 @@ var TemplateBody = (function (_super) {
     function TemplateBody() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    TemplateBody.prototype.formatDate = function (dateStr) {
+        // HACK
+        if (dateStr.length <= 10)
+            return dateStr;
+        var date = new Date(dateStr);
+        var day = date.getDate();
+        var month = date.getMonth() + 1;
+        var year = date.getFullYear();
+        var str = month + '/' + day + '/' + year;
+        return str;
+    };
     TemplateBody.prototype.render = function () {
         return React.createElement("div", { className: "folder-body" },
             React.createElement("p", null,
                 React.createElement("i", { className: "fa fa-calendar fa-task-def", "aria-hidden": "true" }),
-                React.createElement("span", { className: "templateStart" }, this.props.dateStart),
+                React.createElement("span", { className: "templateStart" }, this.formatDate(this.props.dateStart)),
                 React.createElement("i", { className: "fa fa-calendar-check-o fa-task-def", "aria-hidden": "true" }),
-                React.createElement("span", { className: "templateEnd" }, this.props.dateEnd)));
+                React.createElement("span", { className: "templateEnd" }, this.formatDate(this.props.dateEnd))));
     };
     return TemplateBody;
 }(React.Component));
@@ -85,11 +91,9 @@ var TemplateFooter = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     TemplateFooter.prototype.render = function () {
-        var userImages = null;
-        if (this.props.users) {
-            userImages = this.props.users.map(function (email) { return React.createElement("img", { key: email, className: "user", src: '/users/photo/' + email }); });
-        }
-        return React.createElement("div", { className: "folder-footer" }, userImages);
+        return React.createElement("div", { className: "folder-footer" }, (this.props.users) ?
+            this.props.users.map(function (email) { return React.createElement("img", { key: email, className: "user", src: '/users/photo/' + email }); })
+            : null);
     };
     return TemplateFooter;
 }(React.Component));
@@ -98,34 +102,20 @@ var TemplateTask = (function (_super) {
     function TemplateTask() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    TemplateTask.prototype.render = function () {
-        var users = this.props.users;
-        return React.createElement("div", { className: "folder-tasks", id: this.props.id },
-            React.createElement(TemplateHeader, { title: this.props.title }),
-            React.createElement(TemplateBody, __assign({}, this.props)),
-            React.createElement(TemplateFooter, { users: users }));
-    };
-    return TemplateTask;
-}(React.Component));
-var TemplateTask2 = (function (_super) {
-    __extends(TemplateTask2, _super);
-    function TemplateTask2() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TemplateTask2.prototype.dragstart = function (ev) {
+    TemplateTask.prototype.dragstart = function (ev) {
         ev.dataTransfer.setData('text', this.props.id);
     };
-    TemplateTask2.prototype.render = function () {
-        var users = this.props.users;
-        var validIdName = '_' + this.props.id; // avoid issues when taskId starts with numbers
-        var taskId = this.props.id;
-        return React.createElement("div", { id: validIdName, className: "task", draggable: true, "data-toggle": "modal", "data-target": "#WorkloadModal", onDragStart: this.dragstart.bind(this), onClick: function () { taskedit(taskId); } },
-            React.createElement("div", { className: "folder-tasks", id: this.props.id },
+    TemplateTask.prototype.onclick = function () {
+        taskedit(this.props.id);
+    };
+    TemplateTask.prototype.render = function () {
+        return React.createElement("div", { className: "task", id: '_' + this.props.id, key: this.props.id, draggable: true, "data-toggle": "modal", "data-target": "#WorkloadModal", onDragStart: this.dragstart.bind(this), onClick: this.onclick.bind(this) },
+            React.createElement("div", { className: "folder-tasks" },
                 React.createElement(TemplateHeader, { title: this.props.title }),
                 React.createElement(TemplateBody, __assign({}, this.props)),
-                React.createElement(TemplateFooter, { users: users })));
+                React.createElement(TemplateFooter, { users: this.props.users })));
     };
-    return TemplateTask2;
+    return TemplateTask;
 }(React.Component));
 var DashboardFolderHeader = (function (_super) {
     __extends(DashboardFolderHeader, _super);
@@ -137,7 +127,7 @@ var DashboardFolderHeader = (function (_super) {
             React.createElement("div", { className: "col-xs-12 col-md-3" },
                 React.createElement("div", { className: "row" },
                     React.createElement("h3", { className: "dashboard-panel-title dashboard-panel-title--todo" }, "todo"),
-                    React.createElement("button", { id: "btnNewSimple", className: "ds-button-update", "data-toggle": "modal", "data-target": "#WorkloadModal" },
+                    React.createElement("button", { id: "btnNewSimple", className: "ds-button-update", "data-toggle": "modal", "data-target": "#WorkloadModal", onClick: newWorkloadStateSimple },
                         React.createElement("i", { className: "fa fa-plus", "aria-hidden": "true" }),
                         " Quick Create"))),
             React.createElement("div", { className: "col-xs-12 col-md-3" },
@@ -154,17 +144,20 @@ var DashboardFolderHeader = (function (_super) {
     return DashboardFolderHeader;
 }(React.Component));
 var FolderModel = (function () {
-    function FolderModel(state) {
-        this.state = state;
+    function FolderModel() {
         this.tasks = [];
     }
+    FolderModel.prototype.add = function (task) {
+        this.tasks.push(task);
+    };
+    FolderModel.prototype.remove = function (task) {
+        var index = this.tasks.indexOf(task);
+        (index >= 0) && this.tasks.splice(index, 1);
+    };
     return FolderModel;
 }());
-var folderM0 = new FolderModel(0);
-var folderM1 = new FolderModel(1);
-var folderM2 = new FolderModel(2);
-var folderM3 = new FolderModel(3);
-var folderM = [folderM0, folderM1, folderM2, folderM3];
+var folderM = [new FolderModel(), new FolderModel(), new FolderModel(), new FolderModel()];
+var dictM = {};
 var Folder = (function (_super) {
     __extends(Folder, _super);
     function Folder() {
@@ -175,31 +168,16 @@ var Folder = (function (_super) {
     };
     Folder.prototype.drop = function (ev) {
         ev.preventDefault();
-        // jquery-alike
-        var data = ev.dataTransfer.getData('text');
-        var elem = document.getElementById('_' + data);
-        var target = document.querySelector('.folder.state' + this.props.taskState);
-        target.appendChild(elem);
-        // react
-        var numstate = this.props.taskState;
+        var numstate = this.props.state;
         var taskId = ev.dataTransfer.getData('text');
         ;
-        // remove the underscore
-        if (taskId[0] == '_') {
-            taskId = taskId.slice(1);
-        }
-        var task = { Id: taskId, State: numstate };
-        update(task);
+        (this.props.callback) && this.props.callback(taskId, numstate);
     };
     Folder.prototype.render = function () {
-        var state = this.props.model.state;
-        var className = "folder state" + this.props.model.state.toString();
-        var tasks = null;
-        if (this.props.model.tasks) {
-            tasks = this.props.model.tasks.map(function (t) { return React.createElement(TemplateTask2, __assign({ key: t.id }, t)); });
-        }
-        return React.createElement("div", { className: "col-xs-12 col-md-3 dashboard-panel", "data-simplebar-direction": "vertical" },
-            React.createElement("div", { className: className, "data-state": state, onDragOver: this.allowDrop, onDrop: this.drop.bind(this) }, tasks));
+        return React.createElement("div", { className: "col-xs-12 col-md-3 dashboard-panel", style: { overflowY: 'scroll' } },
+            React.createElement("div", { className: "folder", onDragOver: this.allowDrop, onDrop: this.drop.bind(this) }, (this.props.tasks) ?
+                this.props.tasks.map(function (t) { return React.createElement(TemplateTask, __assign({ key: t.id }, t)); })
+                : null));
     };
     return Folder;
 }(React.Component));
@@ -208,721 +186,483 @@ var DashboardFolders = (function (_super) {
     function DashboardFolders() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    DashboardFolders.prototype.moveTask = function (id, nextState) {
+        var task = dictM[id];
+        var curState = task.state;
+        var callback = null;
+        // call the update API
+        update({ Id: id, State: nextState }, callback);
+        // update the folder states
+        folderM[curState].remove(task);
+        folderM[nextState].add(task);
+        // update the task state
+        task.state = nextState;
+        // update react
+        this.forceUpdate();
+    };
     DashboardFolders.prototype.render = function () {
         return React.createElement("div", null,
-            React.createElement(Folder, { taskState: 0, model: folderM0 }),
-            React.createElement(Folder, { taskState: 1, model: folderM1 }),
-            React.createElement(Folder, { taskState: 2, model: folderM2 }),
-            React.createElement(Folder, { taskState: 3, model: folderM3 }));
+            React.createElement(Folder, { state: 0, tasks: folderM[0].tasks, callback: this.moveTask.bind(this) }),
+            React.createElement(Folder, { state: 1, tasks: folderM[1].tasks, callback: this.moveTask.bind(this) }),
+            React.createElement(Folder, { state: 2, tasks: folderM[2].tasks, callback: this.moveTask.bind(this) }),
+            React.createElement(Folder, { state: 3, tasks: folderM[3].tasks, callback: this.moveTask.bind(this) }));
     };
     return DashboardFolders;
 }(React.Component));
-// Initialize functions
-// Scope: Modal, Dashboard, Kanban
-function Initialize() {
-    //Click events:
-    //New Workload:
-    $('#btnNew').click(newWorkloadState);
-    $('#btnNewSimple').click(newWorkloadStateSimple);
-    //Workload Details:
-    $('#btnDetails').click(detailsWorkloadState);
-    //Reset Button:
-    $('#btnWorkloadReset').click(resetWorkloadForm);
-    //Delete Button:
-    $('#btnWorkloadDelete').click(deleteWorkload);
-    //Cancel Button:
-    $('#btnWorkloadCancel').click(function () {
-        $('#WorkloadModal').modal('hide');
-    });
-    //Other events:
-    $('#WBComplexity').on('change', changeComplexity);
-    //Search:
-    $('#search-box').on('keyup', function () {
-        var matcher = new RegExp($(this).val(), 'gi');
-        $('.task').show().not(function () {
-            return matcher.test($(this).find('.templateTitle').text());
-        }).hide();
-    });
-    //Components:
-    $("#WBIsWorkload").bootstrapSwitch();
-    $('#WBStartDate').datepicker({
-        format: "mm/dd/yyyy",
-        autoclose: true,
-        todayHighlight: true
-    });
-    $('#WBEndDate').datepicker({
-        format: "mm/dd/yyyy",
-        autoclose: true,
-        todayHighlight: true
-    });
-    $("#WBComplexity").ionRangeSlider({
-        min: 1,
-        max: 5,
-        hide_min_max: true,
-        hide_from_to: true,
-        grid: false,
-        keyboard: true
-    });
-}
-function InitializeFields() {
-    //Load values:
-    //Get All Activities:
-    $.getJSON('/activity/GetActivities', null, callbackGetActivities);
-    //Get User Technologies:
-    $.getJSON('/technology/GetTechnologies', null, callbackGetTechnologies);
-    //Get User Metrics:
-    $.getJSON('/metric/GetMetrics', null, callbackGetMetrics);
-    //Get User Users:
-    $.getJSON('/users/GetUsers', null, callbackGetUsers);
-}
-//Database Operations:
-function loadWorkload(workloadID) {
-    $.ajax({
-        url: '/Workload/GetWorkload?=' + workloadID,
-        type: 'GET',
-        processData: false,
-        contentType: false,
-        cache: false,
-        success: function (data) {
-            //Hide File Input:
-            $('.fileinput').addClass('hidden');
-            $('#WBID').val(data.WBID);
-            //Dates
-            formatDate(data.WBStartDate, function (str) {
-                $('#WBStartDate').val(str);
-            });
-            formatDate(data.WBEndDate, function (str) {
-                $('#WBEndDate').val(str);
-            });
-            var isWorkload = $('#WBIsWorkload');
-            isWorkload.bootstrapSwitch('toggleDisabled', true, true);
-            isWorkload.bootstrapSwitch('state', data.WBIsWorkload);
-            isWorkload.bootstrapSwitch('toggleDisabled', true, true);
-            $('#WBTitle').val(data.WBTitle);
-            $('#WBDescription').val(data.WBDescription);
-            $('#WBExpertise').val(data.WBExpertise);
-            $('#WBActivity').val(data.WBActivity);
-            //Complexity
-            var slider = $("#WBComplexity").data("ionRangeSlider");
-            slider.update({
-                from: data.WBComplexity,
-                disable: true
-            });
-            var txt = '';
-            switch (data.WBComplexity) {
-                case 1:
-                    txt = 'Very Low';
-                    break;
-                case 2:
-                    txt = 'Low';
-                    break;
-                case 3:
-                    txt = 'Medium';
-                    break;
-                case 4:
-                    txt = 'High';
-                    break;
-                case 5:
-                    txt = 'Very High';
-                    break;
-            }
-            $('#ComplexityLevel').text(txt);
-            //Multi-Select:
-            $('#WBTechnologies').multiselect('select', data.WBTechnologies);
-            $('#WBMetrics').multiselect('select', data.WBMetrics);
-            $('#WBUsers').multiselect('select', data.WBUsers);
-            //Files:
-            var list = $('#filesList');
-            $(data.WBFilesList).each(function () {
-                var div = $('<div id="' + this.Item1 + '">');
-                var a = $('<a class="filePrev" FileID="' + this.Item1 + '" href=' + this.Item2 + '>').text(this.Item3);
-                var remove = $('<a class="fileDel hidden" style="padding-left: 5px;"/>').text('(remove)');
-                remove.click(function () {
-                    $(this).parent().remove();
-                });
-                div.append(a);
-                div.append(remove);
-                list.append(div);
-            });
-        }
-    });
-}
-function addWorkload(e) {
-    //Gets bootstrap-switch component value:
-    var value = $('#WBIsWorkload').bootstrapSwitch('state');
-    //Serializes form and append bootstrap-switch value:
-    var data = new FormData(this);
-    data.append('WBIsWorkload', value);
-    var selectedUsers = $('#WBUsers option:selected');
-    var users = [];
-    for (var i = 0; i < selectedUsers.length; i++) {
-        var item = $(selectedUsers[i]);
-        var user = { Item1: item.val(), Item2: item.text() };
-        users.push(user);
-    }
-    var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
-    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
-    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
-    validateForm(e, data, function (e, data) {
-        DisableWorkloadFields();
-        $('#msg').text('Wait...');
-        $('#msg').fadeIn();
-        $.ajax({
-            url: '/Workload/Add',
-            type: 'POST',
-            data: data,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                if (response.IsSuccessStatusCode) {
-                    $('#WorkloadModal').modal('hide');
-                    //Get GUID:
-                    getGUID(function (data) {
-                        $('#WBID').attr('value', data);
-                    });
-                    createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users /* , workload.description */);
-                }
-                else {
-                    $('#msg').text('Error!');
-                }
-            }
-        });
-        e.preventDefault();
-    });
-}
-function addWorkloadSimple(e) {
-    //Gets bootstrap-switch component value:
-    var value = $('#WBIsWorkload').bootstrapSwitch('state');
-    //Serializes form and append bootstrap-switch value:
-    var data = new FormData(this);
-    data.append('WBIsWorkload', value);
-    var selectedUsers = $('#WBUsers option:selected');
-    var users = [];
-    for (var i = 0; i < selectedUsers.length; i++) {
-        var item = $(selectedUsers[i]);
-        var user = { Item1: item.val(), Item2: item.text() };
-        users.push(user);
-    }
-    var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
-    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
-    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, hours: 0, attachments: attachments, tag: tag, state: 0, users: users };
-    validateFormSimple(e, data, function (e, data) {
-        DisableWorkloadFields();
-        $('#msg').text('Wait...');
-        $('#msg').fadeIn();
-        $.ajax({
-            url: '/Workload/AddSimple',
-            type: 'POST',
-            data: data,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                if (response) {
-                    $('#WorkloadModal').modal('hide');
-                    //Get GUID:
-                    getGUID(function (data) {
-                        $('#WBID').attr('value', data);
-                    });
-                    // hack
-                    var user = { Item1: response.WBUsers[0], Item2: 'not-filled' };
-                    var workload = { id: response.WBID, title: response.WBTitle, start: response.WBStartDate, end: response.WBEndDate, hours: 0, attachments: null, tag: response.WBExpertise, state: 0, users: [user] };
-                    createTask(workload.id, workload.title, workload.start, workload.end, workload.hours, workload.attachments, workload.tag, workload.state, workload.users);
-                }
-                else {
-                    $('#msg').text('Error!');
-                }
-            }
-        });
-        e.preventDefault();
-    });
-}
-function updateWorkload(e) {
-    var id = this.WBID.value;
-    //Gets bootstrap-switch component value:
-    var value = $('#WBIsWorkload').bootstrapSwitch('state');
-    //Serializes form and append bootstrap-switch value:
-    var data = new FormData(this);
-    data.append('WBIsWorkload', value);
-    //Append previous files:
-    var files = $('#filesList div a.filePrev');
-    for (var i = 0; i < files.length; i++) {
-        data.append('oldFiles', files[i].getAttribute("fileid") + '&' + files[i].href + '&' + files[i].text);
-    }
-    var selectedUsers = $('#WBUsers option:selected');
-    var users = [];
-    for (var i = 0; i < selectedUsers.length; i++) {
-        var item = $(selectedUsers[i]);
-        var user = { Item1: item.val(), Item2: item.text() };
-        users.push(user);
-    }
-    var state = $('#' + id).parent().data('state');
-    data.append('WBStatus', state);
-    var attachments = (this.WBFiles.files != null) ? this.WBFiles.files.length : 0;
-    var tag = this.WBExpertise.options[this.WBExpertise.selectedIndex].text;
-    var workload = { id: this.WBID.value, title: this.WBTitle.value, start: this.WBStartDate.value, end: this.WBEndDate.value, attachments: attachments, tag: tag, users: users };
-    // hack: disable validateForm for V2 (and for the legacy code as well)
-    //validateForm(e, data, function (e, data) {
-    DisableWorkloadFields();
-    $('#msg').text('Wait...');
-    $.ajax({
-        url: '/Workload/Update',
-        type: 'PUT',
-        data: data,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-            if (response.IsSuccessStatusCode) {
-                $('#WorkloadModal').modal('hide');
-                updateTaskInFolder(workload.id, workload.title, workload.start, workload.end, workload.attachments, workload.tag, workload.users);
-            }
-            else {
-                $('#msg').text('Error!');
-            }
-        }
-    });
-    e.preventDefault();
-    //})
-}
-function deleteWorkload() {
-    var workloadID = $('#WBID').val();
-    $('#msg').text('Wait...');
-    $.ajax({
-        url: '/Workload/Delete?=' + workloadID,
-        type: 'DELETE',
-        success: function (response) {
-            if (response.IsSuccessStatusCode) {
-                $('#' + workloadID).remove();
-                $('#WorkloadModal').modal('hide');
-            }
-            else {
-                $('#msg').text('Error!');
-            }
-        }
-    });
-}
-function changeComplexity(e) {
-    var value = $(this).val();
-    var txt = '';
-    switch (value) {
-        case '1':
-            txt = 'Very Low';
-            break;
-        case '2':
-            txt = 'Low';
-            break;
-        case '3':
-            txt = 'Medium';
-            break;
-        case '4':
-            txt = 'High';
-            break;
-        case '5':
-            txt = 'Very High';
-            break;
-    }
-    $('#ComplexityLevel').text(txt);
-}
-// Callback to fill form
-// Scope: Modal
-//Callbacks:
-function callbackGetActivities(data) {
-    var options = [];
-    options.push('<option selected disabled value="-1">Select the activity</option>');
-    for (var i = 0; i < data.length; i++) {
-        var text = data[i].ActivityName;
-        var key = data[i].ActivityID;
-        options.push('<option value="' + key + '">' + text + '</option>');
-    }
-    $('#WBActivity').html(options.join(''));
-}
-function callbackGetMetrics(data) {
-    var options = [];
-    var select = $('#WBMetrics');
-    for (var i = 0; i < data.length; i++) {
-        var text = '[' + data[i].MetricCategory + '] ' + data[i].MetricName;
-        var key = data[i].MetricID;
-        options.push('<option value="' + key + '">' + text + '</option>');
-    }
-    select.html(options.join(''));
-    select.multiselect({
-        buttonWidth: '100%',
-        numberDisplayed: 1,
-        nonSelectedText: 'Click to select the metrics'
-    });
-}
-function callbackGetTechnologies(data) {
-    var options = [];
-    var select = $('#WBTechnologies');
-    for (var i = 0; i < data.length; i++) {
-        var text = data[i].TechnologyName;
-        var key = data[i].TechnologyID;
-        options.push('<option value="' + key + '">' + text + '</option>');
-    }
-    select.html(options.join(''));
-    select.multiselect({
-        buttonWidth: '100%',
-        numberDisplayed: 2,
-        nonSelectedText: 'Click to select the technologies'
-    });
-}
-function callbackGetUsers(data) {
-    var options = [];
-    var select = $('#WBUsers');
-    for (var i = 0; i < data.length; i++) {
-        var text = data[i].Name;
-        var key = data[i].UniqueName;
-        options.push('<option value="' + key + '">' + text + '</option>');
-    }
-    select.html(options.join(''));
-    select.multiselect({
-        buttonWidth: '100%',
-        numberDisplayed: 2,
-        nonSelectedText: 'Click to select the users'
-    });
-}
 // Show/hide modal dialog
 // Scope: modal
 //Workloads:
-//Workload Modal states:
-function newWorkloadState() {
-    //Clean values:
-    resetWorkloadForm();
-    EnableWorkloadFields();
-    //Get GUID:
-    getGUID(function (data) {
-        $('#WBID').attr('value', data);
-    });
-    //Set submit event:
-    $('#form-workload').unbind();
-    $('#form-workload').submit(addWorkload);
-    //Modal Title:
-    $('#ModalTitle').text('New Workload:');
-    //Buttons:
-    $('#btnWorkloadSend').text('Add');
-    $('#btnWorkloadEdit').addClass('hidden');
-    $('#btnWorkloadDelete').addClass('hidden');
-    $('#btnWorkloadAddAppointment').addClass('hidden');
-    $("#btnWorkloadCancel").removeAttr("disabled");
-    $('#btnWorkloadReset').removeClass('hidden');
-    $('#btnWorkloadReset').removeAttr("disabled");
-    $('#btnWorkloadSend').removeClass('hidden');
-    $('#btnWorkloadSend').removeAttr("disabled");
-}
 function newWorkloadStateSimple() {
-    //Clean values:
-    resetWorkloadForm();
     EnableWorkloadFields();
-    //Get GUID:
-    getGUID(function (data) {
-        $('#WBID').attr('value', data);
-    });
-    //Set submit event:
-    $('#form-workload').unbind();
-    $('#form-workload').submit(addWorkloadSimple);
-    //Modal Title:
-    $('#ModalTitle').text('New Workload:');
-    //Buttons:
-    $('#btnWorkloadSend').text('Add');
-    $('#btnWorkloadEdit').addClass('hidden');
-    $('#btnWorkloadDelete').addClass('hidden');
-    $('#btnWorkloadAddAppointment').addClass('hidden');
-    $("#btnWorkloadCancel").removeAttr("disabled");
-    $('#btnWorkloadReset').removeClass('hidden');
-    $('#btnWorkloadReset').removeAttr("disabled");
-    $('#btnWorkloadSend').removeClass('hidden');
-    $('#btnWorkloadSend').removeAttr("disabled");
+    var opts = {
+        fields: true,
+        cancel: true,
+        reset: true,
+        add: true
+    };
+    var workload = {};
+    renderModal('New Workload:', workload, opts);
 }
-function detailsWorkloadState(ev, openWorkloadGuid) {
-    resetWorkloadForm();
+function detailsWorkloadState(ev, guid) {
     DisableWorkloadFields();
-    //Modal Title:
-    $('#ModalTitle').text('Workload Details:');
-    //Set GUID:
-    var guid = openWorkloadGuid || $('#_WBID').val();
-    $('#WBID').attr('value', guid);
+    var opts = {
+        fields: false,
+        cancel: true,
+        edit: true,
+        newAppoint: true
+    };
+    renderModal('Workload Details:', {}, {});
     //Load Workload:
-    loadWorkload(guid);
-    //Buttons:
-    $('#btnWorkloadReset').addClass('hidden');
-    $('#btnWorkloadDelete').addClass('hidden');
-    $('#btnWorkloadSend').addClass('hidden');
-    $("#btnWorkloadCancel").removeAttr("disabled");
-    $('#btnWorkloadAddAppointment').removeClass('hidden');
-    $('#btnWorkloadEdit').removeClass('hidden');
-    $('#btnWorkloadEdit').removeClass('hidden');
-    $('#btnWorkloadEdit').removeAttr("disabled");
-    $('#btnWorkloadEdit').click(editWorkloadState);
+    loadWorkload(guid, function (data) {
+        var workload = { wbid: data.WBID, title: data.WBTitle, description: data.WBDescription };
+        renderModal('Workload Details:', workload, opts);
+    });
 }
 function editWorkloadState() {
-    //Set submit event:
-    $('#form-workload').unbind();
-    $('#form-workload').submit(updateWorkload);
-    //Modal Title:
-    $('#ModalTitle').text('Editing Workload:');
+    var opts = {
+        fields: true,
+        cancel: true,
+        update: true,
+        delete: true
+    };
+    renderModal('Editing Workload:', null, opts);
     EnableWorkloadFields();
-    $('.fileDel').removeClass('hidden');
-    //Buttons:
-    $('#btnWorkloadSend').text('Update');
-    $('#btnWorkloadReset').addClass('hidden');
-    $('#btnWorkloadEdit').addClass('hidden');
-    $('#btnWorkloadAddAppointment').addClass('hidden');
-    $('#btnWorkloadSend').removeClass('hidden');
-    $('#btnWorkloadSend').removeAttr("disabled");
-    $('#btnWorkloadDelete').removeClass('hidden');
-    $('#btnWorkloadDelete').removeAttr("disabled");
 }
 //Workloads Modal:
 function resetWorkloadForm() {
     $('#msg').text('');
-    $('#WBStartDate').val('');
-    $('#WBEndDate').val('');
-    if ($('#WBIsWorkload').bootstrapSwitch('disabled')) {
-        $('#WBIsWorkload').bootstrapSwitch('toggleDisabled', true, true);
-        $('#WBIsWorkload').bootstrapSwitch('state', true);
-        $('#WBIsWorkload').bootstrapSwitch('toggleDisabled', true, true);
-    }
-    else {
-        $('#WBIsWorkload').bootstrapSwitch('state', true);
-    }
     $('#WBTitle').val('');
     $('#WBDescription').val('');
-    $('#WBExpertise').val('-1');
-    $('#WBActivity').val('-1');
-    //Slider:
-    var slider = $("#WBComplexity").data("ionRangeSlider");
-    slider.update({
-        from: 1
-    });
-    //Technologies Multiselect:
-    var tech = [];
-    $("#WBTechnologies option").each(function () {
-        tech.push($(this).val());
-    });
-    $('#WBTechnologies').multiselect('deselect', tech);
-    //Metrics Multiselect:
-    var met = [];
-    $("#WBMetrics option").each(function () {
-        met.push($(this).val());
-    });
-    $('#WBMetrics').multiselect('deselect', met);
-    //Users Multiselect:
-    var users = [];
-    $("#WBUsers option").each(function () {
-        users.push($(this).val());
-    });
-    $('#WBUsers').multiselect('deselect', users);
-    //Files:
-    $('.fileinput').fileinput('clear');
-    $('#filesList').html('');
+    // $('#WBStartDate').val('');
+    // $('#WBEndDate').val('');
     clearValidate();
 }
 function DisableWorkloadFields() {
-    $('#WBStartDate').attr("disabled", "disabled");
-    $('#WBEndDate').attr("disabled", "disabled");
-    if (!($('#WBIsWorkload').bootstrapSwitch('disabled'))) {
-        $('#WBIsWorkload').bootstrapSwitch('toggleDisabled', true, true);
-    }
     $('#WBTitle').attr("disabled", "disabled");
     $('#WBDescription').attr("disabled", "disabled");
-    $('#WBExpertise').attr("disabled", "disabled");
-    $('#WBActivity').attr("disabled", "disabled");
-    var slider = $("#WBComplexity").data("ionRangeSlider");
-    slider.update({
-        disable: true
-    });
-    $('.multiselect-container.dropdown-menu li a label input').attr("disabled", "disabled");
-    $('.fileinput').attr("disabled", "disabled");
+    // $('#WBStartDate').attr("disabled", "disabled");
+    // $('#WBEndDate').attr("disabled", "disabled");
     //Disabled all buttons:
-    $("#btnWorkloadCancel").attr("disabled", "disabled");
-    $("#btnWorkloadReset").attr("disabled", "disabled");
-    $("#btnWorkloadEdit").attr("disabled", "disabled");
-    $("#btnWorkloadDelete").attr("disabled", "disabled");
-    $("#btnWorkloadSend").attr("disabled", "disabled");
+    // $("#btnWorkloadCancel").attr("disabled", "disabled");
+    // $("#btnWorkloadReset").attr("disabled", "disabled");
+    // $("#btnWorkloadEdit").attr("disabled", "disabled");
+    // $("#btnWorkloadDelete").attr("disabled", "disabled");
+    // $("#btnWorkloadSendUpdate").attr("disabled", "disabled");
+    // $("#btnWorkloadSendAdd").attr("disabled", "disabled");    
 }
 function EnableWorkloadFields() {
     //Fields:
-    $('#WBStartDate').removeAttr("disabled");
-    $('#WBEndDate').removeAttr("disabled");
-    if ($('#WBIsWorkload').bootstrapSwitch('disabled')) {
-        $('#WBIsWorkload').bootstrapSwitch('toggleDisabled', true, true);
-    }
     $('#WBTitle').removeAttr("disabled");
     $('#WBDescription').removeAttr("disabled");
-    $('#WBExpertise').removeAttr("disabled");
-    $('#WBActivity').removeAttr("disabled");
-    var slider = $("#WBComplexity").data("ionRangeSlider");
-    slider.update({
-        disable: false
+    // $('#WBStartDate').removeAttr("disabled");
+    // $('#WBEndDate').removeAttr("disabled");
+}
+// function HideAllButtons() {
+//     $("#btnWorkloadCancel").addClass('hidden');
+//     $("#btnWorkloadReset").addClass('hidden');
+//     $("#btnWorkloadEdit").addClass('hidden');
+//     $("#btnWorkloadDelete").addClass('hidden');
+//     $("#btnWorkloadSendAdd").addClass('hidden');
+//     $("#btnWorkloadSendUpdate").addClass('hidden');
+// }
+function Initialize() {
+    ReactDOM.render(React.createElement(ModalButtonList, null), document.querySelector('.appmodal'));
+    ReactDOM.render(React.createElement(ModalForm, null), document.querySelector('.appmodalform'));
+    // $('#WBStartDate').datepicker({
+    //     format: "mm/dd/yyyy",
+    //     autoclose: true,
+    //     todayHighlight: true
+    // });
+    // $('#WBEndDate').datepicker({
+    //     format: "mm/dd/yyyy",
+    //     autoclose: true,
+    //     todayHighlight: true
+    // });        
+}
+function renderModal(windowTitle, workload, showopts) {
+    $('#ModalTitle').text(windowTitle);
+    if (workload != null) {
+        ReactDOM.render(React.createElement(ModalForm, workload), document.querySelector('.appmodalform'));
+    }
+    ReactDOM.render(React.createElement(ModalButtonList, { show: showopts }), document.querySelector('.appmodal'));
+}
+// function loadWorkloadCallback(data) {
+//         $('#WBID').val(data.WBID);
+//         // Title and Description
+//         $('#WBTitle').val(data.WBTitle);
+//         $('#WBDescription').val(data.WBDescription);
+//         //Dates
+//         // formatDate(data.WBStartDate, function (str) {
+//         //     $('#WBStartDate').val(str);
+//         // });
+//         // formatDate(data.WBEndDate, function (str) {
+//         //     $('#WBEndDate').val(str);
+//         // });
+// }
+function submitAddWorkloadSimple(e) {
+    e.preventDefault();
+    if (validateFormSimple()) {
+        var workloadV3 = { title: this.WBTitle.value, description: this.WBDescription.value, status: 0 };
+        DisableWorkloadFields();
+        $('#msg').text('Wait...');
+        $('#msg').fadeIn();
+        addWorkloadSimpleV3HttpCall(workloadV3, function (response) {
+            // success
+            $('#WorkloadModal').modal('hide');
+            createTaskSimple(response.WBID, response.WBTitle, response.WBStatus, response.WBStartDate, response.WBEndDate, response.WBUsers);
+            updateDashboard();
+        }, function () {
+            // error
+            $('#msg').text('Error!');
+            EnableWorkloadFields();
+            newWorkloadStateSimple();
+        });
+    }
+}
+function submitUpdateWorkloadSimple(e) {
+    e.preventDefault();
+    if (validateFormSimple()) {
+        var workloadV3 = { id: this.WBID.value, title: this.WBTitle.value, description: this.WBDescription.value };
+        DisableWorkloadFields();
+        $('#msg').text('Wait...');
+        $('#msg').fadeIn();
+        updateWorkloadSimpleV3HttpCall(workloadV3, function (response) {
+            // success
+            $('#WorkloadModal').modal('hide');
+            updateTaskInFolder(response.WBID, response.WBTitle, response.WBStatus, response.WBStartDate, response.WBEndDate, response.WBUsers);
+            updateDashboard();
+        }, function () {
+            // error
+            $('#msg').text('Error!');
+            EnableWorkloadFields();
+            editWorkloadState();
+        });
+    }
+}
+function deleteWorkloadSimple(ev) {
+    ev.preventDefault();
+    var workloadID = $('#WBID').val();
+    $('#msg').text('Wait...');
+    deleteWorkloadHttpCall(workloadID, function (response) {
+        $('#WorkloadModal').modal('hide');
+        deleteTaskInFolder(workloadID);
+        updateDashboard();
+    }, function () {
+        // error
+        $('#msg').text('Error!');
+        EnableWorkloadFields();
+        editWorkloadState();
     });
-    $('.multiselect-container.dropdown-menu li a label input').removeAttr("disabled");
-    $('.fileinput').removeClass('hidden');
 }
-function HideAllButtons() {
-    $("#btnWorkloadCancel").addClass('hidden');
-    $("#btnWorkloadReset").addClass('hidden');
-    $("#btnWorkloadEdit").addClass('hidden');
-    $("#btnWorkloadDelete").addClass('hidden');
-    $("#btnWorkloadSend").addClass('hidden');
-}
-// Validate Modal
-// Scope: modal dialog
-//Workload Validation:
-function validateForm(e, data, callback) {
+function validateFormSimple() {
     var ctrl = true;
-    var textFields = ['#WBStartDate', '#WBEndDate', '#WBTitle'];
+    var textFields = ['#WBTitle'];
     for (var i = 0; i < textFields.length; i++) {
         var field = $(textFields[i]);
         if (field.val() == "") {
             ctrl = false;
-            field.addClass('error');
+            //field.addClass('error'); // css is not working
         }
         else {
-            field.removeClass('error');
-        }
-    }
-    var selectFields = ['#WBExpertise', '#WBActivity'];
-    for (var i = 0; i < selectFields.length; i++) {
-        var field = $(selectFields[i]);
-        if (field.val() == -1 || field.val() == null) {
-            ctrl = false;
-            field.addClass('error');
-        }
-        else {
-            field.removeClass('error');
-        }
-    }
-    var multiselectFields = ['#WBTechnologies', '#WBMetrics', '#WBUsers'];
-    for (var i = 0; i < multiselectFields.length; i++) {
-        var field = $(multiselectFields[i]);
-        var selected = $(multiselectFields[i] + ' option:selected');
-        if (selected.length == 0) {
-            ctrl = false;
-            field.siblings().children("button").addClass('error');
-        }
-        else {
-            field.siblings().children("button").removeClass('error');
+            //field.removeClass('error');
         }
     }
     var msg = $('#msg');
-    if (ctrl) {
-        callback(e, data);
-    }
-    else {
+    if (!ctrl) {
         msg.fadeIn();
         msg.text('Please, fill the mandatory fields.');
-        e.preventDefault();
     }
-}
-function validateFormSimple(e, data, callback) {
-    var ctrl = true;
-    var textFields = [/*'#WBStartDate', '#WBEndDate',*/ '#WBTitle'];
-    for (var i = 0; i < textFields.length; i++) {
-        var field = $(textFields[i]);
-        if (field.val() == "") {
-            ctrl = false;
-            field.addClass('error');
-        }
-        else {
-            field.removeClass('error');
-        }
-    }
-    //var selectFields = ['#WBExpertise', '#WBActivity'];
-    //for (var i = 0; i < selectFields.length; i++) {
-    //    var field = $(selectFields[i]);
-    //    if (field.val() == -1 || field.val() == null) {
-    //        ctrl = false;
-    //        field.addClass('error');
-    //    } else {
-    //        field.removeClass('error');
-    //    }
-    //}
-    //var multiselectFields = ['#WBTechnologies', '#WBMetrics', '#WBUsers'];
-    //for (var i = 0; i < multiselectFields.length; i++) {
-    //    var field = $(multiselectFields[i]);
-    //    var selected = $(multiselectFields[i] + ' option:selected');
-    //    if (selected.length == 0) {
-    //        ctrl = false;
-    //        field.siblings().children("button").addClass('error');
-    //    } else {
-    //        field.siblings().children("button").removeClass('error');
-    //    }
-    //}
-    var msg = $('#msg');
-    if (ctrl) {
-        callback(e, data);
-    }
-    else {
-        msg.fadeIn();
-        msg.text('Please, fill the mandatory fields.');
-        e.preventDefault();
-    }
+    return ctrl;
 }
 function clearValidate() {
-    var textFields = ['#WBStartDate', '#WBEndDate', '#WBTitle', '#WBExpertise', '#WBActivity'];
+    var textFields = ['#WBTitle'];
     for (var i = 0; i < textFields.length; i++) {
         var field = $(textFields[i]);
         field.removeClass('error');
     }
-    var multiselectFields = ['#WBTechnologies', '#WBMetrics', '#WBUsers'];
-    for (var i = 0; i < multiselectFields.length; i++) {
-        var field = $(multiselectFields[i]);
-        field.siblings().children("button").removeClass('error');
+}
+var ModalButton = (function (_super) {
+    __extends(ModalButton, _super);
+    function ModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
+    ModalButton.prototype.render = function () {
+        var classButtonType = this.props.className;
+        var pictureClass = (this.props.picture) ? ("fa " + this.props.picture) : null;
+        return (!this.props.display) ? null :
+            React.createElement("div", { className: "data-sorting-buttons" },
+                React.createElement("button", { className: classButtonType, onClick: this.props.onClick },
+                    (pictureClass) && (React.createElement("i", { className: pictureClass, "aria-hidden": "true" })),
+                    this.props.children));
+    };
+    return ModalButton;
+}(React.Component));
+function cancelButton() {
+    $('#WorkloadModal').modal('hide');
 }
-//Microsoft Graph API calls:
-function GetImage(user, token) {
-    var url = "https://graph.microsoft.com/v1.0/me/photo/$value";
-    var elem = "userImg";
-    var auth = 'bearer ' + token;
-    GetImageBase64FromGraph(url, elem, auth);
-}
-function GetImageBase64FromGraph(url, element, token) {
-    var request = new XMLHttpRequest;
-    request.open("GET", url);
-    request.setRequestHeader("Authorization", token);
-    request.responseType = "blob";
-    request.onload = function () {
-        if (request.readyState === 4 && request.status === 200) {
-            var image = document.getElementById(element);
-            var reader = new FileReader();
-            reader.onload = function () {
-                image.src = reader.result;
-                updateImgOnDatabase();
-            };
-            reader.readAsDataURL(request.response);
+var CancelModalButton = (function (_super) {
+    __extends(CancelModalButton, _super);
+    function CancelModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CancelModalButton.prototype.cancel = function () {
+        $('#WorkloadModal').modal('hide');
+    };
+    CancelModalButton.prototype.render = function () {
+        return React.createElement("div", { className: "data-sorting-buttons" },
+            React.createElement("button", { type: "button", className: "ds-button-reset", id: "btnWorkloadCancel", onClick: this.cancel }, "Cancel"));
+    };
+    return CancelModalButton;
+}(React.Component));
+var ResetModalButton = (function (_super) {
+    __extends(ResetModalButton, _super);
+    function ResetModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ResetModalButton.prototype.render = function () {
+        return React.createElement("div", { className: "data-sorting-buttons" },
+            React.createElement("button", { type: "button", className: "ds-button-reset", id: "btnWorkloadReset", onClick: resetWorkloadForm }, "Reset"));
+    };
+    return ResetModalButton;
+}(React.Component));
+var EditModalButton = (function (_super) {
+    __extends(EditModalButton, _super);
+    function EditModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    EditModalButton.prototype.render = function () {
+        return React.createElement("div", { className: "data-sorting-buttons" },
+            React.createElement("button", { type: "button", className: "ds-button-update", id: "btnWorkloadEdit", onClick: editWorkloadState },
+                React.createElement("i", { className: "fa fa-retweet", "aria-hidden": "true" }),
+                "Edit"));
+    };
+    return EditModalButton;
+}(React.Component));
+var DeleteModalButton = (function (_super) {
+    __extends(DeleteModalButton, _super);
+    function DeleteModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    DeleteModalButton.prototype.render = function () {
+        if (this.props.display) {
+            return React.createElement("div", { className: "data-sorting-buttons" },
+                React.createElement("button", { type: "button", className: "btn btn-warning", id: "btnWorkloadDelete", onClick: deleteWorkloadSimple },
+                    React.createElement("i", { className: "fa fa-trash-o", "aria-hidden": "true" }),
+                    "Delete"));
         }
     };
-    request.send(null);
-}
-function updateImgOnDatabase() {
-    var img = $('#userImg').attr('src');
-    var data = new FormData(this);
-    data.append('img', img);
-    $.ajax({
-        url: '/Users/PhotoUpdate',
-        type: 'PUT',
-        data: data,
-        processData: false,
-        contentType: false,
-        success: function (response) {
+    return DeleteModalButton;
+}(React.Component));
+var SendAddModalButton = (function (_super) {
+    __extends(SendAddModalButton, _super);
+    function SendAddModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SendAddModalButton.prototype.render = function () {
+        return React.createElement("div", { className: "data-sorting-buttons" },
+            React.createElement("button", { type: "button", className: "btn btn-success", id: "btnWorkloadSendAdd", onClick: submitAddWorkloadSimple }, "Add"));
+    };
+    return SendAddModalButton;
+}(React.Component));
+var SendUpdateModalButton = (function (_super) {
+    __extends(SendUpdateModalButton, _super);
+    function SendUpdateModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SendUpdateModalButton.prototype.render = function () {
+        return React.createElement("div", { className: "data-sorting-buttons" },
+            React.createElement("button", { type: "button", className: "btn btn-success", id: "btnWorkloadSendUpdate", onClick: submitUpdateWorkloadSimple }, "Update"));
+    };
+    return SendUpdateModalButton;
+}(React.Component));
+var AddAppointmentModalButton = (function (_super) {
+    __extends(AddAppointmentModalButton, _super);
+    function AddAppointmentModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    AddAppointmentModalButton.prototype.addAppointment = function (ev) {
+        var wbid = this.props.wbid;
+        if (wbid != '') {
+            window.open('/appointment/addsimple?wbid=' + wbid, '_blank', 'height=700, width=600, status=no, toolbar=no, menubar=no, location=no');
         }
-    });
-}
-//Util:
-function formatDate(dateStr, callback) {
-    var date = new Date(dateStr);
-    var day = date.getDate();
-    var month = date.getMonth() + 1;
-    var year = date.getFullYear();
-    var str = month + '/' + day + '/' + year;
-    callback(str);
-}
+    };
+    AddAppointmentModalButton.prototype.render = function () {
+        return React.createElement("div", { className: "data-sorting-buttons" },
+            React.createElement("button", { type: "button", className: "btn btn-success", id: "btnWorkloadAddAppointment", onClick: this.addAppointment },
+                React.createElement("i", { className: "fa fa-retweet", "aria-hidden": "true" }),
+                "New Appointment"));
+    };
+    return AddAppointmentModalButton;
+}(React.Component));
+var LogHistoryModalButton = (function (_super) {
+    __extends(LogHistoryModalButton, _super);
+    function LogHistoryModalButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    LogHistoryModalButton.prototype.showAppointments = function (ev) {
+        var wbid = this.props.wbid;
+        if (wbid != '') {
+            window.open('/appointment/work?wbid=' + wbid, '_blank', 'height=700, width=600, status=no, toolbar=no, menubar=no, location=no');
+        }
+    };
+    LogHistoryModalButton.prototype.render = function () {
+        return React.createElement("div", { className: "data-sorting-buttons" },
+            React.createElement("button", { type: "button", className: "btn btn-success", id: "btnWorkloadShowAppointment", onClick: this.showAppointments },
+                React.createElement("i", { className: "fa fa-retweet", "aria-hidden": "true" }),
+                "Log History"));
+    };
+    return LogHistoryModalButton;
+}(React.Component));
+var ModalButtonList = (function (_super) {
+    __extends(ModalButtonList, _super);
+    function ModalButtonList() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ModalButtonList.prototype.render = function () {
+        var wbid = $('#WBID').val();
+        var show = this.props.show || {};
+        function getfun(wbid) {
+            return function () { window.open('/appointment/work?wbid=' + wbid, '_blank', 'height=700, width=600, status=no, toolbar=no, menubar=no, location=no'); };
+        }
+        ;
+        function getfun2(wbid) {
+            return function () { window.open('/appointment/addsimple?wbid=' + wbid, '_blank', 'height=700, width=600, status=no, toolbar=no, menubar=no, location=no'); };
+        }
+        return React.createElement("div", null,
+            React.createElement(ModalButton, { display: show['cancel'], className: "ds-button-reset", onClick: cancelButton }, "CANCEL"),
+            React.createElement(ModalButton, { display: show['reset'], className: "ds-button-reset", onClick: resetWorkloadForm }, "RESET"),
+            React.createElement(ModalButton, { display: show['edit'], className: "ds-button-update", onClick: editWorkloadState, picture: "fa-retweet" }, "EDIT"),
+            React.createElement(ModalButton, { display: show['delete'], className: "btn btn-warning", onClick: deleteWorkloadSimple, picture: "fa-trash-o" }, "DELETE"),
+            React.createElement(ModalButton, { display: show['add'], className: "btn btn-success", onClick: submitAddWorkloadSimple }, "SENDADD"),
+            React.createElement(ModalButton, { display: show['update'], className: "btn btn-success", onClick: submitUpdateWorkloadSimple }, "SENDUPD"),
+            React.createElement(ModalButton, { display: show['newlog'], className: "btn btn-success", onClick: getfun, picture: "fa-retweet" }, "NEWLOG"),
+            React.createElement(ModalButton, { display: show['history'], className: "btn btn-success", onClick: getfun, picture: "fa-retweet" }, "HISTORY"));
+    };
+    return ModalButtonList;
+}(React.Component));
+var ModalButtonList2 = (function (_super) {
+    __extends(ModalButtonList2, _super);
+    function ModalButtonList2() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ModalButtonList2.prototype.render = function () {
+        var wbid = $('#WBID').val();
+        var show = this.props.show || {};
+        return React.createElement("div", null,
+            React.createElement(CancelModalButton, null),
+            React.createElement(ResetModalButton, null),
+            React.createElement(EditModalButton, null),
+            React.createElement(DeleteModalButton, { display: show['delete'] }),
+            React.createElement(SendAddModalButton, null),
+            React.createElement(SendUpdateModalButton, null),
+            React.createElement(AddAppointmentModalButton, { wbid: wbid }),
+            React.createElement(LogHistoryModalButton, { wbid: wbid }));
+    };
+    return ModalButtonList2;
+}(React.Component));
+var ModalDialog = (function (_super) {
+    __extends(ModalDialog, _super);
+    function ModalDialog() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ModalDialog.prototype.render = function () {
+        return React.createElement("div", { className: "folder-header" },
+            React.createElement("p", null,
+                React.createElement("span", { className: "templateTitle" }, this.props.title)));
+    };
+    return ModalDialog;
+}(React.Component));
+var ModalForm = (function (_super) {
+    __extends(ModalForm, _super);
+    function ModalForm(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            wbid: '',
+            startDate: '',
+            endDate: '',
+            title: '',
+            description: ''
+        };
+        _this.handleChange = _this.handleChange.bind(_this);
+        return _this;
+    }
+    ModalForm.prototype.componentWillReceiveProps = function (props) {
+        this.setState({
+            wbid: props.wbid || '',
+            startDate: props.startDate || '',
+            endDate: props.endDate || '',
+            title: props.title || '',
+            description: props.description || ''
+        });
+    };
+    ModalForm.prototype.handleChange = function (ev) {
+        var name = ev.target.name;
+        var value = ev.target.value;
+        this.setState((_a = {}, _a[name] = ev.target.value, _a));
+        var _a;
+    };
+    ModalForm.prototype.onclick = function (e) {
+        alert(JSON.stringify(this.state));
+        e.preventDefault();
+    };
+    ModalForm.prototype.render = function () {
+        return React.createElement("div", null,
+            React.createElement("div", { className: "row", hidden: true },
+                React.createElement("div", { id: "#formWBID", className: "col-md-9" },
+                    React.createElement("div", { className: "form-group" },
+                        React.createElement("input", { type: "text", className: "form-control", id: "WBID", name: "WBID", value: this.state.wbid })))),
+            React.createElement("div", { className: "row", hidden: true },
+                React.createElement("div", { className: "col-md-4" },
+                    React.createElement("div", { className: "form-group" },
+                        React.createElement("label", { htmlFor: "WBStartDate" }, "Start date:"),
+                        React.createElement("div", { className: "input-group date" },
+                            React.createElement("input", { type: "text", id: "WBStartDate", name: "startDate", className: "form-control", autoComplete: "off", onChange: this.handleChange }),
+                            React.createElement("span", { className: "input-group-addon" },
+                                React.createElement("i", { className: "fa fa-calendar-check-o", "aria-hidden": "true" }))))),
+                React.createElement("div", { className: "col-md-4" },
+                    React.createElement("div", { className: "form-group" },
+                        React.createElement("label", { htmlFor: "WBEndDate" }, "End date:"),
+                        React.createElement("div", { className: "input-group date" },
+                            React.createElement("input", { type: "text", id: "WBEndDate", name: "endDate", className: "form-control", autoComplete: "off", onChange: this.handleChange }),
+                            React.createElement("span", { className: "input-group-addon" },
+                                React.createElement("i", { className: "fa fa-calendar-check-o", "aria-hidden": "true" })))))),
+            React.createElement("div", { className: "row" },
+                React.createElement("div", { className: "col-md-12" },
+                    React.createElement("div", { className: "form-group" },
+                        React.createElement("label", { htmlFor: "WBTitle" }, "Title:"),
+                        React.createElement("input", { type: "text", className: "form-control", id: "WBTitle", name: "title", autoComplete: "off", value: this.state.title, onChange: this.handleChange, autoFocus: true })))),
+            React.createElement("div", { className: "row" },
+                React.createElement("div", { className: "col-md-12" },
+                    React.createElement("div", { className: "form-group" },
+                        React.createElement("label", { htmlFor: "WBDescription" }, "Description:"),
+                        React.createElement("textarea", { className: "form-control", id: "WBDescription", name: "description", rows: 3, value: this.state.description, onChange: this.handleChange })))),
+            React.createElement("button", { onClick: this.onclick.bind(this) }, "DebugShow"));
+    };
+    return ModalForm;
+}(React.Component));
 // initialize
 function InitializeKanban() {
     ReactDOM.render(React.createElement(DashboardFolderHeader, null), document.getElementById('dashboard-folder-header'));
-    ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
-}
-function RefreshTaskList() {
     gettasklist(function (tasklist) {
         tasklist.map(function (task) {
             createTask(task.id, task.title, task.start, task.end, task.hours, task.attachments, task.tag, task.status, task.users /* , task.description */);
@@ -931,19 +671,34 @@ function RefreshTaskList() {
     });
 }
 function createTask(id, title, start, end, hours, attachments, tag, state, users) {
-    var validIdName = '_' + id; // avoid issues when taskId starts with numbers
     var userArray = users.map(function (item) { return item.Item1; });
-    var taskProp = { id: validIdName, title: title, dateStart: start, dateEnd: end, users: userArray };
+    var taskProp = { id: id, title: title, dateStart: start, dateEnd: end, users: userArray, state: state };
     folderM[state].tasks.push(taskProp);
+    dictM[id] = taskProp;
 }
-function updateTaskInFolder(taskId, taskTitle, start, end, attachments, tag, users) {
-    // fix problems
-    var validIdName = '_' + taskId; // avoid issues when taskId starts with numbers
-    var userArray = users.map(function (item) { return item.Item1; });
-    var taskProp = { id: validIdName, title: taskTitle, dateStart: start, dateEnd: end, users: userArray };
-    ReactDOM.render(React.createElement(TemplateTask, taskProp), document.getElementById(validIdName));
+function createTaskSimple(id, title, state, start, end, users) {
+    var taskProp = { id: id, title: title, dateStart: start, dateEnd: end, users: users, state: state };
+    folderM[state].tasks.unshift(taskProp);
+    dictM[id] = taskProp;
+}
+function updateDashboard() {
+    ReactDOM.render(React.createElement(DashboardFolders, null), document.getElementById('dashboard-folders'));
+}
+function updateTaskInFolder(id, title, state, start, end, users) {
+    var task = dictM[id];
+    task.title = title;
+    task.dateStart = start;
+    task.dateEnd = end;
+    task.users = users;
+    task.state = state;
+}
+function deleteTaskInFolder(id) {
+    var task = dictM[id];
+    var curState = task.state;
+    folderM[curState].remove(task);
+    dictM[id] = null;
 }
 // task callback
 function taskedit(id) {
-    detailsWorkloadState(null, id);
+    detailsWorkloadState(this, id);
 }
