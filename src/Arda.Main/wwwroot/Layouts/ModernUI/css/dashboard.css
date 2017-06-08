@@ -1,0 +1,33 @@
+.ctn-header-dashboard {
+  padding: 30px 0;
+  background-color: #f4f5f7; }
+
+.dashboard-filter {
+  font-weight: 400;
+  line-height: 44px;
+  display: inline-block;
+  float: left;
+  width: 32.5%;
+  cursor: pointer;
+  text-align: center;
+  text-transform: uppercase;
+  border: 1px solid #2B2E37;
+  border-right: none; }
+  .dashboard-filter:last-child {
+    border-right: 1px solid #2B2E37; }
+  .dashboard-filter.active {
+    color: #fff;
+    background-color: #2B2E37; }
+
+.dashboard-filter-field {
+  display: none; }
+  .dashboard-filter-field:checked + label {
+    color: #fff;
+    background-color: #2B2E37; }
+
+.form-control:focus {
+  border: 1px solid #2B2E37; }
+
+.dashboard-filter-assign {
+  height: 46px;
+  cursor: pointer; }

@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  arda.main:
+    image: user/arda.main${TAG}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80" 
+      - "443"
