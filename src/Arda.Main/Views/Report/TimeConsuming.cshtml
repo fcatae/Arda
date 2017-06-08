@@ -1,0 +1,340 @@
+﻿<section class="concontainer-fluid">
+    <div class="col-xs-12">
+
+        <div class="row">
+            <header class="ctn-header-dashboard">
+                <div class="col-xs-12 col-lg-3 col-md-6">
+                    <h2>Time Consuming:</h2>
+                </div>
+                <div class="col-xs-12 col-lg-3 col-md-6">
+                    <input class="form-control" type="text" id="dataRange" value="01/01/2015 - 01/31/2015" />
+                </div>
+                <div class="col-xs-12 col-lg-3 col-md-6">
+                    <select class="form-control" id="WBUsers" name="WBUsers"></select>
+                </div>
+                
+                <div class="col-xs-12 col-lg-3 col-md-6">
+                    <div class="data-sorting-buttons">
+                        <button class="btn btn-default" id="btnFilter">Filter</button>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </header>
+
+            <div class="col-lg-12 col-md-12 col-xs-12" id="ActivityConsumingRow" hidden>
+                <h3 class="title-manager-sec">Activity Consuming</h3>
+                <div class="col-md-6">
+                    <div id="activityChart" class="bubbleChart"></div>
+                </div>
+                <div class="col-md-6">
+                    <table id="ActivityConsuming" class="table-striped"></table>
+                </div>
+            </div>
+
+            <div class="col-lg-12 col-md-12 col-xs-12" id="ExpertiseConsumingRow" hidden>
+                <h3 class="title-manager-sec">Expertise Consuming</h3>
+                <div class="col-md-6">
+                    <div id="expertiseChart" class="bubbleChart"></div>
+                </div>
+                <div class="col-md-6">
+                    <table id="ExpertiseConsuming" style="width:500px; margin-top:200px;" class="table-striped"></table>
+                </div>
+            </div>
+
+            <div class="col-lg-12 col-md-12 col-xs-12" id="MetricConsumingRow" hidden>
+                <h3 class="title-manager-sec">Metric Consuming</h3>
+                <div class="col-md-12">
+                    <div id="metricChart"></div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+ 
+</section>
+
+<script>
+    var startDate;
+    var endDate;
+
+    google.charts.load('current', { 'packages': ['corechart'] });
+
+    $(function () {
+        Initialize()
+        
+        //Initial Params:
+        startDate = '01/01/2016';
+        endDate = getToday();
+        user = "All"
+
+        //Get User:
+        $.getJSON('/users/GetUsers', null, callbackGetUsers);
+
+        //Load all charts and tables:
+        loadData(user);
+    });
+
+    function Initialize() {
+
+        var today = getToday();
+
+        //Components:
+        $('#dataRange').daterangepicker(
+        {
+            locale: {
+                format: 'MM/DD/YYYY'
+            },
+            startDate: '01/01/2016',
+            endDate: today,
+            maxDate: today,
+        }, function (start, end, label) {
+            startDate = start.format('MM/DD/YYYY');
+            endDate = end.format('MM/DD/YYYY');
+            //startDate = start.format('DD/MM/YYYY');
+            //endDate = end.format('DD/MM/YYYY');
+        });
+
+        $('#btnFilter').click(filterData);
+    }
+
+    function callbackGetUsers(data) {
+        var options = [];
+        var select = $('#WBUsers');
+        options.push('<option value="All">All</option>');
+        for (var i = 0; i < data.length; i++) {
+            var text = data[i].Name;
+            var key = data[i].UniqueName;
+            options.push('<option value="' + key + '">' + text + '</option>');
+        }
+        select.html(options.join(''));
+    }
+
+    function loadData(user) {
+        //Get Activity Table:
+        loadTimeConsumingDataTable('/Report/GetActivityConsumingTableData', startDate, endDate, user, callbackGetActivityConsumingTableData, '#ActivityConsuming');
+        //Create Activity Bubble Chart:
+        createTimeConsumingBubbleChart(600, 'GetActivityConsumingBubbleData', startDate, endDate, user, '#activityChart');
+
+        //Get Expertise Table:
+        loadTimeConsumingDataTable('/Report/GetExpertiseConsumingTableData', startDate, endDate, user, callbackGetExpertiseConsumingTableData, '#ExpertiseConsuming');
+        //Create Expertise Bubble Chart:
+        createTimeConsumingBubbleChart(600, 'GetExpertiseConsumingBubbleData', startDate, endDate, user, '#expertiseChart');
+
+        //Create Metric Pie Chart:
+        loadTimeConsumingData('/Report/GetMetricConsumingTableData', startDate, endDate, user, createTimeConsumingPieChart, 'metricChart', 'Time Consuming: Metrics')
+    }
+
+
+    function loadTimeConsumingDataTable(url, startDate, endDate, user, callback, tableSelector) {
+        url = url + '?startDate=' + startDate + '&endDate=' + endDate + '&user=' + user;
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data) {
+                callback(data, tableSelector);
+            }
+        });
+    }
+
+    function loadTimeConsumingData(url, startDate, endDate, user, callback, selector, title) {
+        url = url + '?startDate=' + startDate + '&endDate=' + endDate + '&user=' + user;
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (data) {
+                callback(data, selector, title)
+            }
+        });
+    }
+
+
+    function createTimeConsumingBubbleChart(diameter, url, startDate, endDate, user, chartSelector) {
+        var url = url + '?startDate=' + startDate + '&endDate=' + endDate + '&user=' + user;
+
+        var diameter = diameter,
+            format = d3.format(",d"),
+            color = d3.scale.category20c();
+
+        var x = d3.scale.ordinal()
+                  .rangeRoundBands([0, '100px'], .1, .3);
+
+        var bubble = d3.layout.pack()
+            .sort(null)
+            .size([diameter, diameter])
+            .padding(1.5);
+
+        var svg = d3.select(chartSelector).append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+            .attr("class", "bubble");
+
+
+        d3.json(url, function (error, root) {
+            if (error) throw error;
+
+            var node = svg.selectAll(".node")
+                .data(bubble.nodes(classes(root))
+                .filter(function (d) { return !d.children; }))
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+            node.append("circle")
+                .attr("r", function (d) { return d.r; })
+                .style("fill", function (d) { return color(d.packageName); });
+
+            node.append("text")
+                .attr("dy", ".3em")
+                .attr('style', 'word-wrap: break-word; text-align:center; text-anchor: middle; font-weight: 600;')
+                .text(function (d) { return d.className.substring(0, d.r / 4); });
+            
+        });
+
+
+        // Returns a flattened hierarchy containing all leaf nodes under the root.
+        function classes(root) {
+            var classes = [];
+
+            function recurse(name, node) {
+                if (node.children) node.children.forEach(function (child) { recurse(node.name, child); });
+                else classes.push({ packageName: name, className: node.name, value: node.size });
+            }
+
+            recurse(null, root);
+            return { children: classes };
+        }
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+    }
+
+    function createTimeConsumingPieChart(data, chartSelector, title) {
+        google.charts.setOnLoadCallback(drawChart(data));
+        
+        function drawChart(data) {
+            var dataTable = new google.visualization.DataTable();
+
+            // Declare columns
+            dataTable.addColumn('string', 'Metric');
+            dataTable.addColumn('number', 'Hours');
+
+            var rows = [];
+            for (var i = 0; i < data.length; i++) {
+                var row = [];
+                row[0] = data[i].Metric;
+                row[1] = data[i].Hours;
+                rows.push(row);
+            }
+            dataTable.addRows(rows);
+
+            var options = {
+                title: title,
+                'width': 1300,
+                'height': 600
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById(chartSelector));
+
+
+            $('#MetricConsumingRow').fadeIn();
+            chart.draw(dataTable, options);
+        }
+    }
+
+
+    function callbackGetActivityConsumingTableData(data, tableSelector) {
+        var table = $(tableSelector);
+
+        var caption = $('<caption/>').text('Time Consuming: Activities');
+        table.append(caption);
+
+        var row = $("<tr/>");
+        row.append($("<th/>").text('Activity'));
+        row.append($("<th/>").text('Hours'));
+        row.append($("<th/>").text('%'));
+        table.append(row);
+
+        $.each(data, function (rowIndex, r) {
+            var row = $("<tr/>");
+            $.each(r, function (colIndex, c) {
+                var text = ''
+                switch (colIndex) {
+                    case 0:
+                        text = data[i].Activity;
+                        break;
+                    case 1:
+                        text = data[i].Hours;
+                        break;
+                    case 2:
+                        text = data[i].Percent;
+                        break;
+                }
+                row.append($("<td/>").text(c));
+            });
+            table.append(row);
+        });
+        $('#ActivityConsumingRow').fadeIn();
+    }
+
+    function callbackGetExpertiseConsumingTableData(data, tableSelector) {
+        var table = $(tableSelector);
+
+        var caption = $('<caption/>').text('Time Consuming: Expertises');
+        table.append(caption);
+
+        var row = $("<tr/>");
+        row.append($("<th/>").text('Expertise'));
+        row.append($("<th/>").text('Hours'));
+        row.append($("<th/>").text('%'));
+        table.append(row);
+
+        $.each(data, function (rowIndex, r) {
+            var row = $("<tr/>");
+            $.each(r, function (colIndex, c) {
+                var text = ''
+                switch (colIndex) {
+                    case 0:
+                        text = data[i].Expertise;
+                        break;
+                    case 1:
+                        text = data[i].Hours;
+                        break;
+                    case 2:
+                        text = data[i].Percent;
+                        break;
+                }
+                row.append($("<td/>").text(c));
+            });
+            table.append(row);
+        });
+        $('#ExpertiseConsumingRow').fadeIn();
+    }
+
+
+    function filterData() {
+        $('.bubbleChart').html('');
+        $('table').html('');
+
+        user = $('#WBUsers').val();
+
+        loadData(user);
+    }
+
+    function getToday() {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+
+        today = mm + '/' + dd + '/' + yyyy;
+        return today;
+    }
+
+</script>

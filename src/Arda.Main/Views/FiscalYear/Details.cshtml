@@ -1,0 +1,68 @@
+﻿@using Arda.Main.ViewModels
+@model Arda.Main.ViewModels.FiscalYearViewModel
+<section class="concontainer-fluid">
+
+    <div class="col-xs-12">
+        <div class="row">
+            <header class="ctn-header-dashboard">
+
+                <!-- Title -->
+                <div class="col-xs-12 col-lg-3 col-md-4">
+                    <h2>
+                        Fiscal Years
+                    </h2>
+                    <p>Details about "@Model.TextualFiscalYearMain"</p>
+                </div>
+
+                <!-- Some information -->
+                <div class="col-xs-12 col-lg-3 col-md-4">
+
+                </div>
+
+                <!-- Clear some garbage -->
+                <div class="clearfix"></div>
+
+
+            </header>
+
+            <div style="margin-top:20px;">
+
+                <div class="col-xs-12 col-md-8" style="border-right:1px solid #efefef;">
+
+                    <form id="form-edit-fiscal-year" role="form">
+                        <div class="form-group">
+                            <label for="FiscalYearID">Code:</label>
+                            <input type="text" class="form-control" id="FiscalYearID" value="@Model.FiscalYearID" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="FiscalYearText">Fiscal Year (textual form):</label>
+                            <input type="text" class="form-control" id="FiscalYearText" value="@Model.TextualFiscalYearMain" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="FiscalYearNumber">Fiscal Year (numeric form):</label>
+                            <input type="text" class="form-control" id="FiscalYearNumber" value="@Model.FullNumericFiscalYearMain" disabled> 
+                        </div>
+                        <div class="data-sorting-buttons">
+                            <a href="/FiscalYear/Edit/@Model.FiscalYearID" class="ds-button-edit">
+                                <i class='fa fa-pencil-square-o' aria-hidden='true'></i> Edit this Fiscal Year?
+                            </a>
+                        </div>
+                    </form>
+                    
+                </div>
+                <div class="col-xs-6 col-md-4">
+                    <h3>
+                        New fiscal year
+                    </h3>
+                    <p>
+                        To add a new Fiscal Year, please click on button bellow. <br />
+                        <div class="data-sorting-buttons">
+                            <a asp-controller="FiscalYear" asp-action="Add" class="ds-button-update"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
+                        </div>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

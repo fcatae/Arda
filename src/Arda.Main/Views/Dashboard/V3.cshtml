@@ -1,0 +1,31 @@
+﻿    <section class="concontainer-fluid">
+        <div class="col-xs-12">
+            <div class="row">
+                <div id="dashboard-folder-header" class="col-xs-12">
+                    <!-- use react to render -->
+                </div>
+
+                <div class="col-xs-12 container-fluid--dashboard">
+                    <div id="dashboard-folders" class="row">
+                        <!-- use react to render -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+<!-- Workload Modal -->
+@await Html.PartialAsync("_WorkloadModalV3")
+
+<script>
+    //Initialization code
+    $(function () {
+        Initialize();       // initialize.ts
+        InitializeKanban(); // workload.ts
+    });
+
+</script>
+<script src="~/lib/react/react.js"></script>
+<script src="~/lib/react/react-dom.js"></script>
+<script src="~/components/workload.js"></script>
+
