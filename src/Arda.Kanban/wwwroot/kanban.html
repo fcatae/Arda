@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kanban</title>
+    <link rel="stylesheet" href="kanban.css">
+    <script src="lib/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <!-- should be a form instead -->
+            <div>
+                <input id="txtAdd" type="text">
+                <button id="btnAdd">Add</button>
+            </div>
+        </div>
+        <h1 class="title">Active</h1>
+        <div class="folder folder-active" data-state="0">
+            <!--<div id="t1-initial" class="task">
+                <span class="task-text" contenteditable>Projeto Galinha Pintadinha</span>                               
+            </div>
+            <div id="t2-initial" class="task">
+                <span class="task-text2">Projeto Galinha Pintadinha</span>
+                <span class="tag tag-isv">ISV</span>                               
+                <span class="tag tag-metric">metric</span>                               
+            </div>
+            <div id="t3-initial" class="task task-default">
+                <span class="task-text2">Projeto Galinha Pintadinha</span>
+                <span class="task-description">1d</span>
+                <div class="tag-container">
+                    <span class="tag tag-isv">ISV</span>                               
+                    <span class="tag tag-metric">metric</span>                               
+                </div>
+            </div>-->        
+            <template id="templateTask">
+                <div id="templateId" class="task" draggable="true">
+                    <span id="templateText" class="task-text2">templateText</span>
+                    <div class="tag-container">
+                        <span class="tag tag-isv">ISV</span>
+                        <span class="tag tag-metric">metric</span>
+                    </div>
+                </div>
+            </template>                  
+        </div>
+        <div class="folder folder-done" data-state="1">
+        </div>        
+    </div>
+    <script>
+        function dragstart(ev) {
+            ev.dataTransfer.setData('text', ev.target.id);
+        }
+        
+        function dragover(ev) {
+            ev.preventDefault();
+        }
+        
+        function drop(ev) {
+            var target = this;
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData('text');
+            var elem = document.getElementById(data);
+            target.appendChild(elem);
+
+            var state = (target.dataset['state']) | 0;
+            var task = { Id: elem.id, State: state };
+            update(task);
+        }
+        var tasks = $('.task');
+        tasks.map(function(i, task) {
+           task.draggable = true;
+           task.addEventListener('dragstart', dragstart);
+        });
+        
+        var folders = $('.folder');
+        folders.map(function(i, folder) {
+            folder.addEventListener('dragover', dragover);
+            folder.addEventListener('drop', drop.bind(folder));            
+        });
+
+        var btnAdd = $('#btnAdd');
+        var txtAdd = $('#txtAdd');
+
+        btnAdd.click(function () {
+            var taskName = txtAdd.val();
+
+            if (taskName != null && taskName != '') {
+
+                //var taskId = 'id' + (globalId++);
+                // createTask(taskId, taskName);
+
+                create(taskName);
+            }            
+        });
+
+        function createTask(taskId, taskName) {
+            var content = document.querySelector('#templateTask').content;
+            var clone = document.importNode(content, true);
+            var folder = document.querySelector('.folder-active');
+
+            clone.querySelector('.task').id = taskId;
+            clone.querySelector('.task #templateText').textContent = taskName;            
+
+            clone.querySelector('.task').addEventListener('dragstart', dragstart);
+
+            folder.appendChild(clone, true);
+        }
+
+        function createTaskInFolder(taskId, taskName, folderClass) {
+            var content = document.querySelector('#templateTask').content;
+            var clone = document.importNode(content, true);
+            var folder = document.querySelector(folderClass);
+
+            clone.querySelector('.task').id = taskId;
+            clone.querySelector('.task #templateText').textContent = taskName;
+
+            clone.querySelector('.task').addEventListener('dragstart', dragstart);
+
+            folder.appendChild(clone, true);
+        }
+
+    </script>
+    <script src="kanban.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+BEFORE:
+=======
+[
+  {
+    "UniqueName": "admin@ardademo.onmicrosoft.com",
+    "Name": "Admin"
+  },
+  {
+    "UniqueName": "guest@ardademo.onmicrosoft.com",
+    "Name": "Guest User"
+  },
+  {
+    "UniqueName": "user@ardademo.onmicrosoft.com",
+    "Name": "User 1"
+  }
+]
+
+COMMAND: User.AddNewUser('newuser@domain.com','New User 1')
+
+AFTER:
+======
+[
+  {
+    "UniqueName": "admin@ardademo.onmicrosoft.com",
+    "Name": "Admin"
+  },
+  {
+    "UniqueName": "guest@ardademo.onmicrosoft.com",
+    "Name": "Guest User"
+  },
+  {
+    "UniqueName": "newuser@domain.com",
+    "Name": "New User 1"
+  },
+  {
+    "UniqueName": "user@ardademo.onmicrosoft.com",
+    "Name": "User 1"
+  }
+]

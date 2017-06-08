@@ -1,0 +1,36 @@
+version: "3"
+services:
+  main:
+    image: visouza/arda.main
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "44304:443"
+      - "8080:80"
+      
+    depends_on: 
+      - kanban
+      - permissions
+      - reports
+  
+  kanban:
+    image: visouza/arda.kanban  
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "81:80"
+  
+  permissions:
+    image: visouza/arda.permissions
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "82:80"
+
+  reports:
+    image: visouza/arda.reports
+    env_file:
+      - ../templates/environment_secrets.env
+    ports:
+      - "83:80"   
+   
