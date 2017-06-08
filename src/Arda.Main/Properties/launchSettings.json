@@ -1,0 +1,32 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:2168/",
+      "sslPort": 44304
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:44304/",
+      "environmentVariables": {
+        "Hosting:Environment": "Development"
+      },
+      "sdkVersion": "dnx-clr-win-x86.1.0.0-rc1-update1"
+    },
+    "Arda.Main": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Hosting:Environment": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "Docker": {
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:{ServicePort}"
+    }
+  }
+}
