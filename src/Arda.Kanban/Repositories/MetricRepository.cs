@@ -48,8 +48,8 @@ namespace Arda.Kanban.Repositories
         public List<MetricViewModel> GetAllMetrics()
         {
             var response = (from m in _context.Metrics
-                            join f in _context.FiscalYears on m.FiscalYear.FiscalYearID equals f.FiscalYearID
-                            orderby f.FullNumericFiscalYear, m.MetricCategory
+                            //join f in _context.FiscalYears on m.FiscalYear.FiscalYearID equals f.FiscalYearID
+                            orderby m.FiscalYear.FiscalYearID, m.MetricCategory
                             select new MetricViewModel
                             {
                                 MetricID = m.MetricID,
@@ -69,9 +69,9 @@ namespace Arda.Kanban.Repositories
         public List<MetricViewModel> GetAllMetrics(int year)
         {
             var response = (from m in _context.Metrics
-                            join f in _context.FiscalYears on m.FiscalYear.FiscalYearID equals f.FiscalYearID
-                            where f.FullNumericFiscalYear == year
-                            orderby f.FullNumericFiscalYear, m.MetricCategory
+                            //join f in _context.FiscalYears on m.FiscalYear.FiscalYearID equals f.FiscalYearID
+                            where m.FiscalYear.FullNumericFiscalYear == year
+                            orderby m.FiscalYear.FullNumericFiscalYear, m.MetricCategory
                             select new MetricViewModel
                             {
                                 MetricID = m.MetricID,
@@ -90,7 +90,7 @@ namespace Arda.Kanban.Repositories
         public MetricViewModel GetMetricByID(Guid id)
         {
             var metric = (from m in _context.Metrics
-                          join f in _context.FiscalYears on m.FiscalYear.FiscalYearID equals f.FiscalYearID
+                          //join f in _context.FiscalYears on m.FiscalYear.FiscalYearID equals f.FiscalYearID
                           where m.MetricID == id
                           select new MetricViewModel
                           {
