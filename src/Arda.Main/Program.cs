@@ -27,7 +27,7 @@ namespace Arda.Main
                 })
 
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://*:80","https://*:443")
+                .UseUrls("http://*:1265","https://*:44304")
                 .UseIISIntegration()
                 .UseStartup<Startup>();
 

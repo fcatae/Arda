@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceRoot}/Arda.Kanban/bin/Debug/netcoreapp1.1/Arda.Kanban.dll",
+            "program": "${workspaceRoot}/Arda.Main/bin/Debug/netcoreapp1.1/Arda.Main.dll",
             "args": [],
-            "cwd": "${workspaceRoot}/Arda.Kanban",
+            "cwd": "${workspaceRoot}/Arda.Main",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {

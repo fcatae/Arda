@@ -7,7 +7,7 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/Arda.Main/Arda.Main.csproj"
+                "${workspaceRoot}/Arda.Main.csproj"
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
