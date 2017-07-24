@@ -20,7 +20,7 @@ namespace Arda.Kanban
             var builder = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseUrls("http://0.0.0.0:8081")
+                .UseUrls("http://*:8081")
                 .UseIISIntegration()
                 .UseStartup<Startup>();
 

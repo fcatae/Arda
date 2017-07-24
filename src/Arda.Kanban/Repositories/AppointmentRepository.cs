@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Arda.Kanban.Models.Repositories;
 using Arda.Kanban.ViewModels;
+using System.Net.Http;
+using Arda.Common.ViewModels;
 
 namespace Arda.Kanban.Repositories
 {
@@ -44,6 +46,13 @@ namespace Arda.Kanban.Repositories
 
             if (response > 0)
             {
+                //Queueing the message to be sent
+                EmailClient emailClient = new EmailClient();
+                emailClient.EmailTo = user.UniqueName;
+                emailClient.EmailTitle = "New appointment attributed to you";
+                emailClient.EmailMessage = "One new appointment was assigned to you. Plese, check out you dashboard.";
+                var callResponse = Arda.Common.Utils.Util.QueuesEmailMessage("https://arda-function-app.azurewebsites.net/api/AddsMessageToAzureQueueStorage?code=njN1vpdKv6eiMBCs/SLwK9Mdeu8LiMmB5xRr2uLaCyfGvzwUrnK05g==", HttpMethod.Post, emailClient).Result;
+                
                 return true;
             }
             else

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Configuration;
+using Arda.Common.ViewModels;
 
 namespace Arda.Common.Utils
 {
@@ -272,6 +273,28 @@ namespace Arda.Common.Utils
             current = current.Replace("_", ":");
 
             return current;
+        }
+
+        //Method that queues some message on Azure Queue (in order to be sent by email later) by calling an Azure Function
+        public static async Task<HttpResponseMessage> QueuesEmailMessage(string functionEndpoint, HttpMethod method, EmailClient clientemail)
+        {
+            var httpclient = new HttpClient();
+            var request = new HttpRequestMessage(method, functionEndpoint);
+            var json = JsonConvert.SerializeObject(clientemail, Formatting.Indented);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var responseSend = await httpclient.SendAsync(request);
+            var responseStr = await responseSend.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<HttpResponseMessage>(responseStr);
+
+            if (responseSend.IsSuccessStatusCode || responseObj.IsSuccessStatusCode)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            else
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+            }
         }
     }
 
