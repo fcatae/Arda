@@ -5,13 +5,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
-
 using Arda.Common.Utils;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace Arda.Main
 {
     public partial class Startup
     {
+        public IConfigurationRoot Configuration { get; set; }
+
         public Startup(IHostingEnvironment env)
         {
             // Set up configuration sources.
@@ -41,10 +44,13 @@ namespace Arda.Main
             TestManager.TestStatic();
         }
 
-        public IConfigurationRoot Configuration { get; set; }
-
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new RequireHttpsAttribute());
+            });
+
             services.AddCors(x => x.AddPolicy("AllowAll", c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
             // Add framework services.
@@ -74,7 +80,11 @@ namespace Arda.Main
         {
             loggerFactory.AddConsole(LogLevel.Trace);
             var logger = loggerFactory.CreateLogger("Default");
-            
+
+            var options = new RewriteOptions().AddRedirectToHttps();
+
+            app.UseRewriter(options);
+
             app.UseApplicationInsightsRequestTelemetry();
 
             if (env.IsDevelopment())
