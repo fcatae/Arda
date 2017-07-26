@@ -59,7 +59,7 @@ namespace Arda.Main
             
             app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
-                AutomaticAuthenticate = true
+                //AutomaticAuthenticate = true
             });
 
             app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions()
@@ -70,7 +70,7 @@ namespace Arda.Main
                 Authority = Authority,
                 PostLogoutRedirectUri = PostLogoutRedirectUri,
                 SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
-                ResponseType = OpenIdConnectResponseType.CodeIdToken,
+                ResponseType = OpenIdConnectResponseType.IdToken,
 
                 Events = new OpenIdConnectEvents()
                 {
@@ -127,7 +127,7 @@ namespace Arda.Main
             // Per sample: https://github.com/Azure-Samples/active-directory-dotnet-webapp-webapi-openidconnect-aspnetcore/blob/master/WebApp-WebAPI-OpenIdConnect-DotNet/Startup.cs
             AuthenticationResult authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
                  context.ProtocolMessage.Code, new Uri(context.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]), clientCred, GraphResourceId);
-            
+
             // -- See https://github.com/aspnet/Security/issues/1068
             context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
 

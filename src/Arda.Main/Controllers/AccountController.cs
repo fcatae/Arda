@@ -120,15 +120,20 @@ namespace Arda.Main.Controllers
             return Redirect("/Dashboard/");
         }
 
-        public IActionResult SignIn()
+        public async Task SignIn()
         {
-            if(Startup.IsSimpleAuthForDemo)
-            {
-                return Redirect("/Account/page");
-            }
+            //if(Startup.IsSimpleAuthForDemo)
+            //{
+            //    return Redirect("/Account/page");
+            //}
 
-            return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Account/AuthCompleted" });
+            //return new ChallengeResult(
+            //    OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Account/AuthCompleted" });
+
+            if(HttpContext.User == null || !HttpContext.User.Identity.IsAuthenticated)
+            {
+                await HttpContext.Authentication.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Account/AuthCompleted" });
+            }
         }
 
         public async Task<IActionResult> SignOut()
