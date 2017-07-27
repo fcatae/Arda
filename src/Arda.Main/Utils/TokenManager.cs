@@ -13,7 +13,7 @@ namespace Arda.Main.Utils
         public static async Task<AuthenticationResult> GetAccessToken(HttpContext context)
         {
             string userObjectID = context.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            var tokenCache = new SessionCache(userObjectID, context);
+            var tokenCache = new NaiveSessionCache(userObjectID, NaiveSessionCacheResource.MicrosoftGraph, context.Session);
             ClientCredential credential = new ClientCredential(Startup.ClientId, Startup.ClientSecret);
             AuthenticationContext authContext = new AuthenticationContext(Startup.Authority, tokenCache);
             

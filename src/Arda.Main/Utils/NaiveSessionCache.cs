@@ -18,8 +18,7 @@ namespace Arda.Main.Utils
         private static readonly object FileLock = new object();
         string UserObjectId = string.Empty;
         string CacheId = string.Empty;
-        ISession Session = null;
-        
+        ISession Session = null;        
 
         public NaiveSessionCache(string userId, NaiveSessionCacheResource resource, ISession session)
         {

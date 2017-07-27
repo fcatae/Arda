@@ -30,8 +30,12 @@ namespace Arda.Main
         public static string ClientSecret = string.Empty;
         public static string GraphResourceId = string.Empty;
         public static string PostLogoutRedirectUri = string.Empty;
-        private static string _dbgAccessToken = null;
-        private static string _dbgTokenId = null;
+
+        //PowerBI
+        public static string PowerBIResourceId = string.Empty;
+        public static string PowerBIApiUrl = string.Empty;
+        public static string PowerBIGroupId = string.Empty;
+
 
         public void ConfigureAuth(IApplicationBuilder app)
         {
@@ -42,6 +46,11 @@ namespace Arda.Main
             ClientSecret = Configuration.Get("Authentication_AzureAd_ClientSecret");
             GraphResourceId = Configuration.Get("Authentication_AzureAd_GraphResourceId");
             PostLogoutRedirectUri = Configuration.Get("Authentication_AzureAd_PostLogoutRedirectUri");
+
+            PowerBIResourceId = Configuration.Get("Authentication_PowerBI_PowerBIResourceId");
+            PowerBIApiUrl = Configuration.Get("Authentication_PowerBI_ApiUrl");
+            PowerBIGroupId = Configuration.Get("Authentication_PowerBI_GroupId");
+
 
             IsSimpleAuthForDemo = (ClientId == null || ClientId == "");
 
@@ -103,30 +112,25 @@ namespace Arda.Main
 
         public async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         {
-            await AcquireTokenForMicrosoftGraph(context);
-
+            await AcquireTokenForResource(context, NaiveSessionCacheResource.MicrosoftGraph, GraphResourceId);
+            await AcquireTokenForResource(context, NaiveSessionCacheResource.PowerBi, PowerBIResourceId);
         }
 
 
-        private async Task AcquireTokenForMicrosoftGraph(AuthorizationCodeReceivedContext context)
+        private async Task AcquireTokenForResource(AuthorizationCodeReceivedContext context, NaiveSessionCacheResource resource, string resourceId)
         {
-
             string userObjectID = context.Ticket.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            AuthenticationContext authContext  = new AuthenticationContext(Authority, new NaiveSessionCache(userObjectID, NaiveSessionCacheResource.MicrosoftGraph ,context.HttpContext.Session));
+            AuthenticationContext authContext = new AuthenticationContext(Authority, new NaiveSessionCache(userObjectID, resource, context.HttpContext.Session));
 
             // Acquire a Token for the Graph API and cache it in Session.
             ClientCredential clientCred = new ClientCredential(ClientId, ClientSecret);
 
             // Per sample: https://github.com/Azure-Samples/active-directory-dotnet-webapp-webapi-openidconnect-aspnetcore/blob/master/WebApp-WebAPI-OpenIdConnect-DotNet/Startup.cs
             AuthenticationResult authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
-                 context.ProtocolMessage.Code, new Uri(context.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]), clientCred, GraphResourceId);
+                 context.ProtocolMessage.Code, new Uri(context.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]), clientCred, resourceId);
 
             // -- See https://github.com/aspnet/Security/issues/1068
             context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
-
-            _dbgAccessToken = authResult.AccessToken;
-            _dbgTokenId = authResult.IdToken;
-
         }
     }
 }
