@@ -18,6 +18,8 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.IO;
 using System.Net;
 using Microsoft.Extensions.WebEncoders;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Redis;
 
 namespace Arda.Main
 {
@@ -50,7 +52,6 @@ namespace Arda.Main
             PowerBIResourceId = Configuration.Get("Authentication_PowerBI_PowerBIResourceId");
             PowerBIApiUrl = Configuration.Get("Authentication_PowerBI_ApiUrl");
             PowerBIGroupId = Configuration.Get("Authentication_PowerBI_GroupId");
-
 
             IsSimpleAuthForDemo = (ClientId == null || ClientId == "");
 
@@ -112,15 +113,26 @@ namespace Arda.Main
 
         public async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         {
-            await AcquireTokenForResource(context, NaiveSessionCacheResource.MicrosoftGraph, GraphResourceId);
-            await AcquireTokenForResource(context, NaiveSessionCacheResource.PowerBi, PowerBIResourceId);
+            IDistributedCache Cache = new RedisCache(new RedisCacheOptions
+            {
+                Configuration = Configuration.Get("Storage_Redis_Configuration"),
+                InstanceName = Configuration.Get("Storage_Redis_InstanceName")
+            });
+
+            
+
+
+            await AcquireTokenForResource(context, Cache, NaiveSessionCacheResource.MicrosoftGraph, GraphResourceId);
+            await AcquireTokenForResource(context, Cache,  NaiveSessionCacheResource.PowerBi, PowerBIResourceId);
         }
 
 
-        private async Task AcquireTokenForResource(AuthorizationCodeReceivedContext context, NaiveSessionCacheResource resource, string resourceId)
+        private async Task AcquireTokenForResource(AuthorizationCodeReceivedContext context, IDistributedCache cache, NaiveSessionCacheResource resource, string resourceId)
         {
             string userObjectID = context.Ticket.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            AuthenticationContext authContext = new AuthenticationContext(Authority, new NaiveSessionCache(userObjectID, resource, context.HttpContext.Session));
+
+
+            AuthenticationContext authContext = new AuthenticationContext(Authority, new NaiveSessionCache(userObjectID, resource, cache));
 
             // Acquire a Token for the Graph API and cache it in Session.
             ClientCredential clientCred = new ClientCredential(ClientId, ClientSecret);

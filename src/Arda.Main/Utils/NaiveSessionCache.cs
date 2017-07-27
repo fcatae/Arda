@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Arda.Main.Utils
 {
@@ -18,13 +19,13 @@ namespace Arda.Main.Utils
         private static readonly object FileLock = new object();
         string UserObjectId = string.Empty;
         string CacheId = string.Empty;
-        ISession Session = null;        
+        IDistributedCache Cache = null;
 
-        public NaiveSessionCache(string userId, NaiveSessionCacheResource resource, ISession session)
+        public NaiveSessionCache(string userId, NaiveSessionCacheResource resource, IDistributedCache cache)
         {
             UserObjectId = userId;
             CacheId = $"{UserObjectId}_{resource.ToString()}_TokenCache";
-            Session = session;
+            Cache = cache;
             this.AfterAccess = AfterAccessNotification;
             this.BeforeAccess = BeforeAccessNotification;
             Load();
@@ -34,7 +35,7 @@ namespace Arda.Main.Utils
         {
             lock (FileLock)
             {
-                this.Deserialize(Session.Get(CacheId));
+                this.Deserialize(Cache.Get(CacheId));
             }
         }
 
@@ -43,7 +44,7 @@ namespace Arda.Main.Utils
             lock (FileLock)
             {
                 // reflect changes in the persistent store
-                Session.Set(CacheId, this.Serialize());
+                Cache.Set(CacheId, this.Serialize());
                 // once the write operation took place, restore the HasStateChanged bit to false
                 this.HasStateChanged = false;
             }
@@ -53,7 +54,7 @@ namespace Arda.Main.Utils
         public override void Clear()
         {
             base.Clear();
-            Session.Remove(CacheId);
+            Cache.Remove(CacheId);
         }
 
         public override void DeleteItem(TokenCacheItem item)

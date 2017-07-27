@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.PowerBI.Api.V2;
 using Microsoft.PowerBI.Api.V2.Models;
+using Microsoft.Extensions.Caching.Distributed;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,6 +21,14 @@ namespace Arda.Main.Controllers
     [Authorize]
     public class ReportController : Controller
     {
+
+        private IDistributedCache _cache = null;
+
+        public ReportController(IDistributedCache cache)
+        {
+            _cache = cache;
+        }
+
         //public IActionResult TimeConsuming()
         //{
         //    var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
@@ -32,7 +41,7 @@ namespace Arda.Main.Controllers
         public async Task<IActionResult> TimeConsuming()
         {
             string userObjectID = HttpContext.User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-            var tokenCache = new NaiveSessionCache(userObjectID, NaiveSessionCacheResource.PowerBi,HttpContext.Session);
+            var tokenCache = new NaiveSessionCache(userObjectID, NaiveSessionCacheResource.PowerBi, _cache);
             //ClientCredential credential = new ClientCredential(Startup.ClientId, Startup.ClientSecret);
 
             AuthenticationContext authContext = new AuthenticationContext(Startup.Authority, tokenCache);
@@ -41,7 +50,7 @@ namespace Arda.Main.Controllers
 
             var tokenCredentials = new TokenCredentials(authenticationResult.AccessToken, "Bearer");
 
-            using (var client = new PowerBIClient(new Uri(Startup.PowerBIResourceId), tokenCredentials))
+            using (var client = new PowerBIClient(new Uri(Startup.PowerBIApiUrl), tokenCredentials))
             {
                 ODataResponseListDashboard dashboards = client.Dashboards.GetDashboardsInGroup(Startup.PowerBIGroupId);
                 Dashboard dashboard = dashboards.Value.FirstOrDefault();
