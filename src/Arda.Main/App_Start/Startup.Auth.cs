@@ -15,6 +15,9 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.IO;
+using System.Net;
+using Microsoft.Extensions.WebEncoders;
 
 namespace Arda.Main
 {
@@ -38,11 +41,11 @@ namespace Arda.Main
             ClientId = Configuration.Get("Authentication_AzureAd_ClientId");
             ClientSecret = Configuration.Get("Authentication_AzureAd_ClientSecret");
             GraphResourceId = Configuration.Get("Authentication_AzureAd_GraphResourceId");
-            PostLogoutRedirectUri = Configuration.Get("Authentication_AzureAd_PostLogoutRedirectUri");            
+            PostLogoutRedirectUri = Configuration.Get("Authentication_AzureAd_PostLogoutRedirectUri");
 
             IsSimpleAuthForDemo = (ClientId == null || ClientId == "");
 
-            if ( IsSimpleAuthForDemo )
+            if (IsSimpleAuthForDemo)
             {
                 app.UseCookieAuthentication(new CookieAuthenticationOptions()
                 {
@@ -51,18 +54,18 @@ namespace Arda.Main
                     AccessDeniedPath = new PathString("/Account/Forbidden/"),
                     AutomaticAuthenticate = true,
                     AutomaticChallenge = true
-                });                
+                });
 
                 // quick return
                 return;
             }
-            
+
             app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
                 AutomaticAuthenticate = true
             });
 
-            app.UseOpenIdConnectAuthentication(new OpenIdConnectOptions()
+            OpenIdConnectOptions openidOptions = new OpenIdConnectOptions()
             {
                 AutomaticChallenge = true,
                 CallbackPath = new PathString(CallbackPath),
@@ -71,68 +74,59 @@ namespace Arda.Main
                 PostLogoutRedirectUri = PostLogoutRedirectUri,
                 SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,
+                Resource = "https://graph.microsoft.com/",
 
                 Events = new OpenIdConnectEvents()
                 {
                     OnAuthenticationFailed = OnAuthenticationFailed,
                     OnAuthorizationCodeReceived = OnAuthorizationCodeReceived,
-                    OnMessageReceived = (MessageReceivedContext m) => {
-                        return Task.FromResult(0);  }
+                    OnMessageReceived = (MessageReceivedContext m) =>
+                    {
+                        return Task.FromResult(0);
+                    }
                 }
-            });            
+            };
+
+            app.UseOpenIdConnectAuthentication(openidOptions);
         }
 
 
         public Task OnAuthenticationFailed(AuthenticationFailedContext context)
         {
             context.HandleResponse();
-            context.Response.Redirect("/Home/Error?message=" + context.Exception.Message);
 
-            return Task.FromResult(0);
+            context.Response.Redirect("/Home/Error?message=Authentication falilure&oauth=true");
+            Debug.WriteLine(context.Exception.Message);
+
+            return Task.CompletedTask;
         }
 
         public async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
         {
-            // temporarily remove this code
-            //await CacheUserAndCodeOnRedis(context);
             await AcquireTokenForMicrosoftGraph(context);
+
         }
 
-
-        private async Task CacheUserAndCodeOnRedis(AuthorizationCodeReceivedContext context)
-        {
-            var claims = context.JwtSecurityToken.Claims;
-
-            // Getting informations about AD
-            var code = context.JwtSecurityToken.Id;
-            //var validFrom = context.JwtSecurityToken.ValidFrom;
-            //var validTo = context.JwtSecurityToken.ValidTo;
-            //var givenName = claims.FirstOrDefault(claim => claim.Type == "given_name").Value;
-            var name = claims.FirstOrDefault(claim => claim.Type == "name").Value;
-            var uniqueName = claims.FirstOrDefault(claim => claim.Type == "unique_name").Value;
-
-            // TODO: remove this code. we should NOT call permissions API from inside Auth process!
-            await Util.ConnectToRemoteService(HttpMethod.Post, Util.PermissionsURL + "api/permission/setuserpermissionsandcode?name=" + name, uniqueName, code);
-        }
 
         private async Task AcquireTokenForMicrosoftGraph(AuthorizationCodeReceivedContext context)
         {
-            //Uri callback = Util.MainURL + CallbackPath;
-            
+
+            string userObjectID = context.Ticket.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+            AuthenticationContext authContext  = new AuthenticationContext(Authority, new NaiveSessionCache(userObjectID, NaiveSessionCacheResource.MicrosoftGraph ,context.HttpContext.Session));
+
             // Acquire a Token for the Graph API and cache it in Session.
-            string userObjectId = context.Ticket.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
             ClientCredential clientCred = new ClientCredential(ClientId, ClientSecret);
-            AuthenticationContext authContext = new AuthenticationContext(Authority, new SessionCache(userObjectId, context.HttpContext));
 
             // Per sample: https://github.com/Azure-Samples/active-directory-dotnet-webapp-webapi-openidconnect-aspnetcore/blob/master/WebApp-WebAPI-OpenIdConnect-DotNet/Startup.cs
             AuthenticationResult authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
                  context.ProtocolMessage.Code, new Uri(context.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]), clientCred, GraphResourceId);
-            
+
             // -- See https://github.com/aspnet/Security/issues/1068
             context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
 
             _dbgAccessToken = authResult.AccessToken;
             _dbgTokenId = authResult.IdToken;
+
         }
     }
 }

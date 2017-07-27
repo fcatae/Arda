@@ -127,12 +127,12 @@ namespace Arda.Main.Controllers
                 return Redirect("/Account/page");
             }
 
-            return new ChallengeResult(
-                OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Account/AuthCompleted" });
+            return new ChallengeResult(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = Util.MainURL + "Account/AuthCompleted" });
         }
 
         public async Task<IActionResult> SignOut()
         {
+            //TODO: Check the object (null test) before get his value
             var uniqueName = HttpContext.User.Claims.First(claim => claim.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
             await Util.ConnectToRemoteService(HttpMethod.Delete, Util.PermissionsURL + "api/permission/deleteuserpermissions", uniqueName, "");
 
