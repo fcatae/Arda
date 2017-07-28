@@ -119,9 +119,6 @@ namespace Arda.Main
                 InstanceName = Configuration.Get("Storage_Redis_InstanceName")
             });
 
-            
-
-
             await AcquireTokenForResource(context, Cache, NaiveSessionCacheResource.MicrosoftGraph, GraphResourceId);
             await AcquireTokenForResource(context, Cache,  NaiveSessionCacheResource.PowerBi, PowerBIResourceId);
         }

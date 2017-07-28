@@ -13,6 +13,7 @@ using Microsoft.Rest;
 using Microsoft.PowerBI.Api.V2;
 using Microsoft.PowerBI.Api.V2.Models;
 using Microsoft.Extensions.Caching.Distributed;
+using ArdaSDK.Kanban;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -52,11 +53,26 @@ namespace Arda.Main.Controllers
 
             using (var client = new PowerBIClient(new Uri(Startup.PowerBIApiUrl), tokenCredentials))
             {
-                ODataResponseListDashboard dashboards = client.Dashboards.GetDashboardsInGroup(Startup.PowerBIGroupId);
-                Dashboard dashboard = dashboards.Value.FirstOrDefault();
-            }
+                // You will need to provide the GroupID where the dashboard resides.
+                ODataResponseListReport reports = await client.Reports.GetReportsInGroupAsync(Startup.PowerBIGroupId);
 
-            return View("PowerBI");
+                // Get the first report in the group.
+                Report report = reports.Value.FirstOrDefault();
+
+                // Generate Embed Token.
+                var generateTokenRequestParameters = new GenerateTokenRequest(accessLevel: "view");
+                EmbedToken tokenResponse = client.Reports.GenerateTokenInGroup(Startup.PowerBIGroupId, report.Id, generateTokenRequestParameters);
+
+                // Generate Embed Configuration.
+                var embedConfig = new EmbedConfig()
+                {
+                    EmbedToken = tokenResponse,
+                    EmbedUrl = report.EmbedUrl,
+                    Id = report.Id
+                };
+
+                return View("PowerBI", embedConfig);
+            }
         }
 
 
