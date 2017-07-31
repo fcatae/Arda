@@ -14,6 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Properties\PublishProfiles\ardaapp - FTP.pubxml" />
+    <None Remove="Properties\PublishProfiles\ardaapp - Web Deploy.pubxml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="wwwroot\**\*;Views\**\*;Areas\**\Views;docker-compose.yml;Dockerfile;.dockerignore;arda.pfx">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>

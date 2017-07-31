@@ -20,6 +20,7 @@ using System.Net;
 using Microsoft.Extensions.WebEncoders;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
+using Newtonsoft.Json.Linq;
 
 namespace Arda.Main
 {
@@ -84,7 +85,8 @@ namespace Arda.Main
                 PostLogoutRedirectUri = PostLogoutRedirectUri,
                 SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme,
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,
-                Resource = "https://graph.microsoft.com/",
+                //Resource = "https://graph.microsoft.com/",
+                Resource = PowerBIResourceId,
 
                 Events = new OpenIdConnectEvents()
                 {
@@ -101,14 +103,11 @@ namespace Arda.Main
         }
 
 
-        public Task OnAuthenticationFailed(AuthenticationFailedContext context)
+        public async Task OnAuthenticationFailed(AuthenticationFailedContext context)
         {
             context.HandleResponse();
-
             context.Response.Redirect("/Home/Error?message=Authentication falilure&oauth=true");
             Debug.WriteLine(context.Exception.Message);
-
-            return Task.CompletedTask;
         }
 
         public async Task OnAuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
@@ -119,12 +118,12 @@ namespace Arda.Main
                 InstanceName = Configuration.Get("Storage_Redis_InstanceName")
             });
 
-            await AcquireTokenForResource(context, Cache, NaiveSessionCacheResource.MicrosoftGraph, GraphResourceId);
-            await AcquireTokenForResource(context, Cache,  NaiveSessionCacheResource.PowerBi, PowerBIResourceId);
+            await AcquireTokenForResourceByCode(context, Cache, NaiveSessionCacheResource.MicrosoftGraph, GraphResourceId);
+            await AcquireTokenForResourceByCode(context, Cache,  NaiveSessionCacheResource.PowerBi, PowerBIResourceId);
         }
 
 
-        private async Task AcquireTokenForResource(AuthorizationCodeReceivedContext context, IDistributedCache cache, NaiveSessionCacheResource resource, string resourceId)
+        private async Task AcquireTokenForResourceByCode(AuthorizationCodeReceivedContext context, IDistributedCache cache, NaiveSessionCacheResource resource, string resourceId)
         {
             string userObjectID = context.Ticket.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
 
@@ -136,7 +135,7 @@ namespace Arda.Main
 
             // Per sample: https://github.com/Azure-Samples/active-directory-dotnet-webapp-webapi-openidconnect-aspnetcore/blob/master/WebApp-WebAPI-OpenIdConnect-DotNet/Startup.cs
             AuthenticationResult authResult = await authContext.AcquireTokenByAuthorizationCodeAsync(
-                 context.ProtocolMessage.Code, new Uri(context.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]), clientCred, resourceId);
+                         context.ProtocolMessage.Code, new Uri(context.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]), clientCred, resourceId);
 
             // -- See https://github.com/aspnet/Security/issues/1068
             context.HandleCodeRedemption(authResult.AccessToken, authResult.IdToken);
