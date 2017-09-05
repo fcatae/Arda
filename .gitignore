@@ -241,6 +241,7 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 
+.vscode/
 environment_secrets.env
 
 /app_data/
