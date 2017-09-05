@@ -1,3 +1,4 @@
+![Status](https://cselatam.visualstudio.com/_apis/public/build/definitions/7376fbc2-e0ba-4880-9efd-b7284bab684e/13/badge)
 
 # Welcome
 Welcome to the Arda Project!
