@@ -19,6 +19,12 @@ namespace Arda.Kanban.MongoRepositories
             this.Activities = db.GetCollection<Activity>("activities");
             this.FiscalYear = db.GetCollection<FiscalYear>("fiscalyear");
         }
+
+        public void DeleteAll()
+        {
+            var client = new MongoClient();
+            client.DropDatabase("arda");
+        }
     }
 
     public class Activity

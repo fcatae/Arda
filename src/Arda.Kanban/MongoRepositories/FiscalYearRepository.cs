@@ -53,44 +53,37 @@ namespace Arda.Kanban.MongoRepositories
         // Return fiscal year based on ID
         public FiscalYearViewModel GetFiscalYearByID(Guid id)
         {
-            //var response = _context.FiscalYears.Where(fy => fy.FiscalYearID.Equals(id)).SingleOrDefault();
+            var byId = new BsonDocument { { nameof(FiscalYear._id), id.ToString() } };
 
-            //var fiscalYear = new FiscalYearViewModel()
-            //{
-            //    FiscalYearID = response.FiscalYearID,
-            //    TextualFiscalYearMain = response.TextualFiscalYear,
-            //    FullNumericFiscalYearMain = response.FullNumericFiscalYear
-            //};
-            
-            throw new NotImplementedException();
+            var fiscalYear = _context.FiscalYear.Find(byId).FirstOrDefault();
+
+            return new FiscalYearViewModel()
+            {
+                FiscalYearID = Guid.Parse(fiscalYear._id),
+                TextualFiscalYearMain = fiscalYear.textualFiscalYear,
+                FullNumericFiscalYearMain = fiscalYear.fullNumericFiscalYear
+            };
         }
 
-        // Update fiscal year data based on ID
         public bool EditFiscalYearByID(FiscalYearViewModel fiscalyear)
         {
-            //var fiscalYearToBeUpdated = _context.FiscalYears.SingleOrDefault(fy => fy.FiscalYearID.Equals(fiscalyear.FiscalYearID));
+            var byID = new BsonDocument { { nameof(FiscalYear._id), fiscalyear.FiscalYearID.ToString() } };
+            var updateColumns = Builders<FiscalYear>.Update
+                                    .Set(nameof(FiscalYear.fullNumericFiscalYear), fiscalyear.FullNumericFiscalYearMain)
+                                    .Set(nameof(FiscalYear.textualFiscalYear), fiscalyear.TextualFiscalYearMain);
 
-            //if (fiscalYearToBeUpdated != null)
-            //{
-            //    // Update informations of object
-            //    fiscalYearToBeUpdated.FullNumericFiscalYear = fiscalyear.FullNumericFiscalYearMain;
-            //    fiscalYearToBeUpdated.TextualFiscalYear = fiscalyear.TextualFiscalYearMain;
+            var fiscalYear = _context.FiscalYear.UpdateOne(byID, updateColumns);
 
-            //    var response = _context.SaveChanges();
-
-            //    return true;
-            //}
-
-            throw new NotImplementedException();
+            return true;
         }
-
-        // Delete fiscal year based on ID
+        
         public bool DeleteFiscalYearByID(Guid id)
         {
-            //var fiscalYearToBeDeleted = _context.FiscalYears.SingleOrDefault(fy => fy.FiscalYearID.Equals(id));
+            var byId = new BsonDocument { { nameof(FiscalYear._id), id.ToString() } };
 
+            var fiscalYear = _context.FiscalYear.DeleteOne(byId);
 
-            throw new NotImplementedException();
+            return true;
         }
     }
 }
