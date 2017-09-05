@@ -12,13 +12,29 @@ namespace Arda.Kanban
         public static void InitialSeed()
         {
             var context = new MongoContext();
-            var repo = new ActivityMongoRepository(context);
-            var activities = repo.GetAllActivities();
+            var activityRepo = new ActivityMongoRepository(context);
+            var activities = activityRepo.GetAllActivities();
 
             // empty activities
             if( !activities.Any() )
             {
-                repo.Create(Guid.NewGuid(), "coding");
+                activityRepo.Create(Guid.NewGuid(), "coding");
+            }
+
+            var fiscalyearRepo = new FiscalYearMongoRepository(context);
+            var fiscalYears = fiscalyearRepo.GetAllFiscalYears();
+
+            // empty activities
+            if (!fiscalYears.Any())
+            {
+                var fy = new ViewModels.FiscalYearViewModel
+                {
+                    FiscalYearID = Guid.NewGuid(),
+                    FullNumericFiscalYearMain = 2017,
+                    TextualFiscalYearMain = "FY2017"
+                };
+
+                fiscalyearRepo.AddNewFiscalYear(fy);
             }
         }
 
@@ -30,6 +46,10 @@ namespace Arda.Kanban
             var activityRepo = new ActivityMongoRepository(context);
 
             var activities = activityRepo.GetAllActivities();
-        }        
+
+            var fiscalyearRepo = new FiscalYearMongoRepository(context);
+            var fiscalYears = fiscalyearRepo.GetAllFiscalYears();
+
+        }
     }
 }
