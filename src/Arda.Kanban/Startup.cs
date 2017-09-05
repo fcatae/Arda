@@ -125,10 +125,12 @@ namespace Arda.Kanban
                 c.SwaggerEndpoint("/swagger/v2/swagger.json", "Arda.Kanban v2 (Workspaces)");
             });
             
-            app.UseMvc();            
-        }
+            app.UseMvc();
 
-        // Entry point for the application.
-        //public static void Main(string[] args) => WebApplication.Run<Startup>(args);
+            if(Configuration.Get("TestMongoRepository") != null)
+            {
+                TestMongoRepository.Test();
+            }
+        }        
     }
 }

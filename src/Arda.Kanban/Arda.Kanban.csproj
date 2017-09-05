@@ -35,6 +35,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="1.1.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.4.4" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="1.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0-rc1" />
