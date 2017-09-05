@@ -8,11 +8,11 @@ using Arda.Kanban.Repositories;
 
 namespace Arda.Kanban
 {
-    public class TestManager
+    public class TestKanbanRepository
     {
         private KanbanContext _context;
 
-        public TestManager(KanbanContext context)
+        public TestKanbanRepository(KanbanContext context)
         {
             _context = context;
         }
@@ -124,4 +124,5 @@ namespace Arda.Kanban
         }
 
     }
+
 }
