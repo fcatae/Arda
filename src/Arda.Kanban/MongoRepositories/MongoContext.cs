@@ -15,6 +15,7 @@ namespace Arda.Kanban.MongoRepositories
         public IMongoCollection<FiscalYear> FiscalYears { get; private set; }
         public IMongoCollection<Technology> Technologies { get; private set; }
         public IMongoCollection<Metric> Metrics { get; private set; }
+        public IMongoCollection<User> Users { get; private set; }
 
         public MongoContext()
         {
@@ -24,6 +25,7 @@ namespace Arda.Kanban.MongoRepositories
             this.FiscalYears = db.GetCollection<FiscalYear>("fiscalyears");
             this.Technologies = db.GetCollection<Technology>("technologies");
             this.Metrics = db.GetCollection<Metric>("metrics");
+            this.Users = db.GetCollection<User>("users");
         }
 
         public void DeleteAll()

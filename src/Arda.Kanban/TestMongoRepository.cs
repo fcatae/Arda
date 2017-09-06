@@ -23,7 +23,7 @@ namespace Arda.Kanban
             var fiscalyearRepo = new FiscalYearMongoRepository(context);
             var fiscalYears = fiscalyearRepo.GetAllFiscalYears();
 
-            // empty activities
+            // empty fiscal year
             if (!fiscalYears.Any())
             {
                 var fy17 = new ViewModels.FiscalYearViewModel
@@ -49,6 +49,7 @@ namespace Arda.Kanban
             var technologiesRepo = new TechnologyMongoRepository(context);
             var technologies = technologiesRepo.GetAllTechnologies();
 
+            // empty technologies
             if( !technologies.Any() )
             {
                 technologiesRepo.Create(Guid.NewGuid(), "Cloud Technologies");
@@ -57,6 +58,7 @@ namespace Arda.Kanban
             var metricsRepo = new MetricMongoRepository(context);
             var metrics = metricsRepo.GetAllMetrics();
 
+            // empty metrics
             if( !metrics.Any() )
             {
                 var fy17 = fiscalYears[0];
@@ -82,6 +84,19 @@ namespace Arda.Kanban
                 metricsRepo.AddNewMetric(m1);
                 metricsRepo.AddNewMetric(m2);
             }
+
+            var userRepo = new UserMongoRepository(context);
+            var users = userRepo.GetAllUsers();
+
+            // empty users
+            if( !users.Any() )
+            {
+                var u1 = new ViewModels.UserKanbanViewModel() { UniqueName = "u1@teste", Name = "U1" };
+                var u2 = new ViewModels.UserKanbanViewModel() { UniqueName = "u2@teste", Name = "U2" };
+
+                userRepo.AddNewUser(u1);
+                userRepo.AddNewUser(u2);
+            }
         }
 
         public static void Test()
@@ -96,6 +111,7 @@ namespace Arda.Kanban
             TestFiscalYears(context);
             TestTechnologies(context);
             TestMetrics(context);
+            TestUsers(context);
         }
 
         public static void TestActivities(MongoContext context)
@@ -105,7 +121,7 @@ namespace Arda.Kanban
             var activities = activityRepo.GetAllActivities();
 
             // assert
-            Assert(activities.Count(), 1);
+            AssertEqual(activities.Count(), 1);
         }
 
         public static void TestFiscalYears(MongoContext context)
@@ -131,8 +147,8 @@ namespace Arda.Kanban
             var finalFiscalYears = fiscalyearRepo.GetAllFiscalYears();
 
             // assert
-            Assert(finalFiscalYears.Count, 1);
-            Assert(finalFiscalYears[0].FullNumericFiscalYearMain, 2016);
+            AssertEqual(finalFiscalYears.Count, 1);
+            AssertEqual(finalFiscalYears[0].FullNumericFiscalYearMain, 2016);
         }
 
         public static void TestTechnologies(MongoContext context)
@@ -142,7 +158,7 @@ namespace Arda.Kanban
             var technologies = technologiesRepo.GetAllTechnologies();
 
             // assert
-            Assert(technologies.Count(), 1);
+            AssertEqual(technologies.Count(), 1);
         }
 
         public static void TestMetrics(MongoContext context)
@@ -154,10 +170,30 @@ namespace Arda.Kanban
             var id2 = metrics[1].MetricID;
             
             // assert
-            Assert(metrics.Count, 2);
-            
+            AssertEqual(metrics.Count, 2);            
         }
-        static void Assert(object a, object b)
+
+        public static void TestUsers(MongoContext context)
+        {
+            var usersRepo = new UserMongoRepository(context);
+            var users = usersRepo.GetAllUsers().ToList();
+
+            var id1 = users[0].UniqueName;
+            var id2 = users[1].UniqueName;
+
+            usersRepo.DeleteUserByID(id2);
+
+            var finalUsers = usersRepo.GetAllUsers().ToList();
+
+            // assert
+            AssertEqual(users.Count, 2);
+            AssertEqual(id2, "u2@teste");
+
+            AssertEqual(finalUsers.Count, 1);
+            AssertEqual(finalUsers[0].UniqueName, id1);
+        }
+
+        static void AssertEqual(object a, object b)
         {
             if( !a.Equals(b) )
                 throw new InvalidOperationException();
