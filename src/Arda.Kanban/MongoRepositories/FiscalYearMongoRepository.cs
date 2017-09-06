@@ -30,14 +30,14 @@ namespace Arda.Kanban.MongoRepositories
                 textualFiscalYear = fiscalyear.TextualFiscalYearMain
             };
 
-            _context.FiscalYear.InsertOne(fy);
+            _context.FiscalYears.InsertOne(fy);
 
             return true;
         }
         
         public List<FiscalYearViewModel> GetAllFiscalYears()
         {
-            var response = (from f in _context.FiscalYear.Find(all)
+            var response = (from f in _context.FiscalYears.Find(all)
                                               .Sort(byFullNumericFiscalYear)
                                               .ToEnumerable()
                             select new FiscalYearViewModel
@@ -55,7 +55,7 @@ namespace Arda.Kanban.MongoRepositories
         {
             var byId = new BsonDocument { { nameof(FiscalYear._id), id.ToString() } };
 
-            var fiscalYear = _context.FiscalYear.Find(byId).FirstOrDefault();
+            var fiscalYear = _context.FiscalYears.Find(byId).FirstOrDefault();
 
             return new FiscalYearViewModel()
             {
@@ -72,7 +72,7 @@ namespace Arda.Kanban.MongoRepositories
                                     .Set(nameof(FiscalYear.fullNumericFiscalYear), fiscalyear.FullNumericFiscalYearMain)
                                     .Set(nameof(FiscalYear.textualFiscalYear), fiscalyear.TextualFiscalYearMain);
 
-            var fiscalYear = _context.FiscalYear.UpdateOne(byID, updateColumns);
+            var fiscalYear = _context.FiscalYears.UpdateOne(byID, updateColumns);
 
             return true;
         }
@@ -81,7 +81,7 @@ namespace Arda.Kanban.MongoRepositories
         {
             var byId = new BsonDocument { { nameof(FiscalYear._id), id.ToString() } };
 
-            var fiscalYear = _context.FiscalYear.DeleteOne(byId);
+            var fiscalYear = _context.FiscalYears.DeleteOne(byId);
 
             return true;
         }

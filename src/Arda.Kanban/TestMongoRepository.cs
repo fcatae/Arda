@@ -43,6 +43,14 @@ namespace Arda.Kanban
                 fiscalyearRepo.AddNewFiscalYear(fy17);
                 fiscalyearRepo.AddNewFiscalYear(fy18);
             }
+
+            var technologiesRepo = new TechnologyMongoRepository(context);
+            var technologies = technologiesRepo.GetAllTechnologies();
+
+            if( !technologies.Any() )
+            {
+                technologiesRepo.Create(Guid.NewGuid(), "Cloud Technologies");
+            }
         }
 
         public static void Test()
@@ -54,7 +62,8 @@ namespace Arda.Kanban
             InitialSeed(context);
 
             TestActivities(context);
-            TestFiscalYear(context);
+            TestFiscalYears(context);
+            TestTechnologies(context);
         }
 
         public static void TestActivities(MongoContext context)
@@ -66,7 +75,8 @@ namespace Arda.Kanban
             // assert
             Assert(activities.Count(), 1);
         }
-        public static void TestFiscalYear(MongoContext context)
+
+        public static void TestFiscalYears(MongoContext context)
         {
             var fiscalyearRepo = new FiscalYearMongoRepository(context);
             var fiscalYears = fiscalyearRepo.GetAllFiscalYears();
@@ -91,6 +101,16 @@ namespace Arda.Kanban
             // assert
             Assert(finalFiscalYears.Count, 1);
             Assert(finalFiscalYears[0].FullNumericFiscalYearMain, 2016);
+        }
+
+        public static void TestTechnologies(MongoContext context)
+        {
+            var technologiesRepo = new TechnologyMongoRepository(context);
+
+            var technologies = technologiesRepo.GetAllTechnologies();
+
+            // assert
+            Assert(technologies.Count(), 1);
         }
 
         static void Assert(object a, object b)
