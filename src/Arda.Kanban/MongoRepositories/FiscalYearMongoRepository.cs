@@ -67,6 +67,8 @@ namespace Arda.Kanban.MongoRepositories
 
         public bool EditFiscalYearByID(FiscalYearViewModel fiscalyear)
         {
+            // WARNING: impacts all Metrics!!!
+
             var byID = new BsonDocument { { nameof(FiscalYear._id), fiscalyear.FiscalYearID.ToString() } };
             var updateColumns = Builders<FiscalYear>.Update
                                     .Set(nameof(FiscalYear.fullNumericFiscalYear), fiscalyear.FullNumericFiscalYearMain)
@@ -79,6 +81,8 @@ namespace Arda.Kanban.MongoRepositories
         
         public bool DeleteFiscalYearByID(Guid id)
         {
+            // WARNING: does not delete metrics of the same Fiscal Year
+
             var byId = new BsonDocument { { nameof(FiscalYear._id), id.ToString() } };
 
             var fiscalYear = _context.FiscalYears.DeleteOne(byId);

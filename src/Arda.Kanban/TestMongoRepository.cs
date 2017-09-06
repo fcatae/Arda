@@ -42,6 +42,8 @@ namespace Arda.Kanban
 
                 fiscalyearRepo.AddNewFiscalYear(fy17);
                 fiscalyearRepo.AddNewFiscalYear(fy18);
+
+                fiscalYears = fiscalyearRepo.GetAllFiscalYears();
             }
 
             var technologiesRepo = new TechnologyMongoRepository(context);
@@ -50,6 +52,35 @@ namespace Arda.Kanban
             if( !technologies.Any() )
             {
                 technologiesRepo.Create(Guid.NewGuid(), "Cloud Technologies");
+            }
+
+            var metricsRepo = new MetricMongoRepository(context);
+            var metrics = metricsRepo.GetAllMetrics();
+
+            if( !metrics.Any() )
+            {
+                var fy17 = fiscalYears[0];
+                var fy18 = fiscalYears[1];
+
+                var m1 = new ViewModels.MetricViewModel()
+                {
+                    MetricID = Guid.NewGuid(),
+                    MetricName = "Product sales",
+                    Description = "$$$ Dollars $$$",
+                    MetricCategory = "Sales",
+                    FiscalYearID = fy17.FiscalYearID
+                };
+                var m2 = new ViewModels.MetricViewModel()
+                {
+                    MetricID = Guid.NewGuid(),
+                    MetricName = "Customer satisfaction",
+                    Description = "Happy customers",
+                    MetricCategory = "Customer",
+                    FiscalYearID = fy18.FiscalYearID
+                };
+
+                metricsRepo.AddNewMetric(m1);
+                metricsRepo.AddNewMetric(m2);
             }
         }
 
@@ -64,6 +95,7 @@ namespace Arda.Kanban
             TestActivities(context);
             TestFiscalYears(context);
             TestTechnologies(context);
+            TestMetrics(context);
         }
 
         public static void TestActivities(MongoContext context)
@@ -113,6 +145,18 @@ namespace Arda.Kanban
             Assert(technologies.Count(), 1);
         }
 
+        public static void TestMetrics(MongoContext context)
+        {
+            var metricsRepo = new MetricMongoRepository(context);
+            var metrics = metricsRepo.GetAllMetrics();
+
+            var id1 = metrics[0].MetricID;
+            var id2 = metrics[1].MetricID;
+            
+            // assert
+            Assert(metrics.Count, 2);
+            
+        }
         static void Assert(object a, object b)
         {
             if( !a.Equals(b) )

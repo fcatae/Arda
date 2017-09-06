@@ -26,4 +26,17 @@ namespace Arda.Kanban.MongoRepositories
 
         public string technologyName { get; set; }
     }
+
+    public class Metric
+    {
+        public string _id { get; set; }
+
+        public string metricCategory { get; set; }
+
+        public string metricName { get; set; }
+
+        public string description { get; set; }
+
+        public FiscalYear FiscalYear { get; set; }
+    }
 }
